@@ -90,6 +90,16 @@ npm start
 
 Project ini menggunakan `next/font` untuk otomatis optimize dan load Geist.
 
+## Checklist Validasi Lokal
+
+Sebelum mengirim perubahan, jalankan pemeriksaan berikut:
+
+```bash
+npx tsc --noEmit
+npm run build
+git diff --check
+```
+
 ## Push ke GitHub
 
 Project ini cukup memakai satu repository:
