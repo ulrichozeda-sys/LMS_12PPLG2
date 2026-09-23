@@ -1,7 +1,7 @@
 // app/kurikulum/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import KelasCard, { KelasData } from "@/components/KelasCard";
@@ -58,7 +58,7 @@ const TABS: { key: Tab; label: string }[] = [
   { key: "PERFORMA", label: "Performa Akademik" },
 ];
 
-export default function KurikulumDashboard() {
+function KurikulumDashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -186,7 +186,7 @@ export default function KurikulumDashboard() {
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
             </button>
             <div className="flex items-center gap-2">
-              <span className="text-lg font-bold tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Studify</span>
+              <span className="text-lg font-bold tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>MyClass</span>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -245,7 +245,7 @@ export default function KurikulumDashboard() {
               <div className="rounded-2xl p-6 text-white shadow-sm" style={{ background: BRAND }}>
                 <p className="text-xs font-semibold uppercase tracking-wide text-white/75">Dashboard Kurikulum</p>
                 <h1 className="mt-2 text-2xl font-bold">Selamat Datang, {me?.nama ?? "Kurikulum"}</h1>
-                <p className="mt-2 max-w-2xl text-sm text-white/85">Pantau kelas, akun, dan performa akademik Studify — akses lihat saja.</p>
+                <p className="mt-2 max-w-2xl text-sm text-white/85">Pantau kelas, akun, dan performa akademik MyClass — akses lihat saja.</p>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -559,10 +559,18 @@ export default function KurikulumDashboard() {
       </div>
 
       <footer className="py-10 text-center text-white" style={{ background: BRAND }}>
-        <p className="text-lg font-bold">Studify</p>
-        <p className="mt-8 border-t border-white/20 pt-6 text-center text-xs text-white/80">© 2026 Studify. All Rights Reserved.</p>
+        <p className="text-lg font-bold">MyClass</p>
+        <p className="mt-8 border-t border-white/20 pt-6 text-center text-xs text-white/80">© 2026 MyClass. All Rights Reserved.</p>
       </footer>
     </div>
+  );
+}
+
+export default function KurikulumDashboard() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#FAF6EE]" />}>
+      <KurikulumDashboardContent />
+    </Suspense>
   );
 }
 

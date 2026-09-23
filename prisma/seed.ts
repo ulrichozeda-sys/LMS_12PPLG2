@@ -8,7 +8,7 @@ const adapter = new PrismaMariaDb({
   port: Number(process.env.DB_PORT ?? 3306),
   user: process.env.DB_USER ?? "root",
   password: process.env.DB_PASSWORD ?? "",
-  database: process.env.DB_NAME ?? "Studify",
+  database: process.env.DB_NAME ?? "myclass",
 });
 
 const db = new PrismaClient({ adapter });
@@ -158,13 +158,13 @@ async function main() {
   console.log("Seeding akun admin default...");
   const hashedPassword = await bcrypt.hash("admin123", 10);
   await db.user.upsert({
-    where: { email: "admin@studify.sch.id" },
+    where: { email: "admin@myclass.sch.id" },
     update: {},
     create: {
-      email: "admin@studify.sch.id",
+      email: "admin@myclass.sch.id",
       password: hashedPassword,
       role: "ADMIN",
-      nama: "Admin Studify",
+      nama: "Admin MyClass",
       passwordSementara: false, // <-- TAMBAH INI
     },
   });
@@ -173,10 +173,10 @@ async function main() {
 
 const kepsekPassword = await bcrypt.hash("kepsek123", 10);
 await db.user.upsert({
-  where: { email: "kepsek@studify.sch.id" },
+  where: { email: "kepsek@myclass.sch.id" },
   update: {},
   create: {
-    email: "kepsek@studify.sch.id",
+    email: "kepsek@myclass.sch.id",
     password: kepsekPassword,
     role: "KEPSEK",
     nama: "Kepala Sekolah",
@@ -186,10 +186,10 @@ await db.user.upsert({
 
 const kurikulumPassword = await bcrypt.hash("kurikulum123", 10);
 await db.user.upsert({
-  where: { email: "kurikulum@studify.sch.id" },
+  where: { email: "kurikulum@myclass.sch.id" },
   update: {},
   create: {
-    email: "kurikulum@studify.sch.id",
+    email: "kurikulum@myclass.sch.id",
     password: kurikulumPassword,
     role: "KURIKULUM",
     nama: "Waka Kurikulum",

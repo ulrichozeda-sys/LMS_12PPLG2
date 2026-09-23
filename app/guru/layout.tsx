@@ -77,7 +77,7 @@ export default function GuruLayout({ children }: { children: React.ReactNode }) 
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#658864] text-xs font-black text-white">S</div>
             </div>
             <span className="text-lg font-bold tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-              Studify
+              MyClass
             </span>
           </div>
 
@@ -149,9 +149,9 @@ export default function GuruLayout({ children }: { children: React.ReactNode }) 
       </div>
 
       <footer className="py-10 text-center text-white" style={{ background: BRAND }}>
-        <p className="text-lg font-bold">Studify</p>
+        <p className="text-lg font-bold">MyClass</p>
         <p className="mt-8 border-t border-white/20 pt-6 text-xs text-white/80">
-          © 2026 Studify. All Rights Reserved.
+          © 2026 MyClass. All Rights Reserved.
         </p>
       </footer>
     </div>

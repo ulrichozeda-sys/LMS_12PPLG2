@@ -29,7 +29,7 @@ export default function SiswaAsesmenPage() {
       .then((data) => {
         const userId = data.data?.id;
         if (!userId) return;
-        const stored = window.localStorage.getItem(`studify:siswa:removed-asesmen:${userId}`);
+        const stored = window.localStorage.getItem(`myclass:siswa:removed-asesmen:${userId}`);
         if (!stored) return;
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed)) setDismissedIds(parsed.filter((id): id is string => typeof id === "string"));
@@ -48,7 +48,7 @@ export default function SiswaAsesmenPage() {
         if (!userId) return;
         setDismissedIds((current) => {
           const next = current.includes(asesmen.id) ? current : [...current, asesmen.id];
-          window.localStorage.setItem(`studify:siswa:removed-asesmen:${userId}`, JSON.stringify(next));
+          window.localStorage.setItem(`myclass:siswa:removed-asesmen:${userId}`, JSON.stringify(next));
           return next;
         });
       })

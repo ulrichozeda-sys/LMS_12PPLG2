@@ -215,7 +215,7 @@ export default function AdminKelasDetailPage() {
               </svg>
             </button>
             <span className="text-lg font-bold tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-              Studify
+              MyClass
             </span>
           </div>
           <div className="flex items-center gap-3">

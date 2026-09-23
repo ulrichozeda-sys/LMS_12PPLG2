@@ -8,7 +8,7 @@ import { cookies } from "next/headers";
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET ?? "ganti-ini-di-env-jangan-dipake-production"
 );
-const COOKIE_NAME = "studify_session";
+const COOKIE_NAME = "myclass_session";
 const TOKEN_EXPIRY = "7d"; // token/login berlaku 7 hari
 
 export type SessionPayload = {

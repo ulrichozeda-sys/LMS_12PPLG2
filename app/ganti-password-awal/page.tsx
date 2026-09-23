@@ -64,7 +64,7 @@ export default function GantiPasswordAwalPage() {
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#658864] text-sm font-black text-white">S</div>
           </div>
           <p className="mt-2 text-base font-bold" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-            Studify
+            MyClass
           </p>
         </div>
 

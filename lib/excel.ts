@@ -13,7 +13,7 @@ export async function generateNilaiExcel(
   rows: NilaiRow[]
 ): Promise<Buffer> {
   const workbook = new ExcelJS.Workbook();
-  workbook.creator = "Studify";
+  workbook.creator = "MyClass";
   workbook.created = new Date();
 
   const sheet = workbook.addWorksheet("Nilai", {

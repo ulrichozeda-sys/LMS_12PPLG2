@@ -195,7 +195,7 @@ export default function LoginPage() {
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#658864] text-xs font-black text-white">S</div>
             </div>
             <span className="text-lg font-bold tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-              Studify
+              MyClass
             </span>
           </Link>
 
@@ -214,7 +214,7 @@ export default function LoginPage() {
         className="relative flex min-h-[640px] items-center justify-center bg-cover bg-center px-6 py-16"
         style={{
           backgroundImage:
-            "linear-gradient(180deg, rgba(17,24,39,0.45), rgba(17,24,39,0.65)), url('/hero-sekolah.jpg')",
+            "linear-gradient(180deg, rgba(17,24,39,0.4), rgba(17,24,39,0.58)), url('/hero-sekolah.svg')",
           backgroundColor: "#1F2937",
         }}
       >
@@ -222,7 +222,7 @@ export default function LoginPage() {
           className="absolute top-16 text-center text-2xl font-bold text-white md:text-3xl opacity-0 animate-[fadeUp_0.6s_ease-out_forwards]"
           style={{ fontFamily: "'Space Grotesk', sans-serif", animationDelay: "0.1s" }}
         >
-          Selamat Datang di Studify
+          Selamat Datang di MyClass
         </h1>
 
         <div className="mt-20 w-full max-w-sm rounded-2xl bg-[#FAF6EE] p-8 shadow-2xl opacity-0 animate-[fadeUp_0.6s_ease-out_forwards]">
@@ -232,9 +232,9 @@ export default function LoginPage() {
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#658864] text-xs font-black text-white">S</div>
             </div>
             <p className="mt-2 text-base font-bold" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-              Studify
+              MyClass
             </p>
-            <p className="mt-1 text-sm font-semibold text-[#111827]">Ayo Belajar Lebih Cerdas Bersama Studify</p>
+            <p className="mt-1 text-sm font-semibold text-[#111827]">Ayo Belajar Lebih Cerdas Bersama MyClass</p>
           </div>
 
           {/* ============ VIEW: LOGIN ============ */}
@@ -518,9 +518,9 @@ export default function LoginPage() {
 
       {/* FOOTER */}
       <footer className="py-12 text-center text-white" style={{ background: BRAND }}>
-        <p className="text-lg font-bold">Studify</p>
+        <p className="text-lg font-bold">MyClass</p>
         <p className="mt-10 border-t border-white/20 pt-6 text-xs text-white/80">
-          © 2026 Studify. All Rights Reserved.
+          © 2026 MyClass. All Rights Reserved.
         </p>
       </footer>
     </div>

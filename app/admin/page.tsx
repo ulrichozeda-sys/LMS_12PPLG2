@@ -259,7 +259,7 @@ export default function AdminDashboard() {
             </button>
             <div className="flex items-center gap-2">
               <span className="text-lg font-bold tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                Studify
+                MyClass
               </span>
             </div>
           </div>
@@ -346,7 +346,7 @@ export default function AdminDashboard() {
               <div className="rounded-2xl p-6 text-white shadow-sm" style={{ background: BRAND }}>
                 <p className="text-xs font-semibold uppercase tracking-wide text-white/75">Dashboard Admin</p>
                 <h1 className="mt-2 text-2xl font-bold">Selamat Datang, {me?.nama ?? "Admin"}</h1>
-                <p className="mt-2 max-w-2xl text-sm text-white/85">Kelola akun, kelas, dan aktivitas pembelajaran Studify dari satu tempat.</p>
+                <p className="mt-2 max-w-2xl text-sm text-white/85">Kelola akun, kelas, dan aktivitas pembelajaran MyClass dari satu tempat.</p>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -521,9 +521,9 @@ export default function AdminDashboard() {
       </div>
 
       <footer className="py-10 text-center text-white" style={{ background: BRAND }}>
-        <p className="text-lg font-bold">Studify</p>
+        <p className="text-lg font-bold">MyClass</p>
         <p className="mt-8 border-t border-white/20 pt-6 text-xs text-white/80">
-          © 2026 Studify. All Rights Reserved.
+          © 2026 MyClass. All Rights Reserved.
         </p>
       </footer>
 

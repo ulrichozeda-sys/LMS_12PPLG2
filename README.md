@@ -1,6 +1,6 @@
-# Studify
+# MyClass
 
-Studify adalah Learning Management System (LMS) untuk mendukung aktivitas sekolah: pengelolaan kelas, akun siswa dan guru, materi, tugas, asesmen, pengumpulan jawaban, serta pemantauan performa akademik.
+MyClass adalah Learning Management System (LMS) untuk mendukung aktivitas sekolah: pengelolaan kelas, akun siswa dan guru, materi, tugas, asesmen, pengumpulan jawaban, serta pemantauan performa akademik.
 
 A modern classroom and academic management app built with Next.js.
 
@@ -37,7 +37,7 @@ Untuk kondisi project sekarang, satu repository lebih sederhana karena frontend 
 
 ```bash
 git clone <URL_REPOSITORY>
-cd Studify
+cd myclass
 npm install
 copy .env.example .env
 ```
@@ -51,7 +51,7 @@ DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_USER=root
 DB_PASSWORD=
-DB_NAME=Studify
+DB_NAME=myclass
 JWT_SECRET=ganti-dengan-secret-random
 RESEND_API_KEY=
 ```

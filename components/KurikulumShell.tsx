@@ -54,7 +54,7 @@ export default function KurikulumShell({ children, activeTab = "KELAS" }: { chil
             <button onClick={() => setSidebarOpen((value) => !value)} aria-label="Toggle sidebar" className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg hover:bg-black/5">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
             </button>
-            <span className="text-lg font-bold tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Studify</span>
+            <span className="text-lg font-bold tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>MyClass</span>
           </div>
           <div className="flex items-center gap-3">
             {me && <div className="hidden text-right sm:block"><p className="text-sm font-semibold text-[#111827]">{me.nama}</p><p className="text-xs text-[#9CA3AF]">KURIKULUM</p></div>}
@@ -76,8 +76,8 @@ export default function KurikulumShell({ children, activeTab = "KELAS" }: { chil
       </div>
 
       <footer className="py-10 text-center text-white" style={{ background: BRAND }}>
-        <p className="text-lg font-bold">Studify</p>
-        <p className="mt-8 border-t border-white/20 pt-6 text-xs text-white/80">© 2026 Studify. All Rights Reserved.</p>
+        <p className="text-lg font-bold">MyClass</p>
+        <p className="mt-8 border-t border-white/20 pt-6 text-xs text-white/80">© 2026 MyClass. All Rights Reserved.</p>
       </footer>
     </div>
   );

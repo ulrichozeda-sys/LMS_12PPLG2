@@ -201,7 +201,7 @@ export default function ProfilPage() {
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#658864] text-xs font-black text-white">S</div>
             </div>
             <span className="text-lg font-bold tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-              Studify
+              MyClass
             </span>
           </div>
 
@@ -423,7 +423,7 @@ export default function ProfilPage() {
 
             <div className="print-only-card">
               <div className="print-card-identity">
-                <span className="print-card-label">STUDIFY · PROFIL {roleLabel[profil.role].toUpperCase()}</span>
+                <span className="print-card-label">MYCLASS · PROFIL {roleLabel[profil.role].toUpperCase()}</span>
                 <div className="print-card-photo">
                   {profil.fotoProfil ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -479,9 +479,9 @@ export default function ProfilPage() {
       )}
 
       <footer className="no-print py-10 text-center text-white" style={{ background: BRAND }}>
-        <p className="text-lg font-bold">Studify</p>
+        <p className="text-lg font-bold">MyClass</p>
         <p className="mt-8 border-t border-white/20 pt-6 text-xs text-white/80">
-          © 2026 Studify. All Rights Reserved.
+          © 2026 MyClass. All Rights Reserved.
         </p>
       </footer>
     </div>

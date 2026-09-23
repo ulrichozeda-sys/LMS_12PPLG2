@@ -9,7 +9,7 @@ type DialogDetail = {
 function request(type: DialogType, message: string): Promise<boolean> {
   if (typeof window === "undefined") return Promise.resolve(type === "alert");
   return new Promise((resolve) => {
-    window.dispatchEvent(new CustomEvent<DialogDetail>("studify-dialog", { detail: { type, message, resolve } }));
+    window.dispatchEvent(new CustomEvent<DialogDetail>("myclass-dialog", { detail: { type, message, resolve } }));
   });
 }
 

@@ -87,15 +87,15 @@ Mulai dari pencarian source aktif, lalu lakukan perubahan kecil dan validasi ber
 ## Contoh Pengisian
 
 ```text
-Brand baru: Studify
-Nama database MySQL/MariaDB: Studify
+Brand baru: MyClass
+Nama database MySQL/MariaDB: myclass
 Host database: 127.0.0.1
 Port database: 3306
 User database: root
 Password database:
-Domain email akun seed: studify.sch.id
-Prefix internal/cookie/localStorage/event: studify
-Nama package npm: studify
+Domain email akun seed: myclass.sch.id
+Prefix internal/cookie/localStorage/event: myclass
+Nama package npm: myclass
 Tahun copyright: 2026
 ```
 
@@ -220,15 +220,15 @@ Jangan memasukkan credential rahasia ke dalam project atau ZIP.
 ### Contoh Konfigurasi ZIP
 
 ```text
-Brand baru: Studify
-Nama database MySQL/MariaDB: Studify
+Brand baru: MyClass
+Nama database MySQL/MariaDB: myclass
 DB host: 127.0.0.1
 DB port: 3306
 DB user: root
 DB password:
-Domain email akun seed: studify.sch.id
-Prefix cookie/session/localStorage/event: studify
-Nama package npm: studify
+Domain email akun seed: myclass.sch.id
+Prefix cookie/session/localStorage/event: myclass
+Nama package npm: myclass
 Tahun copyright: 2026
 ```
 

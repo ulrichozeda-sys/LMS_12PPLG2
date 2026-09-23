@@ -19,8 +19,8 @@ export default function DialogHost() {
       setDialog(detail);
     }
 
-    window.addEventListener("studify-dialog", handleDialog);
-    return () => window.removeEventListener("studify-dialog", handleDialog);
+    window.addEventListener("myclass-dialog", handleDialog);
+    return () => window.removeEventListener("myclass-dialog", handleDialog);
   }, []);
 
   function close(result: boolean) {

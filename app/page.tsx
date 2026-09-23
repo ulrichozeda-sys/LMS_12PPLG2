@@ -12,7 +12,7 @@ export default function Home() {
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-2">
             <span className="text-lg font-bold tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-              Studify
+              MyClass
             </span>
           </div>
 
@@ -31,13 +31,13 @@ export default function Home() {
         className="relative flex min-h-[700px] items-center justify-center bg-cover bg-center text-center"
         style={{
           backgroundImage:
-            "linear-gradient(180deg, rgba(17,24,39,0.35), rgba(17,24,39,0.55)), url('/hero-sekolah.jpg')",
+            "linear-gradient(180deg, rgba(17,24,39,0.3), rgba(17,24,39,0.48)), url('/hero-sekolah.svg')",
           backgroundColor: "#1F2937",
         }}
       >
         <div className="px-6">
           <h1 className="text-3xl font-bold text-white md:text-4xl" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-            Ayo Belajar Lebih Cerdas Bersama Studify
+            Ayo Belajar Lebih Cerdas Bersama MyClass
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-sm text-white/90 md:text-base">
             &quot;Platform pembelajaran digital yang membantu guru dan siswa belajar,
@@ -54,9 +54,9 @@ export default function Home() {
       </section>
 
       <footer className="py-12 text-center text-white" style={{ background: BRAND }}>
-        <p className="text-lg font-bold">Studify</p>
+        <p className="text-lg font-bold">MyClass</p>
         <p className="mt-10 border-t border-white/20 pt-6 text-xs text-white/80">
-          © 2026 Studify. All Rights Reserved.
+          © 2026 MyClass. All Rights Reserved.
         </p>
       </footer>
     </div>

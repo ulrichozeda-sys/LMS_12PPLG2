@@ -5,7 +5,7 @@ import { ROUTE_ACCESS, getDashboardPath, type Role } from "@/lib/rbac";
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET ?? "ganti-ini-di-env-jangan-dipake-production"
 );
-const COOKIE_NAME = "studify_session";
+const COOKIE_NAME = "myclass_session";
 
 type SessionPayload = {
   userId: string;
