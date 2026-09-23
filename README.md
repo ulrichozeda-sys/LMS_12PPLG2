@@ -70,6 +70,8 @@ npx prisma db seed
 
 Untuk pengembangan schema lokal, gunakan `npx prisma migrate dev`.
 
+Jika Prisma menampilkan peringatan bahwa perubahan dapat menghapus data, hentikan proses dan periksa dampaknya terlebih dahulu. Jangan gunakan opsi reset paksa pada database yang masih berisi data penting.
+
 ## Menjalankan Aplikasi
 
 Mode development:
