@@ -7,7 +7,7 @@ import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import KepsekShell from "@/components/KepsekShell";
 
-const BRAND = "#658864";
+const BRAND = "#00D2D9";
 
 interface OpsiSoal {
   id: string;
@@ -203,12 +203,12 @@ export default function KepsekDetailJawabanSiswaPage() {
     <KepsekShell activeTab="ASESMEN"><div className="mx-auto w-full max-w-7xl px-4 pb-10 sm:px-6">
       <Link
         href={`/kepsek/asesmen/${asesmenId}/jawaban`}
-        className="mb-4 inline-flex items-center gap-1 text-sm font-semibold text-[#64748B] hover:text-[#658864]"
+        className="mb-4 inline-flex items-center gap-1 text-sm font-semibold text-[#64748B] hover:text-[#00D2D9]"
       >
         &larr; Kembali ke Daftar Jawaban
       </Link>
 
-      <div className="flex flex-wrap items-start justify-between gap-5 rounded-xl border border-black/5 border-t-4 border-t-[#658864] bg-[#FAF6EE] p-6 shadow-[0_2px_8px_rgba(15,23,42,0.08)]">
+      <div className="flex flex-wrap items-start justify-between gap-5 rounded-xl border border-black/5 border-t-4 border-t-[#00D2D9] bg-[#FFFFFF] p-6 shadow-[0_2px_8px_rgba(15,23,42,0.08)]">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wide text-[#94A3B8]">Jawaban Siswa</p>
           <h1 className="mt-1 text-2xl font-bold text-[#111827]">{detail.siswa.nama}</h1>
@@ -223,7 +223,7 @@ export default function KepsekDetailJawabanSiswaPage() {
 
       </div>
 
-      <div className="mt-4 overflow-hidden rounded-xl border border-black/5 bg-[#FAF6EE] shadow-sm">
+      <div className="mt-4 overflow-hidden rounded-xl border border-black/5 bg-[#FFFFFF] shadow-sm">
         <div className="grid lg:grid-cols-[1fr_220px]">
           <div className="overflow-x-auto p-4 sm:p-5">
             <table className="w-full min-w-[420px] text-left text-sm">
@@ -284,7 +284,7 @@ export default function KepsekDetailJawabanSiswaPage() {
             aria-label="Soal sebelumnya"
             onClick={() => setActiveIndex((i) => Math.max(0, i - 1))}
             disabled={activeIndex === 0}
-            className="cursor-pointer rounded-lg border border-[#CBD5E1] bg-[#FAF6EE] px-3 py-2 text-xs font-semibold text-[#475569] disabled:cursor-not-allowed disabled:opacity-40"
+            className="cursor-pointer rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] px-3 py-2 text-xs font-semibold text-[#475569] disabled:cursor-not-allowed disabled:opacity-40"
           >
             {"<<"}
           </button>
@@ -295,13 +295,13 @@ export default function KepsekDetailJawabanSiswaPage() {
             aria-label="Soal berikutnya"
             onClick={() => setActiveIndex((i) => Math.min(detail.soal.length - 1, i + 1))}
             disabled={activeIndex >= detail.soal.length - 1}
-            className="cursor-pointer rounded-lg border border-[#CBD5E1] bg-[#FAF6EE] px-3 py-2 text-xs font-semibold text-[#475569] disabled:cursor-not-allowed disabled:opacity-40"
+            className="cursor-pointer rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] px-3 py-2 text-xs font-semibold text-[#475569] disabled:cursor-not-allowed disabled:opacity-40"
           >
             {">>"}
           </button>
           <button
             onClick={() => setShowGrid((v) => !v)}
-            className="cursor-pointer rounded-lg border border-[#CBD5E1] bg-[#FAF6EE] p-2 text-[#475569]"
+            className="cursor-pointer rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] p-2 text-[#475569]"
             title="Daftar Nomor Soal"
             aria-label="Daftar Nomor Soal"
           >
@@ -316,7 +316,7 @@ export default function KepsekDetailJawabanSiswaPage() {
       </div>
 
       {showGrid && (
-        <div className="mt-3 rounded-xl border border-black/5 bg-[#FAF6EE] p-3 shadow-sm">
+        <div className="mt-3 rounded-xl border border-black/5 bg-[#FFFFFF] p-3 shadow-sm">
           <p className="mb-2 text-xs font-semibold text-[#64748B]">Daftar Soal</p>
           {detail.soal.length === 0 ? (
             <p className="text-xs text-[#94A3B8]">Belum ada soal.</p>
@@ -354,7 +354,7 @@ export default function KepsekDetailJawabanSiswaPage() {
         </div>
       )}
 
-      <div className="mt-4 min-h-[360px] rounded-xl border border-black/5 bg-[#FAF6EE] p-6 shadow-[0_2px_8px_rgba(15,23,42,0.08)] sm:p-8">
+      <div className="mt-4 min-h-[360px] rounded-xl border border-black/5 bg-[#FFFFFF] p-6 shadow-[0_2px_8px_rgba(15,23,42,0.08)] sm:p-8">
         {detail.soal.length === 0 ? (
           <p className="text-sm text-[#9CA3AF]">Siswa ini belum menjawab soal apapun.</p>
         ) : currentSoal ? (

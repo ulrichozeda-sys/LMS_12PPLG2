@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Button from "@/components/ui/Button";
 
-const BRAND = "#658864";
+const BRAND = "#00D2D9";
 type KurikulumTab = "DASHBOARD" | "KELAS" | "SISWA" | "GURU" | "ASESMEN" | "PERFORMA";
 
 const TABS: { key: KurikulumTab; label: string; href: string }[] = [
@@ -47,8 +47,8 @@ export default function KurikulumShell({ children, activeTab = "KELAS" }: { chil
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#FAF6EE]" style={{ fontFamily: "Inter, sans-serif" }}>
-      <header className="sticky top-0 z-40 border-b border-black/5 bg-[#FAF6EE]">
+    <div className="flex min-h-screen flex-col bg-[#FFFFFF]" style={{ fontFamily: "Inter, sans-serif" }}>
+      <header className="sticky top-0 z-40 border-b border-black/5 bg-[#FFFFFF]">
         <div className="flex items-center justify-between px-4 py-3 sm:px-6">
           <div className="flex items-center gap-3">
             <button onClick={() => setSidebarOpen((value) => !value)} aria-label="Toggle sidebar" className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg hover:bg-black/5">
@@ -65,8 +65,8 @@ export default function KurikulumShell({ children, activeTab = "KELAS" }: { chil
 
       <div className="mx-auto flex w-full max-w-7xl flex-1 px-4 py-6 sm:px-6">
         {sidebarOpen && <div onClick={() => setSidebarOpen(false)} className="fixed inset-0 z-40 bg-black/30 backdrop-blur-[1px]" />}
-        <aside aria-label="Navigasi kurikulum" className={`fixed inset-y-0 left-0 z-50 w-72 overflow-y-auto bg-[#FAF6EE] p-4 shadow-[8px_0_24px_rgba(15,23,42,0.12)] transition-transform duration-300 ease-out ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
-          <div className="flex min-h-full flex-col border-r border-black/5 bg-[#FAF6EE] p-4 shadow-sm">
+        <aside aria-label="Navigasi kurikulum" className={`fixed inset-y-0 left-0 z-50 w-72 overflow-y-auto bg-[#FFFFFF] p-4 shadow-[8px_0_24px_rgba(15,23,42,0.12)] transition-transform duration-300 ease-out ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
+          <div className="flex min-h-full flex-col border-r border-black/5 bg-[#FFFFFF] p-4 shadow-sm">
             <p className="mb-3 px-2 pt-2 text-sm font-bold text-[#111827]">Dashboard Kurikulum<br /><span style={{ color: BRAND }}>- {TABS.find((tab) => tab.key === activeTab)?.label}</span></p>
             <nav className="flex flex-col gap-1">{TABS.map((tab) => <Link key={tab.key} href={tab.href} onClick={() => setSidebarOpen(false)} className="flex cursor-pointer items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors" style={activeTab === tab.key ? { background: `${BRAND}1A`, color: BRAND } : { color: "#374151" }}><TabIcon tab={tab.key} /><span>{tab.label}</span></Link>)}</nav>
             <Button size="md" onClick={handleLogout} className="mt-auto w-full rounded-xl" style={{ background: "#F8CDBD", color: "#7C4A3A" }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4"><path d="M10 17l5-5-5-5M15 12H3M21 4v16" strokeLinecap="round" strokeLinejoin="round" /></svg>Keluar</Button>
@@ -77,7 +77,7 @@ export default function KurikulumShell({ children, activeTab = "KELAS" }: { chil
 
       <footer className="py-10 text-center text-white" style={{ background: BRAND }}>
         <p className="text-lg font-bold">MyClass</p>
-        <p className="mt-8 border-t border-white/20 pt-6 text-xs text-white/80">© 2026 MyClass. All Rights Reserved.</p>
+        <p className="mt-8 border-t border-white/20 pt-6 text-xs text-white/80">Â© 2026 MyClass. All Rights Reserved.</p>
       </footer>
     </div>
   );

@@ -7,7 +7,7 @@ import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import KurikulumShell from "@/components/KurikulumShell";
 
-const BRAND = "#658864";
+const BRAND = "#00D2D9";
 
 interface OpsiJawaban {
   id: string;
@@ -86,11 +86,11 @@ export default function KurikulumAsesmenDetailPage() {
 
   return (
     <KurikulumShell activeTab="ASESMEN"><div className="mx-auto w-full max-w-7xl px-4 pb-10 sm:px-6">
-      <Link href="/kurikulum" className="mb-4 inline-flex items-center gap-1 text-sm font-semibold text-[#64748B] hover:text-[#658864]">
+      <Link href="/kurikulum" className="mb-4 inline-flex items-center gap-1 text-sm font-semibold text-[#64748B] hover:text-[#00D2D9]">
         &larr; Kembali ke Kurikulum
       </Link>
 
-      <div className="flex flex-wrap items-start justify-between gap-5 rounded-xl border border-black/5 border-t-4 border-t-[#658864] bg-[#FAF6EE] p-6 shadow-[0_2px_8px_rgba(15,23,42,0.08)]">
+      <div className="flex flex-wrap items-start justify-between gap-5 rounded-xl border border-black/5 border-t-4 border-t-[#00D2D9] bg-[#FFFFFF] p-6 shadow-[0_2px_8px_rgba(15,23,42,0.08)]">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-[#111827]">{asesmen.judul}</h1>
           <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
@@ -120,7 +120,7 @@ export default function KurikulumAsesmenDetailPage() {
       <div className="mt-5 flex flex-wrap items-center gap-2">
         <Link
           href={`/kurikulum/asesmen/${asesmenId}/jawaban`}
-          className="inline-flex items-center justify-center rounded-lg border border-[#CBD5E1] bg-[#FAF6EE] px-3 py-1.5 text-xs font-semibold text-[#475569] transition-colors hover:border-[#658864] hover:text-[#658864]"
+          className="inline-flex items-center justify-center rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] px-3 py-1.5 text-xs font-semibold text-[#475569] transition-colors hover:border-[#00D2D9] hover:text-[#00D2D9]"
         >
           Jawaban
         </Link>
@@ -131,14 +131,14 @@ export default function KurikulumAsesmenDetailPage() {
             setActiveIndex(0);
           }}
           placeholder="Cari soal..."
-          className="min-w-[180px] flex-1 rounded-lg border border-[#CBD5E1] bg-[#FAF6EE] px-4 py-2 text-sm outline-none placeholder:text-[#94A3B8] focus:border-[#658864] focus:ring-2 focus:ring-[#658864]/10"
+          className="min-w-[180px] flex-1 rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] px-4 py-2 text-sm outline-none placeholder:text-[#94A3B8] focus:border-[#00D2D9] focus:ring-2 focus:ring-[#00D2D9]/10"
         />
         <div className="flex items-center gap-1">
           <button
             aria-label="Soal sebelumnya"
             onClick={() => setActiveIndex((i) => Math.max(0, i - 1))}
             disabled={activeIndex === 0}
-            className="cursor-pointer rounded-lg border border-[#CBD5E1] bg-[#FAF6EE] px-3 py-2 text-xs font-semibold text-[#475569] disabled:cursor-not-allowed disabled:opacity-40"
+            className="cursor-pointer rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] px-3 py-2 text-xs font-semibold text-[#475569] disabled:cursor-not-allowed disabled:opacity-40"
           >
             {"<<"}
           </button>
@@ -149,13 +149,13 @@ export default function KurikulumAsesmenDetailPage() {
             aria-label="Soal berikutnya"
             onClick={() => setActiveIndex((i) => Math.min(halamanCount - 1, i + 1))}
             disabled={activeIndex >= halamanCount - 1}
-            className="cursor-pointer rounded-lg border border-[#CBD5E1] bg-[#FAF6EE] px-3 py-2 text-xs font-semibold text-[#475569] disabled:cursor-not-allowed disabled:opacity-40"
+            className="cursor-pointer rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] px-3 py-2 text-xs font-semibold text-[#475569] disabled:cursor-not-allowed disabled:opacity-40"
           >
             {">>"}
           </button>
           <button
             onClick={() => setShowGrid((v) => !v)}
-            className="cursor-pointer rounded-lg border border-[#CBD5E1] bg-[#FAF6EE] p-2 text-[#475569]"
+            className="cursor-pointer rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] p-2 text-[#475569]"
             title="Buka Library Soal"
             aria-label="Buka Library Soal"
           >
@@ -170,7 +170,7 @@ export default function KurikulumAsesmenDetailPage() {
       </div>
 
       {showGrid && (
-        <div className="mt-3 rounded-xl border border-black/5 bg-[#FAF6EE] p-3 shadow-sm">
+        <div className="mt-3 rounded-xl border border-black/5 bg-[#FFFFFF] p-3 shadow-sm">
           <p className="mb-2 text-xs font-semibold text-[#64748B]">Library Soal</p>
           {halamanCount === 0 ? (
             <p className="text-xs text-[#94A3B8]">{search ? "Tidak ada soal yang cocok." : "Belum ada soal."}</p>
@@ -194,7 +194,7 @@ export default function KurikulumAsesmenDetailPage() {
         </div>
       )}
 
-      <div className="mt-4 min-h-[360px] rounded-xl border border-black/5 bg-[#FAF6EE] p-6 shadow-[0_2px_8px_rgba(15,23,42,0.08)] sm:p-10">
+      <div className="mt-4 min-h-[360px] rounded-xl border border-black/5 bg-[#FFFFFF] p-6 shadow-[0_2px_8px_rgba(15,23,42,0.08)] sm:p-10">
         {asesmen.soal.length === 0 ? (
           <p className="text-sm text-[#9CA3AF]">Belum ada soal.</p>
         ) : halamanCount === 0 ? (
@@ -222,7 +222,7 @@ export default function KurikulumAsesmenDetailPage() {
                   <div
                     key={o.id}
                     className={`flex items-center justify-between gap-3 rounded-lg border px-4 py-3 text-sm ${
-                      o.isBenar ? "border-[#658864] bg-[#658864]/5" : "border-[#E2E8F0]"
+                      o.isBenar ? "border-[#00D2D9] bg-[#00D2D9]/5" : "border-[#E2E8F0]"
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -234,7 +234,7 @@ export default function KurikulumAsesmenDetailPage() {
                 ))}
               </div>
             ) : (
-              <p className="mt-3 text-xs text-[#9CA3AF]">Soal Essay — dinilai manual oleh guru setelah siswa mengumpulkan.</p>
+              <p className="mt-3 text-xs text-[#9CA3AF]">Soal Essay â€” dinilai manual oleh guru setelah siswa mengumpulkan.</p>
             )}
           </div>
         ) : null}

@@ -2,7 +2,7 @@
 
 import { ButtonHTMLAttributes, ReactNode } from "react";
 
-const BRAND = "#658864";
+const BRAND = "#00D2D9";
 
 type Variant = "primary" | "outline" | "danger" | "ghost";
 type Size = "sm" | "md" | "lg";

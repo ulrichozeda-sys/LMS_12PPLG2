@@ -170,7 +170,7 @@ export default function ModalBuatSoal({ open, onClose, onSuccess, asesmenId, mod
               className="cursor-pointer rounded-lg border py-2 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50"
               style={
                 tipe === t
-                  ? { background: "#658864", borderColor: "#658864", color: "white" }
+                  ? { background: "#00D2D9", borderColor: "#00D2D9", color: "white" }
                   : { borderColor: "#D1D5DB", color: "#374151" }
               }
             >

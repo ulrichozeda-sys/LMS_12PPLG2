@@ -16,7 +16,7 @@ import ModalKirimPengumuman from "@/components/ModalKirimPengumuman";
 import type { AsesmenData } from "@/components/Asesmencard";
 import { showAlert, showConfirm } from "@/lib/dialog";
 
-const BRAND = "#658864";
+const BRAND = "#00D2D9";
 
 interface SiswaDiKelas {
   siswaId: string;
@@ -196,7 +196,7 @@ export default function GuruKelasDetailPage() {
             <p className="text-lg font-bold">{kelas.judul}</p>
             {kelas.deskripsi && <p className="mt-1 text-sm text-white/85">&quot;{kelas.deskripsi}&quot;</p>}
           </div>
-          <div className="rounded-xl bg-[#FAF6EE]/15 px-3 py-2 text-right">
+          <div className="rounded-xl bg-[#FFFFFF]/15 px-3 py-2 text-right">
             <p className="text-[10px] font-semibold uppercase tracking-wide text-white/80">Kode Kelas</p>
             <p className="text-sm font-bold">{kelas.inviteToken}</p>
             <button onClick={handleCopyInvite} className="mt-1 flex items-center gap-1 text-[11px] font-medium text-white/90 hover:underline">
@@ -227,7 +227,7 @@ export default function GuruKelasDetailPage() {
             Object.entries(siswaGrouped).map(([label, list]) => {
               const isOpen = expandedRombel === label;
               return (
-                <div key={label} className="overflow-hidden rounded-2xl border border-black/5 bg-[#FAF6EE] shadow-sm">
+                <div key={label} className="overflow-hidden rounded-2xl border border-black/5 bg-[#FFFFFF] shadow-sm">
                   <button onClick={() => setExpandedRombel(isOpen ? null : label)} className="flex w-full cursor-pointer items-center justify-between px-5 py-3.5 text-left">
                     <div className="flex items-center gap-2">
                       <p className="text-sm font-bold text-[#111827]">{label}</p>
@@ -278,7 +278,7 @@ export default function GuruKelasDetailPage() {
                 <p className="mb-2 text-xs font-bold uppercase tracking-wide text-[#9CA3AF]">{mapel}</p>
                 <div className="space-y-2">
                   {list.map((gm) => (
-                    <div key={gm.id} className="flex items-center gap-3 rounded-xl border border-black/5 bg-[#FAF6EE] p-3 shadow-sm">
+                    <div key={gm.id} className="flex items-center gap-3 rounded-xl border border-black/5 bg-[#FFFFFF] p-3 shadow-sm">
                       <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#E5E7EB] text-xs font-bold text-[#6B7280]">
                         {gm.guru.fotoProfil ? (
                           // eslint-disable-next-line @next/next/no-img-element
@@ -349,7 +349,7 @@ export default function GuruKelasDetailPage() {
               <div
                 key={`a-${i}`}
                 onClick={() => router.push(`/guru/asesmen/${a.id}`)}
-                className="block w-full cursor-pointer rounded-2xl border border-black/5 bg-[#FAF6EE] p-4 text-left shadow-sm transition-shadow hover:shadow-md"
+                className="block w-full cursor-pointer rounded-2xl border border-black/5 bg-[#FFFFFF] p-4 text-left shadow-sm transition-shadow hover:shadow-md"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-2">
@@ -367,10 +367,10 @@ export default function GuruKelasDetailPage() {
                         }}
                         className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-lg font-bold text-[#64748B] hover:bg-[#F1F5F9]"
                       >
-                        ⋯
+                        â‹¯
                       </button>
                       {openAsesmenOptionsId === a.id && (
-                        <div onClick={(event) => event.stopPropagation()} className="absolute right-0 top-9 z-20 w-32 overflow-hidden rounded-xl border border-[#E2E8F0] bg-[#FAF6EE] py-1 text-left shadow-lg">
+                        <div onClick={(event) => event.stopPropagation()} className="absolute right-0 top-9 z-20 w-32 overflow-hidden rounded-xl border border-[#E2E8F0] bg-[#FFFFFF] py-1 text-left shadow-lg">
                           {a.status === "PROSES" && (
                             <button type="button" onClick={() => { setOpenAsesmenOptionsId(null); setEditingAsesmen(a as AsesmenData); }} className="block w-full cursor-pointer px-3 py-2 text-xs font-medium text-[#475569] hover:bg-[#F8FAFC]">
                               Edit
@@ -391,7 +391,7 @@ export default function GuruKelasDetailPage() {
                 </div>
                 <p className="mt-2 text-sm font-bold text-[#111827]">{a.judul}</p>
                 <p className="mt-1 text-xs text-[#9CA3AF]">
-                  {a._count?.soal ?? 0} soal · oleh {a.guru?.nama}
+                  {a._count?.soal ?? 0} soal Â· oleh {a.guru?.nama}
                 </p>
               </div>
             );

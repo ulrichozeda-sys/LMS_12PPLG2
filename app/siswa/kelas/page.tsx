@@ -49,7 +49,7 @@ export default function SiswaKelasPage() {
       )}
 
       {!loading && !error && kelasList.length === 0 && (
-        <div className="rounded-2xl border border-dashed border-[#CBD5E1] bg-[#FAF6EE] p-6 text-center shadow-sm">
+        <div className="rounded-2xl border border-dashed border-[#CBD5E1] bg-[#FFFFFF] p-6 text-center shadow-sm">
           <p className="text-lg font-semibold text-[#111827]">Belum ada kelas</p>
           <p className="mt-2 text-sm text-[#64748B]">Kamu belum tergabung di kelas yang dibuat admin.</p>
         </div>

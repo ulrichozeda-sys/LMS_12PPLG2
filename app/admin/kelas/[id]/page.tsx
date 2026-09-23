@@ -13,7 +13,7 @@ import PengumumanCard from "@/components/PengumumanCard";
 import TugasCard from "@/components/TugasCard";
 import { showConfirm } from "@/lib/dialog";
 
-const BRAND = "#658864";
+const BRAND = "#00D2D9";
 type AdminTab = "KELAS" | "AKUN" | "SISWA" | "GURU" | "LAPORAN";
 type GuruNav = "KELAS" | "ASESMEN" | "TUGAS" | "PROFILE";
 
@@ -169,7 +169,7 @@ export default function AdminKelasDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#FAF6EE]">
+      <div className="flex min-h-screen items-center justify-center bg-[#FFFFFF]">
         <p className="text-sm text-[#9CA3AF]">Memuat...</p>
       </div>
     );
@@ -177,7 +177,7 @@ export default function AdminKelasDetailPage() {
 
   if (!kelas) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-[#FAF6EE]">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-[#FFFFFF]">
         <p className="text-sm text-[#9CA3AF]">Kelas tidak ditemukan.</p>
         <Button variant="outline" onClick={() => router.push("/admin")}>
           Kembali
@@ -201,8 +201,8 @@ export default function AdminKelasDetailPage() {
   }, {});
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#FAF6EE]" style={{ fontFamily: "Inter, sans-serif" }}>
-      <header className="sticky top-0 z-40 border-b border-black/5 bg-[#FAF6EE]">
+    <div className="flex min-h-screen flex-col bg-[#FFFFFF]" style={{ fontFamily: "Inter, sans-serif" }}>
+      <header className="sticky top-0 z-40 border-b border-black/5 bg-[#FFFFFF]">
         <div className="flex items-center justify-between px-4 py-3 sm:px-6">
           <div className="flex items-center gap-3">
             <button
@@ -246,11 +246,11 @@ export default function AdminKelasDetailPage() {
 
       <aside
         aria-label={canManageClass ? "Navigasi admin" : "Navigasi guru"}
-        className={`fixed inset-y-0 left-0 z-50 w-72 overflow-y-auto bg-[#FAF6EE] p-4 shadow-[8px_0_24px_rgba(15,23,42,0.12)] transition-transform duration-300 ease-out ${
+        className={`fixed inset-y-0 left-0 z-50 w-72 overflow-y-auto bg-[#FFFFFF] p-4 shadow-[8px_0_24px_rgba(15,23,42,0.12)] transition-transform duration-300 ease-out ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex min-h-full flex-col border-r border-black/5 bg-[#FAF6EE] p-4 shadow-sm">
+        <div className="flex min-h-full flex-col border-r border-black/5 bg-[#FFFFFF] p-4 shadow-sm">
           <p className="mb-3 px-2 pt-2 text-sm font-bold text-[#111827]">
             {canManageClass ? "Dashboard Admin" : "Dashboard Guru"}
             <br />
@@ -263,7 +263,7 @@ export default function AdminKelasDetailPage() {
                 onClick={() => navigateToAdminTab(tab.key)}
                 title={tab.label}
                 className={`flex cursor-pointer items-center gap-3 rounded-lg px-4 py-2.5 text-left text-sm font-semibold ${
-                  tab.key === "KELAS" ? "text-[#658864]" : "text-[#374151] hover:bg-black/5"
+                  tab.key === "KELAS" ? "text-[#00D2D9]" : "text-[#374151] hover:bg-black/5"
                 }`}
                 style={tab.key === "KELAS" ? { background: `${BRAND}1A` } : undefined}
               >
@@ -309,7 +309,7 @@ export default function AdminKelasDetailPage() {
               <p className="text-lg font-bold">{kelas.judul}</p>
               {kelas.deskripsi && <p className="mt-1 text-sm text-white/85">&quot;{kelas.deskripsi}&quot;</p>}
             </div>
-            <div className="rounded-xl bg-[#FAF6EE]/15 px-3 py-2 text-right">
+            <div className="rounded-xl bg-[#FFFFFF]/15 px-3 py-2 text-right">
               <p className="text-[10px] font-semibold uppercase tracking-wide text-white/80">Kode Kelas</p>
               <p className="text-sm font-bold">{kelas.inviteToken}</p>
               <button
@@ -354,7 +354,7 @@ export default function AdminKelasDetailPage() {
                   onClick={() => setSection(null)}
                   className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-black/10 text-lg text-[#6B7280] hover:bg-black/5"
                 >
-                  ×
+                  Ã—
                 </button>
               </div>
             </div>
@@ -366,7 +366,7 @@ export default function AdminKelasDetailPage() {
                 {Object.entries(siswaGrouped).map(([label, list]) => {
                   const isOpen = expandedRombel === label;
                   return (
-                    <div key={label} className="overflow-hidden rounded-2xl border border-black/5 bg-[#FAF6EE] shadow-sm">
+                    <div key={label} className="overflow-hidden rounded-2xl border border-black/5 bg-[#FFFFFF] shadow-sm">
                       <button
                         onClick={() => setExpandedRombel(isOpen ? null : label)}
                         className="flex w-full cursor-pointer items-center justify-between px-5 py-3.5 text-left"
@@ -427,7 +427,7 @@ export default function AdminKelasDetailPage() {
                   onClick={() => setSection(null)}
                   className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-black/10 text-lg text-[#6B7280] hover:bg-black/5"
                 >
-                  ×
+                  Ã—
                 </button>
               </div>
             </div>
@@ -440,7 +440,7 @@ export default function AdminKelasDetailPage() {
                   <p className="mb-2 text-xs font-bold uppercase tracking-wide text-[#9CA3AF]">{mapel}</p>
                   <div className="space-y-2">
                     {list.map((gm) => (
-                      <div key={gm.id} className="flex items-center gap-3 rounded-xl border border-black/5 bg-[#FAF6EE] p-3 shadow-sm">
+                      <div key={gm.id} className="flex items-center gap-3 rounded-xl border border-black/5 bg-[#FFFFFF] p-3 shadow-sm">
                         <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#E5E7EB] text-xs font-bold text-[#6B7280]">
                           {gm.guru.fotoProfil ? (
                             // eslint-disable-next-line @next/next/no-img-element
@@ -484,14 +484,14 @@ export default function AdminKelasDetailPage() {
                   }
                   const a = item.data;
                   return (
-                    <div key={`a-${i}`} className="rounded-2xl border border-black/5 bg-[#FAF6EE] p-4 shadow-sm">
+                    <div key={`a-${i}`} className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-4 shadow-sm">
                       <div className="flex items-center gap-2">
                         <Badge tone="brand">{a.tipe === "KUIS" ? "Kuis" : "Ujian Online"}</Badge>
                         {a.mapel && <Badge tone="gray">{a.mapel.nama}</Badge>}
                       </div>
                       <p className="mt-2 text-sm font-bold text-[#111827]">{a.judul}</p>
                       <p className="mt-1 text-xs text-[#9CA3AF]">
-                        {a._count?.soal ?? 0} soal · oleh {a.guru?.nama}
+                        {a._count?.soal ?? 0} soal Â· oleh {a.guru?.nama}
                       </p>
                     </div>
                   );
@@ -620,7 +620,7 @@ function ModalTambahSiswa({
               <label key={s.id} className="flex cursor-pointer items-center gap-2 rounded-lg p-2 hover:bg-black/5">
                 <input type="checkbox" checked={selectedIds.includes(s.id)} onChange={() => toggle(s.id)} />
                 <span className="text-sm text-[#374151]">
-                  {s.nama} — {s.nis}
+                  {s.nama} â€” {s.nis}
                 </span>
               </label>
             ))}

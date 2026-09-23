@@ -8,7 +8,7 @@ import Badge from "@/components/ui/Badge";
 import PengumumanCard from "@/components/PengumumanCard";
 import TugasCard from "@/components/TugasCard";
 
-const BRAND = "#658864";
+const BRAND = "#00D2D9";
 
 interface SiswaDiKelas {
   siswaId: string;
@@ -130,7 +130,7 @@ export default function SiswaKelasDetailPage() {
             Object.entries(siswaGrouped).map(([label, list]) => {
               const isOpen = expandedRombel === label;
               return (
-                <div key={label} className="overflow-hidden rounded-2xl border border-black/5 bg-[#FAF6EE] shadow-sm">
+                <div key={label} className="overflow-hidden rounded-2xl border border-black/5 bg-[#FFFFFF] shadow-sm">
                   <button onClick={() => setExpandedRombel(isOpen ? null : label)} className="flex w-full cursor-pointer items-center justify-between px-5 py-3.5 text-left">
                     <div className="flex items-center gap-2">
                       <p className="text-sm font-bold text-[#111827]">{label}</p>
@@ -184,7 +184,7 @@ export default function SiswaKelasDetailPage() {
                     <button
                       key={gm.id}
                       onClick={() => router.push(`/profil/${gm.guru.id}`)}
-                      className="flex w-full cursor-pointer items-center gap-3 rounded-xl border border-black/5 bg-[#FAF6EE] p-3 text-left shadow-sm hover:bg-black/5"
+                      className="flex w-full cursor-pointer items-center gap-3 rounded-xl border border-black/5 bg-[#FFFFFF] p-3 text-left shadow-sm hover:bg-black/5"
                     >
                       <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#E5E7EB] text-xs font-bold text-[#6B7280]">
                         {gm.guru.fotoProfil ? (
@@ -222,7 +222,7 @@ export default function SiswaKelasDetailPage() {
                 // ASESMEN: murni tampilan, gak diklik dari feed -- siswa ngerjain dari tab Asesmen
                 const a = item.data;
                 return (
-                  <div key={`a-${i}`} className="rounded-2xl border border-black/5 bg-[#FAF6EE] p-4 shadow-sm">
+                  <div key={`a-${i}`} className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-4 shadow-sm">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-center gap-2">
                         <Badge tone="brand">{a.tipe === "KUIS" ? "Kuis" : "Ujian Online"}</Badge>
@@ -231,7 +231,7 @@ export default function SiswaKelasDetailPage() {
                       <button
                         type="button"
                         onClick={() => router.push(`/siswa/asesmen/${a.id}`)}
-                        className="flex-shrink-0 rounded-lg bg-[#658864] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#557654]"
+                        className="flex-shrink-0 rounded-lg bg-[#00D2D9] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#557654]"
                       >
                         {a.statusSubmission === "SUDAH" ? "Sudah Dikerjakan" : "Kerjakan"}
                       </button>

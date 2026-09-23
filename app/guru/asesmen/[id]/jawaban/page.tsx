@@ -75,11 +75,11 @@ export default function GuruJawabanPage() {
 
   return (
     <div className="mx-auto max-w-6xl pb-10">
-      <Link href={`/guru/asesmen/${asesmenId}`} className="text-sm font-semibold text-[#64748B] hover:text-[#658864]">
+      <Link href={`/guru/asesmen/${asesmenId}`} className="text-sm font-semibold text-[#64748B] hover:text-[#00D2D9]">
         &larr; Kembali ke Asesmen
       </Link>
 
-      <div className="mt-4 rounded-xl border border-black/5 border-t-4 border-t-[#658864] bg-[#FAF6EE] p-6 shadow-sm">
+      <div className="mt-4 rounded-xl border border-black/5 border-t-4 border-t-[#00D2D9] bg-[#FFFFFF] p-6 shadow-sm">
         <p className="text-xs font-semibold uppercase tracking-wide text-[#94A3B8]">Jawaban Siswa</p>
         <h1 className="mt-1 text-2xl font-bold text-[#111827]">{hasil.asesmen.judul}</h1>
         <div className="mt-3 flex flex-wrap gap-2">
@@ -104,8 +104,8 @@ export default function GuruJawabanPage() {
                 <button
                   key={kelas.id}
                   onClick={() => setSelectedKelasId(active ? null : kelas.id)}
-                  className="rounded-xl border bg-[#FAF6EE] p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-                  style={active ? { borderColor: "#658864", boxShadow: "0 0 0 2px #65886433" } : { borderColor: "#E5E7EB" }}
+                  className="rounded-xl border bg-[#FFFFFF] p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                  style={active ? { borderColor: "#00D2D9", boxShadow: "0 0 0 2px #00D2D933" } : { borderColor: "#E5E7EB" }}
                 >
                   <p className="font-bold text-[#111827]">{kelas.judul}</p>
                   <p className="mt-1 text-xs text-[#64748B]">{count} siswa mengumpulkan jawaban</p>

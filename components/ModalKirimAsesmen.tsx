@@ -67,7 +67,7 @@ export default function ModalKirimAsesmen({ open, asesmenId, onClose, onSuccess 
         <div>
           <label className="mb-1.5 block text-xs font-semibold text-[#374151]">Pilih kelas tujuan</label>
           <select
-            className="w-full rounded-lg border border-[#D1D5DB] px-3.5 py-2.5 text-sm outline-none focus:border-[#658864]"
+            className="w-full rounded-lg border border-[#D1D5DB] px-3.5 py-2.5 text-sm outline-none focus:border-[#00D2D9]"
             value=""
             onChange={(event) => event.target.value && toggleKelas(event.target.value)}
           >

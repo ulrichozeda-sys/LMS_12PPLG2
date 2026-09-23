@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 
-const BRAND = "#658864";
+const BRAND = "#00D2D9";
 
 type Portal = "ADMIN" | "PETUGAS" | "SISWA";
 type View = "LOGIN" | "LAPOR" | "OTP" | "PASSWORD_BARU" | "SUKSES";
@@ -186,13 +186,13 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAF6EE]" style={{ fontFamily: "Inter, sans-serif" }}>
+    <div className="min-h-screen bg-[#FFFFFF]" style={{ fontFamily: "Inter, sans-serif" }}>
       {/* NAVBAR */}
-      <header className="border-b border-black/5 bg-[#FAF6EE]">
+      <header className="border-b border-black/5 bg-[#FFFFFF]">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <Link href="/" className="flex items-center gap-2">
             <div className="relative h-8 w-8 flex-shrink-0">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#658864] text-xs font-black text-white">S</div>
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#00D2D9] text-xs font-black text-white">S</div>
             </div>
             <span className="text-lg font-bold tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
               MyClass
@@ -225,11 +225,11 @@ export default function LoginPage() {
           Selamat Datang di MyClass
         </h1>
 
-        <div className="mt-20 w-full max-w-sm rounded-2xl bg-[#FAF6EE] p-8 shadow-2xl opacity-0 animate-[fadeUp_0.6s_ease-out_forwards]">
+        <div className="mt-20 w-full max-w-sm rounded-2xl bg-[#FFFFFF] p-8 shadow-2xl opacity-0 animate-[fadeUp_0.6s_ease-out_forwards]">
           {/* header logo + tagline, tampil di semua view */}
           <div className="flex flex-col items-center text-center">
             <div className="relative h-8 w-8 flex-shrink-0">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#658864] text-xs font-black text-white">S</div>
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#00D2D9] text-xs font-black text-white">S</div>
             </div>
             <p className="mt-2 text-base font-bold" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
               MyClass
@@ -269,7 +269,7 @@ export default function LoginPage() {
                   placeholder={config.identifierPlaceholder}
                   value={loginIdentifier}
                   onChange={(e) => setLoginIdentifier(e.target.value)}
-                  className="w-full rounded-lg border border-[#D1D5DB] px-4 py-2.5 text-sm outline-none focus:border-[#658864]"
+                  className="w-full rounded-lg border border-[#D1D5DB] px-4 py-2.5 text-sm outline-none focus:border-[#00D2D9]"
                 />
                 <input
                   type="password"
@@ -277,7 +277,7 @@ export default function LoginPage() {
                   placeholder="Password"
                   value={loginPassword}
                   onChange={(e) => setLoginPassword(e.target.value)}
-                  className="w-full rounded-lg border border-[#D1D5DB] px-4 py-2.5 text-sm outline-none focus:border-[#658864]"
+                  className="w-full rounded-lg border border-[#D1D5DB] px-4 py-2.5 text-sm outline-none focus:border-[#00D2D9]"
                 />
 
                 {error && <p className="text-xs font-medium text-red-500">{error}</p>}
@@ -338,7 +338,7 @@ export default function LoginPage() {
                     placeholder="NIS / NIK"
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
-                    className="w-full rounded-lg border border-[#D1D5DB] px-4 py-2.5 text-sm outline-none focus:border-[#658864]"
+                    className="w-full rounded-lg border border-[#D1D5DB] px-4 py-2.5 text-sm outline-none focus:border-[#00D2D9]"
                   />
                   <input
                     type="email"
@@ -346,14 +346,14 @@ export default function LoginPage() {
                     placeholder="Email"
                     value={lupaEmail}
                     onChange={(e) => setLupaEmail(e.target.value)}
-                    className="w-full rounded-lg border border-[#D1D5DB] px-4 py-2.5 text-sm outline-none focus:border-[#658864]"
+                    className="w-full rounded-lg border border-[#D1D5DB] px-4 py-2.5 text-sm outline-none focus:border-[#00D2D9]"
                   />
                   <input
                     type="date"
                     required
                     value={tanggalLahir}
                     onChange={(e) => setTanggalLahir(e.target.value)}
-                    className="w-full rounded-lg border border-[#D1D5DB] px-4 py-2.5 text-sm outline-none focus:border-[#658864]"
+                    className="w-full rounded-lg border border-[#D1D5DB] px-4 py-2.5 text-sm outline-none focus:border-[#00D2D9]"
                   />
                   <textarea
                     required
@@ -361,7 +361,7 @@ export default function LoginPage() {
                     value={alasan}
                     onChange={(e) => setAlasan(e.target.value)}
                     rows={3}
-                    className="w-full resize-none rounded-lg border border-[#D1D5DB] px-4 py-2.5 text-sm outline-none focus:border-[#658864]"
+                    className="w-full resize-none rounded-lg border border-[#D1D5DB] px-4 py-2.5 text-sm outline-none focus:border-[#00D2D9]"
                   />
 
                   {error && <p className="text-xs font-medium text-red-500">{error}</p>}
@@ -407,7 +407,7 @@ export default function LoginPage() {
                   placeholder="NIS / NIK"
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
-                  className="w-full rounded-lg border border-[#D1D5DB] px-4 py-2.5 text-sm outline-none focus:border-[#658864]"
+                  className="w-full rounded-lg border border-[#D1D5DB] px-4 py-2.5 text-sm outline-none focus:border-[#00D2D9]"
                 />
 
                 <div className="flex justify-center gap-3">
@@ -420,7 +420,7 @@ export default function LoginPage() {
                       maxLength={1}
                       value={digit}
                       onChange={(e) => handleOtpChange(i, e.target.value)}
-                      className="h-12 w-12 rounded-lg border border-[#D1D5DB] text-center text-lg font-bold outline-none focus:border-[#658864]"
+                      className="h-12 w-12 rounded-lg border border-[#D1D5DB] text-center text-lg font-bold outline-none focus:border-[#00D2D9]"
                     />
                   ))}
                 </div>
@@ -440,7 +440,7 @@ export default function LoginPage() {
                   <button type="button" onClick={kembaliKeLogin} className="cursor-pointer hover:underline">
                     Kembali ke login
                   </button>
-                  {" · "}
+                  {" Â· "}
                   <button
                     type="button"
                     onClick={() => setView("LAPOR")}
@@ -467,7 +467,7 @@ export default function LoginPage() {
                   placeholder="Password Baru"
                   value={passwordBaru}
                   onChange={(e) => setPasswordBaru(e.target.value)}
-                  className="w-full rounded-lg border border-[#D1D5DB] px-4 py-2.5 text-sm outline-none focus:border-[#658864]"
+                  className="w-full rounded-lg border border-[#D1D5DB] px-4 py-2.5 text-sm outline-none focus:border-[#00D2D9]"
                 />
 
                 {error && <p className="text-xs font-medium text-red-500">{error}</p>}
@@ -520,7 +520,7 @@ export default function LoginPage() {
       <footer className="py-12 text-center text-white" style={{ background: BRAND }}>
         <p className="text-lg font-bold">MyClass</p>
         <p className="mt-10 border-t border-white/20 pt-6 text-xs text-white/80">
-          © 2026 MyClass. All Rights Reserved.
+          Â© 2026 MyClass. All Rights Reserved.
         </p>
       </footer>
     </div>

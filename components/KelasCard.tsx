@@ -44,7 +44,7 @@ export default function KelasCard({
   return (
     <div
       onClick={() => router.push(`${basePath}/${data.id}`)}
-      className="group relative cursor-pointer overflow-hidden rounded-2xl border border-black/5 bg-[#FAF6EE] shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+      className="group relative cursor-pointer overflow-hidden rounded-2xl border border-black/5 bg-[#FFFFFF] shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
     >
       <div className="flex items-center justify-between px-4 pt-4">
         <div className="flex items-center gap-2">
@@ -66,7 +66,7 @@ export default function KelasCard({
             </button>
 
             {menuOpen && (
-              <div className="absolute right-0 top-8 z-20 w-32 overflow-hidden rounded-lg border border-black/5 bg-[#FAF6EE] shadow-lg">
+              <div className="absolute right-0 top-8 z-20 w-32 overflow-hidden rounded-lg border border-black/5 bg-[#FFFFFF] shadow-lg">
                 <button
                   onClick={() => {
                     setMenuOpen(false);
@@ -102,7 +102,7 @@ export default function KelasCard({
         <div className="flex items-center gap-1 border-t border-black/5 px-4 py-2.5">
           <button
             onClick={handleCopyInvite}
-            className="flex cursor-pointer items-center gap-1 text-[11px] font-medium text-[#6B7280] hover:text-[#658864]"
+            className="flex cursor-pointer items-center gap-1 text-[11px] font-medium text-[#6B7280] hover:text-[#00D2D9]"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-3.5 w-3.5">
               <rect x="9" y="9" width="12" height="12" rx="2" />

@@ -156,7 +156,7 @@ export default function ModalSoal({ open, onClose, onSuccess, asesmenId, editing
               className="cursor-pointer rounded-lg border py-2 text-xs font-semibold transition-colors"
               style={
                 tipe === t
-                  ? { background: "#658864", borderColor: "#658864", color: "white" }
+                  ? { background: "#00D2D9", borderColor: "#00D2D9", color: "white" }
                   : { borderColor: "#D1D5DB", color: "#374151" }
               }
             >
@@ -169,7 +169,7 @@ export default function ModalSoal({ open, onClose, onSuccess, asesmenId, editing
 
         <div>
           <label className="mb-1.5 block text-xs font-semibold text-[#374151]">Kirim Foto (opsional)</label>
-          <label className="relative flex h-20 w-20 cursor-pointer items-center justify-center overflow-hidden rounded-lg border border-dashed border-[#D1D5DB] text-[#9CA3AF] hover:border-[#658864]">
+          <label className="relative flex h-20 w-20 cursor-pointer items-center justify-center overflow-hidden rounded-lg border border-dashed border-[#D1D5DB] text-[#9CA3AF] hover:border-[#00D2D9]">
             {uploading ? (
               <span className="text-[10px] font-medium">Upload...</span>
             ) : gambar ? (
@@ -191,7 +191,7 @@ export default function ModalSoal({ open, onClose, onSuccess, asesmenId, editing
         {tipe !== "ESSAY" && (
           <div>
             <label className="mb-1.5 block text-xs font-semibold text-[#374151]">
-              Opsi Jawaban ({tipe === "PILIHAN_GANDA" ? "pilih 1 jawaban benar" : "bisa pilih lebih dari 1"}) — kunci
+              Opsi Jawaban ({tipe === "PILIHAN_GANDA" ? "pilih 1 jawaban benar" : "bisa pilih lebih dari 1"}) â€” kunci
               jawaban opsional, bisa ditandain belakangan
             </label>
             <div className="space-y-2">
@@ -215,7 +215,7 @@ export default function ModalSoal({ open, onClose, onSuccess, asesmenId, editing
                     value={opsi.teks}
                     onChange={(e) => handleOpsiTeksChange(i, e.target.value)}
                     placeholder={`Opsi ${i + 1}`}
-                    className="flex-1 rounded-lg border border-[#D1D5DB] px-3 py-2 text-sm outline-none focus:border-[#658864]"
+                    className="flex-1 rounded-lg border border-[#D1D5DB] px-3 py-2 text-sm outline-none focus:border-[#00D2D9]"
                   />
                   {opsiList.length > 2 && (
                     <button type="button" onClick={() => handleRemoveOpsi(i)} className="cursor-pointer text-[#9CA3AF] hover:text-red-500">
@@ -227,7 +227,7 @@ export default function ModalSoal({ open, onClose, onSuccess, asesmenId, editing
                 </div>
               ))}
             </div>
-            <button type="button" onClick={handleAddOpsi} className="mt-2 cursor-pointer text-xs font-semibold text-[#658864] hover:underline">
+            <button type="button" onClick={handleAddOpsi} className="mt-2 cursor-pointer text-xs font-semibold text-[#00D2D9] hover:underline">
               + Tambah Opsi
             </button>
           </div>

@@ -8,7 +8,7 @@ import ModalTugas from "@/components/ModalTugas";
 import ModalKirimTugas from "@/components/ModalKirimTugas";
 import { showConfirm } from "@/lib/dialog";
 
-const BRAND = "#658864";
+const BRAND = "#00D2D9";
 
 export default function GuruTugasPage() {
   const [tugasList, setTugasList] = useState<TugasData[]>([]);
@@ -78,7 +78,7 @@ export default function GuruTugasPage() {
       <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
         <Button onClick={openBuat}>+ Buat Tugas</Button>
         <select
-          className="rounded-lg border border-[#D1D5DB] px-3 py-2 text-sm outline-none focus:border-[#658864]"
+          className="rounded-lg border border-[#D1D5DB] px-3 py-2 text-sm outline-none focus:border-[#00D2D9]"
           value={filterKelasId}
           onChange={(e) => setFilterKelasId(e.target.value)}
         >

@@ -105,7 +105,7 @@ export default function SiswaAsesmenPage() {
       ) : (
         <div className="space-y-5">
           {kelompok.map((group) => group.data.length > 0 && (
-            <section key={group.key} className="overflow-hidden rounded-2xl border border-black/5 bg-[#FAF6EE] p-4 shadow-sm sm:p-5">
+            <section key={group.key} className="overflow-hidden rounded-2xl border border-black/5 bg-[#FFFFFF] p-4 shadow-sm sm:p-5">
               <button
                 type="button"
                 onClick={() => setVisibleGroups((current) => ({ ...current, [group.key]: !current[group.key] }))}

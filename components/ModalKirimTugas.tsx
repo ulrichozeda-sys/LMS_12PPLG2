@@ -78,7 +78,7 @@ export default function ModalKirimTugas({ open, tugasId, onClose, onSuccess }: M
         <div>
           <label className="mb-1.5 block text-xs font-semibold text-[#374151]">Pilih kelas tujuan</label>
           <select
-            className="w-full rounded-lg border border-[#D1D5DB] px-3.5 py-2.5 text-sm outline-none focus:border-[#658864]"
+            className="w-full rounded-lg border border-[#D1D5DB] px-3.5 py-2.5 text-sm outline-none focus:border-[#00D2D9]"
             value=""
             onChange={(event) => event.target.value && toggleKelas(event.target.value)}
           >
@@ -99,7 +99,7 @@ export default function ModalKirimTugas({ open, tugasId, onClose, onSuccess }: M
                   <Badge key={id} tone="brand" className="flex items-center gap-1">
                     {kelas?.label}
                     <button type="button" onClick={() => toggleKelas(id)} className="cursor-pointer hover:text-red-500">
-                      ×
+                      Ã—
                     </button>
                   </Badge>
                 );

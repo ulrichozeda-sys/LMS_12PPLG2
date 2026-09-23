@@ -64,7 +64,7 @@ type DashboardData = {
 
 function StatCard({ label, value, helper }: { label: string; value: string; helper: string }) {
   return (
-    <div className="rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+    <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
       <p className="text-xs font-semibold uppercase tracking-wide text-[#94A3B8]">{label}</p>
       <p className="mt-2 text-3xl font-bold text-[#111827]">{value}</p>
       <p className="mt-1 text-xs text-[#64748B]">{helper}</p>
@@ -116,13 +116,13 @@ export default function SiswaDashboardPage() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+        <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
           <div className="h-6 w-48 animate-pulse rounded bg-slate-200" />
           <div className="mt-4 h-10 w-72 animate-pulse rounded bg-slate-200" />
         </div>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {Array.from({ length: 4 }).map((_, index) => (
-            <div key={index} className="h-32 animate-pulse rounded-2xl bg-[#FAF6EE] p-5 shadow-sm" />
+            <div key={index} className="h-32 animate-pulse rounded-2xl bg-[#FFFFFF] p-5 shadow-sm" />
           ))}
         </div>
       </div>
@@ -140,7 +140,7 @@ export default function SiswaDashboardPage() {
 
   if (!data) {
     return (
-      <div className="rounded-2xl border border-dashed border-[#CBD5E1] bg-[#FAF6EE] p-6 text-center shadow-sm">
+      <div className="rounded-2xl border border-dashed border-[#CBD5E1] bg-[#FFFFFF] p-6 text-center shadow-sm">
         <p className="text-lg font-semibold text-[#111827]">Belum ada data</p>
         <p className="mt-2 text-sm text-[#64748B]">Belum ada aktivitas kelas, tugas, atau asesmen untuk akun Anda.</p>
       </div>
@@ -149,7 +149,7 @@ export default function SiswaDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl p-6 text-white shadow-sm" style={{ background: "#658864" }}>
+      <div className="rounded-2xl p-6 text-white shadow-sm" style={{ background: "#00D2D9" }}>
         <p className="text-xs font-semibold uppercase tracking-wide text-white/75">Dashboard Siswa</p>
         <h1 className="mt-2 text-2xl font-bold">Selamat Datang, {data.siswa.nama}</h1>
         <p className="mt-2 text-sm text-white/85">{data.siswa.kelasJurusan}</p>
@@ -169,7 +169,7 @@ export default function SiswaDashboardPage() {
         <StatCard label="Tugas Belum" value={String(data.statistik.tugasBelum)} helper="Belum dikumpulkan" />
       </div>
 
-      <div className="rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+      <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
         <div className="flex items-center justify-between gap-3">
           <p className="text-sm font-bold text-[#111827]">Rata-rata Nilai Asesmen</p>
           <Badge tone={data.statistik.rataRataNilai !== null ? "green" : "gray"}>
@@ -179,7 +179,7 @@ export default function SiswaDashboardPage() {
       </div>
 
       <div className="grid gap-5 lg:grid-cols-2">
-        <div className="rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+        <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
           <div className="flex items-center justify-between">
             <p className="text-sm font-bold text-[#111827]">Aksi Cepat</p>
           </div>
@@ -196,7 +196,7 @@ export default function SiswaDashboardPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+        <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
           <p className="text-sm font-bold text-[#111827]">Nilai Terbaru</p>
           <div className="mt-3 space-y-3">
             {data.nilaiTerbaru.length === 0 ? (
@@ -219,7 +219,7 @@ export default function SiswaDashboardPage() {
       </div>
 
       <div className="grid gap-5 lg:grid-cols-2">
-        <div className="rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+        <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
           <p className="text-sm font-bold text-[#111827]">Asesmen Terbaru</p>
           <div className="mt-3 space-y-3">
             {data.asesmenTerbaru.length === 0 ? (
@@ -242,7 +242,7 @@ export default function SiswaDashboardPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+        <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
           <p className="text-sm font-bold text-[#111827]">Tugas Terbaru</p>
           <div className="mt-3 space-y-3">
             {data.tugasTerbaru.length === 0 ? (
@@ -267,7 +267,7 @@ export default function SiswaDashboardPage() {
       </div>
 
       <div className="grid gap-5 lg:grid-cols-2">
-        <div className="rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+        <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
           <p className="text-sm font-bold text-[#111827]">Tugas yang Belum Dikumpulkan</p>
           <div className="mt-3 space-y-3">
             {data.tugasBelumDikumpulkan.length === 0 ? (
@@ -283,7 +283,7 @@ export default function SiswaDashboardPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+        <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
           <p className="text-sm font-bold text-[#111827]">Asesmen yang Sedang Dikerjakan</p>
           <div className="mt-3 space-y-3">
             {data.asesmenSedangDikerjakan.length === 0 ? (

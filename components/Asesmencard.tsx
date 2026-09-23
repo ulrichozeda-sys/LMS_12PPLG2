@@ -53,7 +53,7 @@ export default function AsesmenCard({ data, basePath = "/guru/asesmen", submissi
   return (
     <div
       onClick={() => router.push(`${basePath}/${data.id}`)}
-      className="group cursor-pointer overflow-hidden rounded-2xl border border-black/5 bg-[#FAF6EE] shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+      className="group cursor-pointer overflow-hidden rounded-2xl border border-black/5 bg-[#FFFFFF] shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
     >
       <div className="p-4">
         <div className="flex items-start justify-between gap-2">
@@ -74,9 +74,9 @@ export default function AsesmenCard({ data, basePath = "/guru/asesmen", submissi
             )}
             {(onEdit || onSend || onDelete) && (
               <div className="relative" data-options-menu>
-                <button type="button" aria-label="Opsi asesmen" onClick={(event) => { event.stopPropagation(); setShowOptions((value) => !value); }} className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-lg font-bold text-[#64748B] hover:bg-[#F1F5F9]">⋯</button>
+                <button type="button" aria-label="Opsi asesmen" onClick={(event) => { event.stopPropagation(); setShowOptions((value) => !value); }} className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-lg font-bold text-[#64748B] hover:bg-[#F1F5F9]">â‹¯</button>
                 {showOptions && (
-                  <div onClick={(event) => event.stopPropagation()} className="absolute right-0 top-9 z-20 w-32 overflow-hidden rounded-xl border border-[#E2E8F0] bg-[#FAF6EE] py-1 text-left shadow-lg">
+                  <div onClick={(event) => event.stopPropagation()} className="absolute right-0 top-9 z-20 w-32 overflow-hidden rounded-xl border border-[#E2E8F0] bg-[#FFFFFF] py-1 text-left shadow-lg">
                     {onEdit && data.status === "PROSES" && <button type="button" onClick={() => { setShowOptions(false); onEdit(data); }} className="block w-full cursor-pointer px-3 py-2 text-xs font-medium text-[#475569] hover:bg-[#F8FAFC]">Edit</button>}
                     {onSend && data.status === "SELESAI" && <button type="button" onClick={() => { setShowOptions(false); onSend(data); }} className="block w-full cursor-pointer px-3 py-2 text-xs font-medium text-[#475569] hover:bg-[#F8FAFC]">Kirim ke</button>}
                     {onDelete && <button type="button" onClick={() => { setShowOptions(false); onDelete(data); }} className="block w-full cursor-pointer px-3 py-2 text-xs font-medium text-red-500 hover:bg-red-50">Hapus</button>}
@@ -100,7 +100,7 @@ export default function AsesmenCard({ data, basePath = "/guru/asesmen", submissi
                     }}
                     className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border border-[#E2E8F0] text-lg leading-none text-[#94A3B8] transition hover:border-red-200 hover:bg-red-50 hover:text-red-500"
                   >
-                    ×
+                    Ã—
                   </button>
                 )}
               </>
@@ -131,7 +131,7 @@ export default function AsesmenCard({ data, basePath = "/guru/asesmen", submissi
         {data._count && (
           <div className="mt-3 flex items-center gap-3 border-t border-black/5 pt-2.5 text-[11px] text-[#9CA3AF]">
             <span>{data._count.soal} soal</span>
-            <span>•</span>
+            <span>â€¢</span>
             <span>{data._count.submission} pengumpulan</span>
           </div>
         )}

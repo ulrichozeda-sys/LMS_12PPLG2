@@ -10,7 +10,7 @@ import AsesmenCard, { AsesmenData } from "@/components/Asesmencard";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 
-const BRAND = "#658864";
+const BRAND = "#00D2D9";
 
 type Tab = "DASHBOARD" | "KELAS" | "SISWA" | "GURU" | "ASESMEN" | "PERFORMA";
 type KepsekAsesmen = AsesmenData & { guru: { id: string; nama: string } };
@@ -178,8 +178,8 @@ function KepsekDashboardContent() {
   }, new Map<string, { guru: KepsekAsesmen["guru"]; asesmen: KepsekAsesmen[] }>()).values());
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#FAF6EE]" style={{ fontFamily: "Inter, sans-serif" }}>
-      <header className="sticky top-0 z-40 border-b border-black/5 bg-[#FAF6EE]">
+    <div className="flex min-h-screen flex-col bg-[#FFFFFF]" style={{ fontFamily: "Inter, sans-serif" }}>
+      <header className="sticky top-0 z-40 border-b border-black/5 bg-[#FFFFFF]">
         <div className="flex items-center justify-between px-4 py-3 sm:px-6">
           <div className="flex items-center gap-3">
             <button onClick={toggleSidebar} aria-label="Toggle sidebar" className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg hover:bg-black/5">
@@ -208,9 +208,9 @@ function KepsekDashboardContent() {
 
         <aside
           aria-label="Navigasi kepsek"
-          className={`fixed inset-y-0 left-0 z-50 w-72 overflow-y-auto bg-[#FAF6EE] p-4 shadow-[8px_0_24px_rgba(15,23,42,0.12)] transition-transform duration-300 ease-out ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+          className={`fixed inset-y-0 left-0 z-50 w-72 overflow-y-auto bg-[#FFFFFF] p-4 shadow-[8px_0_24px_rgba(15,23,42,0.12)] transition-transform duration-300 ease-out ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
         >
-          <div className="flex min-h-full flex-col border-r border-black/5 bg-[#FAF6EE] p-4 shadow-sm">
+          <div className="flex min-h-full flex-col border-r border-black/5 bg-[#FFFFFF] p-4 shadow-sm">
             <p className="mb-3 px-2 pt-2 text-sm font-bold text-[#111827]">
               Dashboard Kepsek
               <br />
@@ -245,7 +245,7 @@ function KepsekDashboardContent() {
               <div className="rounded-2xl p-6 text-white shadow-sm" style={{ background: BRAND }}>
                 <p className="text-xs font-semibold uppercase tracking-wide text-white/75">Dashboard Kepsek</p>
                 <h1 className="mt-2 text-2xl font-bold">Selamat Datang, {me?.nama ?? "Kepsek"}</h1>
-                <p className="mt-2 max-w-2xl text-sm text-white/85">Pantau kelas, akun, dan performa akademik MyClass — akses lihat saja.</p>
+                <p className="mt-2 max-w-2xl text-sm text-white/85">Pantau kelas, akun, dan performa akademik MyClass â€” akses lihat saja.</p>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -258,7 +258,7 @@ function KepsekDashboardContent() {
                   ["Mata Pelajaran", dashboardData.statistik.mapel, "Mapel tersedia", "GURU"],
                   ["Rata-rata Nilai", dashboardData.statistik.rataRataNilai, "Dari asesmen dinilai", "PERFORMA"],
                 ].map(([label, value, caption, tab]) => (
-                  <button key={label as string} type="button" onClick={() => openTab(tab as Tab)} className="rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+                  <button key={label as string} type="button" onClick={() => openTab(tab as Tab)} className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                     <p className="text-xs font-semibold uppercase tracking-wide text-[#94A3B8]">{label}</p>
                     <p className="mt-2 text-3xl font-bold text-[#111827]">{value}</p>
                     <p className="mt-1 text-xs text-[#64748B]">{caption}</p>
@@ -266,7 +266,7 @@ function KepsekDashboardContent() {
                 ))}
               </div>
 
-              <div className="rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+              <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
                 <div className="flex items-center justify-between gap-3">
                   <div>
                     <h2 className="text-sm font-bold text-[#111827]">Akun Terbaru</h2>
@@ -306,7 +306,7 @@ function KepsekDashboardContent() {
 
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {[["Rata-rata Nilai", dashboardData.statistik.rataRataNilai, "Nilai asesmen dinilai"], ["Asesmen Dinilai", dashboardData.statistik.submissionDinilai, "Submission dengan nilai"], ["Tugas Dibuat", dashboardData.statistik.tugasDibuat, "Total tugas guru"], ["Tugas Dikumpulkan", dashboardData.statistik.tugasDikumpulkan, "Submission siswa"]].map(([label, value, caption]) => (
-                  <div key={label as string} className="rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+                  <div key={label as string} className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
                     <p className="text-xs font-semibold uppercase tracking-wide text-[#94A3B8]">{label}</p>
                     <p className="mt-2 text-3xl font-bold text-[#111827]">{value}</p>
                     <p className="mt-1 text-xs text-[#64748B]">{caption}</p>
@@ -315,10 +315,10 @@ function KepsekDashboardContent() {
               </div>
 
               <div className="grid gap-5 lg:grid-cols-2">
-                <div className="rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+                <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
                   <h2 className="text-sm font-bold text-[#111827]">Kuis dan Ujian</h2>
                   <div className="mt-5 space-y-4">
-                    {[["Kuis", dashboardData.statistik.kuis, "#658864"], ["Ujian Online", dashboardData.statistik.ujian, "#8B5CF6"]].map(([label, value, color]) => {
+                    {[["Kuis", dashboardData.statistik.kuis, "#00D2D9"], ["Ujian Online", dashboardData.statistik.ujian, "#8B5CF6"]].map(([label, value, color]) => {
                       const max = Math.max(dashboardData.statistik.kuis, dashboardData.statistik.ujian, 1);
                       return (
                         <div key={label as string}>
@@ -329,10 +329,10 @@ function KepsekDashboardContent() {
                     })}
                   </div>
                 </div>
-                <div className="rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+                <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
                   <h2 className="text-sm font-bold text-[#111827]">Tugas Dibuat vs Dikumpulkan</h2>
                   <div className="mt-5 space-y-4">
-                    {[["Tugas dibuat", dashboardData.statistik.tugasDibuat, "#658864"], ["Dikumpulkan siswa", dashboardData.statistik.tugasDikumpulkan, "#16A34A"]].map(([label, value, color]) => {
+                    {[["Tugas dibuat", dashboardData.statistik.tugasDibuat, "#00D2D9"], ["Dikumpulkan siswa", dashboardData.statistik.tugasDikumpulkan, "#16A34A"]].map(([label, value, color]) => {
                       const max = Math.max(dashboardData.statistik.tugasDibuat, dashboardData.statistik.tugasDikumpulkan, 1);
                       return (
                         <div key={label as string}>
@@ -346,29 +346,29 @@ function KepsekDashboardContent() {
               </div>
 
               <div className="grid gap-5 lg:grid-cols-2">
-                <div className="rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+                <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
                   <h2 className="text-sm font-bold text-[#111827]">Grafik Linear Tren Rata-rata Nilai Akademik Sekolah</h2>
                   <p className="mt-1 text-xs text-[#64748B]">Perubahan rata-rata nilai seluruh siswa berdasarkan periode asesmen.</p>
                   <AcademicTrendChart items={dashboardData.akademik.trendNilai} />
                 </div>
-                <div className="rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+                <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
                   <h2 className="text-sm font-bold text-[#111827]">Grafik Batang Rata-rata Nilai per Kelas</h2>
                   <p className="mt-1 text-xs text-[#64748B]">Perbandingan capaian akademik rata-rata setiap kelas.</p>
-                  <AcademicBarChart items={dashboardData.akademik.rataRataPerKelas} label="kelas" color="#658864" />
+                  <AcademicBarChart items={dashboardData.akademik.rataRataPerKelas} label="kelas" color="#00D2D9" />
                 </div>
               </div>
 
               <div className="grid gap-5 lg:grid-cols-2">
-                <div className="rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+                <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
                   <h2 className="text-sm font-bold text-[#111827]">Grafik Batang Rata-rata Nilai per Mata Pelajaran</h2>
                   <p className="mt-1 text-xs text-[#64748B]">Perbandingan rata-rata nilai untuk setiap mata pelajaran.</p>
                   <AcademicBarChart items={dashboardData.akademik.rataRataPerMapel} label="mata pelajaran" color="#14B8A6" />
                 </div>
-                <div className="rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+                <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
                   <h2 className="text-sm font-bold text-[#111827]">Grafik Progress Aktivitas Pembelajaran</h2>
                   <p className="mt-1 text-xs text-[#64748B]">Status penyelesaian asesmen dan tugas di seluruh sekolah.</p>
                   <LearningProgressChart items={[
-                    ["Asesmen sudah dikerjakan", dashboardData.aktivitasPembelajaran.asesmenSelesai, "#658864"],
+                    ["Asesmen sudah dikerjakan", dashboardData.aktivitasPembelajaran.asesmenSelesai, "#00D2D9"],
                     ["Asesmen belum dikerjakan", dashboardData.aktivitasPembelajaran.asesmenBelum, "#CBD5E1"],
                     ["Tugas dikumpulkan", dashboardData.aktivitasPembelajaran.tugasDikumpulkan, "#14B8A6"],
                     ["Tugas belum dikumpulkan", dashboardData.aktivitasPembelajaran.tugasBelum, "#FCD34D"],
@@ -393,7 +393,7 @@ function KepsekDashboardContent() {
           )}
 
           {!loading && activeTab === "SISWA" && (
-            <div className="rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+            <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
               <div className="mb-4">
                 <h2 className="text-base font-bold text-[#111827]">Daftar Siswa</h2>
                 <p className="mt-1 text-xs text-[#64748B]">Lihat data siswa dan kelasnya (akses lihat saja).</p>
@@ -401,23 +401,23 @@ function KepsekDashboardContent() {
               <div className="mb-5 grid gap-3 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-3 md:grid-cols-[180px_220px_minmax(220px,1fr)_auto] md:items-end">
                 <label className="block text-xs font-semibold text-[#64748B]">
                   Jurusan
-                  <select value={jurusanFilter} onChange={(event) => setJurusanFilter(event.target.value)} className="mt-1 w-full rounded-lg border border-[#CBD5E1] bg-[#FAF6EE] px-3 py-2 text-sm font-normal text-[#334155] outline-none focus:border-[#658864]">
+                  <select value={jurusanFilter} onChange={(event) => setJurusanFilter(event.target.value)} className="mt-1 w-full rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] px-3 py-2 text-sm font-normal text-[#334155] outline-none focus:border-[#00D2D9]">
                     <option value="">Semua Jurusan</option>
                     {jurusanOptions.map((jurusan) => <option key={jurusan} value={jurusan}>{jurusan}</option>)}
                   </select>
                 </label>
                 <label className="block text-xs font-semibold text-[#64748B]">
                   Kelas
-                  <select value={kelasFilter} onChange={(event) => setKelasFilter(event.target.value)} className="mt-1 w-full rounded-lg border border-[#CBD5E1] bg-[#FAF6EE] px-3 py-2 text-sm font-normal text-[#334155] outline-none focus:border-[#658864]">
+                  <select value={kelasFilter} onChange={(event) => setKelasFilter(event.target.value)} className="mt-1 w-full rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] px-3 py-2 text-sm font-normal text-[#334155] outline-none focus:border-[#00D2D9]">
                     <option value="">Semua Kelas</option>
                     {kelasOptions.map((kelas) => <option key={kelas} value={kelas}>{kelas}</option>)}
                   </select>
                 </label>
                 <label className="block text-xs font-semibold text-[#64748B]">
                   Search
-                  <input value={siswaSearch} onChange={(event) => setSiswaSearch(event.target.value)} placeholder="Nama, email, atau NIS..." className="mt-1 w-full rounded-lg border border-[#CBD5E1] bg-[#FAF6EE] px-3 py-2 text-sm font-normal text-[#334155] outline-none focus:border-[#658864]" />
+                  <input value={siswaSearch} onChange={(event) => setSiswaSearch(event.target.value)} placeholder="Nama, email, atau NIS..." className="mt-1 w-full rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] px-3 py-2 text-sm font-normal text-[#334155] outline-none focus:border-[#00D2D9]" />
                 </label>
-                <button type="button" onClick={() => { setJurusanFilter(""); setKelasFilter(""); setSiswaSearch(""); }} className="cursor-pointer rounded-lg px-3 py-2 text-xs font-semibold text-[#64748B] hover:bg-[#FAF6EE] hover:text-[#111827]">Reset</button>
+                <button type="button" onClick={() => { setJurusanFilter(""); setKelasFilter(""); setSiswaSearch(""); }} className="cursor-pointer rounded-lg px-3 py-2 text-xs font-semibold text-[#64748B] hover:bg-[#FFFFFF] hover:text-[#111827]">Reset</button>
               </div>
               {filteredSiswaList.length === 0 ? (
                 <p className="text-sm text-[#9CA3AF]">Belum ada siswa terdaftar.</p>
@@ -459,7 +459,7 @@ function KepsekDashboardContent() {
           )}
 
           {!loading && activeTab === "GURU" && (
-            <div className="rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+            <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
               <div className="mb-4">
                 <h2 className="text-base font-bold text-[#111827]">Daftar Guru</h2>
                 <p className="mt-1 text-xs text-[#64748B]">Lihat data guru dan mapel yang diampu (akses lihat saja).</p>
@@ -467,16 +467,16 @@ function KepsekDashboardContent() {
               <div className="mb-5 grid gap-3 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-3 md:grid-cols-[240px_minmax(220px,1fr)_auto] md:items-end">
                 <label className="block text-xs font-semibold text-[#64748B]">
                   Mapel
-                  <select value={mapelFilter} onChange={(event) => setMapelFilter(event.target.value)} className="mt-1 w-full rounded-lg border border-[#CBD5E1] bg-[#FAF6EE] px-3 py-2 text-sm font-normal text-[#334155] outline-none focus:border-[#658864]">
+                  <select value={mapelFilter} onChange={(event) => setMapelFilter(event.target.value)} className="mt-1 w-full rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] px-3 py-2 text-sm font-normal text-[#334155] outline-none focus:border-[#00D2D9]">
                     <option value="">Semua Mapel</option>
                     {mapelOptions.map((mapel) => <option key={mapel} value={mapel}>{mapel}</option>)}
                   </select>
                 </label>
                 <label className="block text-xs font-semibold text-[#64748B]">
                   Search
-                  <input value={guruSearch} onChange={(event) => setGuruSearch(event.target.value)} placeholder="Nama, email, atau NIK..." className="mt-1 w-full rounded-lg border border-[#CBD5E1] bg-[#FAF6EE] px-3 py-2 text-sm font-normal text-[#334155] outline-none focus:border-[#658864]" />
+                  <input value={guruSearch} onChange={(event) => setGuruSearch(event.target.value)} placeholder="Nama, email, atau NIK..." className="mt-1 w-full rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] px-3 py-2 text-sm font-normal text-[#334155] outline-none focus:border-[#00D2D9]" />
                 </label>
-                <button type="button" onClick={() => { setMapelFilter(""); setGuruSearch(""); }} className="cursor-pointer rounded-lg px-3 py-2 text-xs font-semibold text-[#64748B] hover:bg-[#FAF6EE] hover:text-[#111827]">Reset</button>
+                <button type="button" onClick={() => { setMapelFilter(""); setGuruSearch(""); }} className="cursor-pointer rounded-lg px-3 py-2 text-xs font-semibold text-[#64748B] hover:bg-[#FFFFFF] hover:text-[#111827]">Reset</button>
               </div>
               {filteredGuruList.length === 0 ? (
                 <p className="text-sm text-[#9CA3AF]">Belum ada guru terdaftar.</p>
@@ -520,21 +520,21 @@ function KepsekDashboardContent() {
                 <p className="mt-1 text-sm text-[#64748B]">Pilih guru untuk melihat seluruh asesmen yang dibuatnya.</p>
               </div>
               {asesmenByGuru.length === 0 ? (
-                <div className="rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+                <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
                   <p className="text-sm text-[#9CA3AF]">Belum ada asesmen yang dibuat guru.</p>
                 </div>
               ) : (
                 asesmenByGuru.map(({ guru, asesmen }) => {
                   const expanded = expandedGuruId === guru.id;
                   return (
-                    <section key={guru.id} className="overflow-hidden rounded-2xl border border-black/5 bg-[#FAF6EE] shadow-sm">
+                    <section key={guru.id} className="overflow-hidden rounded-2xl border border-black/5 bg-[#FFFFFF] shadow-sm">
                       <button
                         type="button"
                         onClick={() => setExpandedGuruId(expanded ? null : guru.id)}
                         className="flex w-full cursor-pointer items-center justify-between gap-4 p-5 text-left hover:bg-[#F8FAFC]"
                       >
                         <span className="flex min-w-0 items-center gap-3">
-                          <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[#EEF2FF] text-sm font-bold text-[#658864]">{guru.nama.charAt(0)}</span>
+                          <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[#EEF2FF] text-sm font-bold text-[#00D2D9]">{guru.nama.charAt(0)}</span>
                           <span className="min-w-0">
                             <span className="block truncate text-sm font-bold text-[#111827]">{guru.nama}</span>
                             <span className="block text-xs text-[#64748B]">{asesmen.length} asesmen</span>
@@ -564,7 +564,7 @@ function KepsekDashboardContent() {
             <p className="text-lg font-bold">MyClass</p>
           </div>
         </div>
-        <p className="mt-8 border-t border-white/20 pt-6 text-center text-xs text-white/80">© 2026 MyClass. All Rights Reserved.</p>
+        <p className="mt-8 border-t border-white/20 pt-6 text-center text-xs text-white/80">Â© 2026 MyClass. All Rights Reserved.</p>
       </footer>
     </div>
   );
@@ -572,7 +572,7 @@ function KepsekDashboardContent() {
 
 export default function KepsekDashboard() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#FAF6EE]" />}>
+    <Suspense fallback={<div className="min-h-screen bg-[#FFFFFF]" />}>
       <KepsekDashboardContent />
     </Suspense>
   );
@@ -609,10 +609,10 @@ function AcademicTrendChart({ items }: { items: AcademicTrend[] }) {
             <text x={left - 8} y={yFor(value) + 4} textAnchor="end" fontSize="11" fill="#94A3B8">{value}</text>
           </g>
         ))}
-        <polyline points={points} fill="none" stroke="#658864" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+        <polyline points={points} fill="none" stroke="#00D2D9" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
         {items.map((item, index) => (
           <g key={`${item.tanggal}-${item.judul}`}>
-            <circle cx={xFor(index)} cy={yFor(item.nilai ?? 0)} r="4" fill="#FAF6EE" stroke="#658864" strokeWidth="3">
+            <circle cx={xFor(index)} cy={yFor(item.nilai ?? 0)} r="4" fill="#FFFFFF" stroke="#00D2D9" strokeWidth="3">
               <title>{`${item.tanggal}: ${item.nilai ?? 0} (${item.judul})`}</title>
             </circle>
             <text x={xFor(index)} y={height - 14} textAnchor="middle" fontSize="10" fill="#94A3B8">{item.tanggal.slice(5)}</text>

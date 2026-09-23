@@ -109,7 +109,7 @@ export default function TabelNilai({ asesmenId, judulAsesmen, nilaiList, onReset
   }
 
   return (
-    <div className="rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+    <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
       <div className="flex items-center justify-between">
         <p className="text-sm font-bold text-[#111827]">Nilai Siswa</p>
         <div className="flex gap-2">
@@ -179,7 +179,7 @@ export default function TabelNilai({ asesmenId, judulAsesmen, nilaiList, onReset
                     >
                       Reset Nilai
                     </Button>}
-                    {readOnly && <span className="text-xs font-semibold text-[#658864]">Lihat jawaban</span>}
+                    {readOnly && <span className="text-xs font-semibold text-[#00D2D9]">Lihat jawaban</span>}
                   </td>
                 </tr>
               ))}

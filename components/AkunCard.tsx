@@ -33,16 +33,16 @@ export default function AkunCard({ data, isEditable = false, onEdit, onDelete }:
     data.role === "SISWA"
       ? data.kelasReferensi?.label ?? "Belum ada kelas"
       : data.kelasGuruMapel && data.kelasGuruMapel.length > 0
-      ? `${data.kelasGuruMapel[0].mapel.nama} • ${data.kelasGuruMapel.length} kelas`
+      ? `${data.kelasGuruMapel[0].mapel.nama} â€¢ ${data.kelasGuruMapel.length} kelas`
       : "Belum ada kelas";
 
   return (
     <div
       onClick={() => router.push(`/profil/${data.id}`)}
       className="group relative flex cursor-pointer items-start gap-3 overflow-hidden rounded-2xl p-4 text-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
-      style={{ background: "#658864" }}
+      style={{ background: "#00D2D9" }}
     >
-      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#FAF6EE]/20 text-sm font-bold">
+      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#FFFFFF]/20 text-sm font-bold">
         {data.fotoProfil ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={data.fotoProfil} alt={data.nama} className="h-full w-full object-cover" />
@@ -54,7 +54,7 @@ export default function AkunCard({ data, isEditable = false, onEdit, onDelete }:
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <p className="truncate text-sm font-bold">{data.nama}</p>
-          <Badge tone="gray" className="!bg-[#FAF6EE]/20 !text-white">
+          <Badge tone="gray" className="!bg-[#FFFFFF]/20 !text-white">
             {data.role === "SISWA" ? "Siswa" : "Guru"}
           </Badge>
         </div>
@@ -70,7 +70,7 @@ export default function AkunCard({ data, isEditable = false, onEdit, onDelete }:
         <div className="relative flex-shrink-0" onClick={(e) => e.stopPropagation()}>
           <button
             onClick={() => setMenuOpen((v) => !v)}
-            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-white/80 transition-colors hover:bg-[#FAF6EE]/20"
+            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-white/80 transition-colors hover:bg-[#FFFFFF]/20"
           >
             <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
               <circle cx="12" cy="5" r="1.5" />
@@ -80,7 +80,7 @@ export default function AkunCard({ data, isEditable = false, onEdit, onDelete }:
           </button>
 
           {menuOpen && (
-            <div className="absolute right-0 top-8 z-20 w-28 overflow-hidden rounded-lg border border-black/5 bg-[#FAF6EE] shadow-lg">
+            <div className="absolute right-0 top-8 z-20 w-28 overflow-hidden rounded-lg border border-black/5 bg-[#FFFFFF] shadow-lg">
               <button
                 onClick={() => {
                   setMenuOpen(false);

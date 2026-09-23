@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 
-const BRAND = "#658864";
+const BRAND = "#00D2D9";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#FAF6EE] text-[#111827]" style={{ fontFamily: "Inter, sans-serif" }}>
+    <div className="min-h-screen bg-[#FFFFFF] text-[#111827]" style={{ fontFamily: "Inter, sans-serif" }}>
       {/* NAVBAR */}
-      <header className="sticky top-0 z-50 border-b border-black/5 bg-[#FAF6EE]">
+      <header className="sticky top-0 z-50 border-b border-black/5 bg-[#FFFFFF]">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-2">
             <span className="text-lg font-bold tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
@@ -56,7 +56,7 @@ export default function Home() {
       <footer className="py-12 text-center text-white" style={{ background: BRAND }}>
         <p className="text-lg font-bold">MyClass</p>
         <p className="mt-10 border-t border-white/20 pt-6 text-xs text-white/80">
-          © 2026 MyClass. All Rights Reserved.
+          Â© 2026 MyClass. All Rights Reserved.
         </p>
       </footer>
     </div>

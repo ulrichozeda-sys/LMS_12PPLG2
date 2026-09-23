@@ -267,7 +267,7 @@ export default function SiswaAsesmenKerjakanPage() {
 
   if (sudahSelesai) {
     return (
-      <div className="flex flex-col items-center gap-3 rounded-2xl border border-black/5 bg-[#FAF6EE] p-10 text-center shadow-sm">
+      <div className="flex flex-col items-center gap-3 rounded-2xl border border-black/5 bg-[#FFFFFF] p-10 text-center shadow-sm">
         <Badge tone="green">Sudah Dikumpulkan</Badge>
         <p className="text-lg font-bold text-[#111827]">{asesmen.judul}</p>
         <p className="text-sm text-[#6B7280]">Jawabanmu sudah tersimpan. Nilai akan diumumkan oleh guru.</p>
@@ -278,7 +278,7 @@ export default function SiswaAsesmenKerjakanPage() {
 
   return (
     <div>
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
         <div>
           <div className="flex flex-wrap items-center gap-2">
             <p className="text-lg font-bold text-[#111827]">{asesmen.judul}</p>
@@ -287,7 +287,7 @@ export default function SiswaAsesmenKerjakanPage() {
           <p className="mt-0.5 text-sm text-[#6B7280]">Mapel - {asesmen.mapel?.nama ?? "-"}</p>
         </div>
         {asesmen.durasiMenit && (
-          <div className={`rounded-xl border px-4 py-2 text-right ${sisaDetik <= 300 ? "border-red-300 bg-red-50" : "border-black/5 bg-[#FAF6EE]"}`}>
+          <div className={`rounded-xl border px-4 py-2 text-right ${sisaDetik <= 300 ? "border-red-300 bg-red-50" : "border-black/5 bg-[#FFFFFF]"}`}>
             <p className="text-[10px] font-semibold uppercase tracking-wide text-[#9CA3AF]">Sisa Waktu</p>
             <p className={`text-lg font-bold ${sisaDetik <= 300 ? "text-red-600" : "text-[#111827]"}`}>{formatTimer(sisaDetik)}</p>
             {sisaDetik <= 300 && <p className="text-[10px] font-semibold text-red-500">Waktu hampir habis!</p>}
@@ -304,7 +304,7 @@ export default function SiswaAsesmenKerjakanPage() {
               setActiveIndex(0);
             }}
             placeholder="Cari soal..."
-            className="min-w-[140px] flex-1 rounded-lg border border-[#D1D5DB] px-3 py-1.5 text-sm outline-none focus:border-[#658864]"
+            className="min-w-[140px] flex-1 rounded-lg border border-[#D1D5DB] px-3 py-1.5 text-sm outline-none focus:border-[#00D2D9]"
           />
           <div className="flex items-center gap-1">
             <button onClick={() => setActiveIndex((i) => Math.max(0, i - 1))} disabled={activeIndex === 0} className="cursor-pointer rounded-lg border border-[#D1D5DB] px-2 py-1.5 text-xs font-semibold text-[#374151] disabled:opacity-40">
@@ -320,7 +320,7 @@ export default function SiswaAsesmenKerjakanPage() {
               onClick={() => setShowGrid((v) => !v)}
               title={showGrid ? "Tutup daftar soal" : "Buka daftar soal"}
               aria-label={showGrid ? "Tutup daftar soal" : "Buka daftar soal"}
-              className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border text-[#374151] transition-colors ${showGrid ? "border-[#658864] bg-[#EEF2FF] text-[#658864]" : "border-[#D1D5DB] bg-[#FAF6EE] hover:bg-black/5"}`}
+              className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border text-[#374151] transition-colors ${showGrid ? "border-[#00D2D9] bg-[#EEF2FF] text-[#00D2D9]" : "border-[#D1D5DB] bg-[#FFFFFF] hover:bg-black/5"}`}
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4">
                 <rect x="3" y="3" width="7" height="7" rx="1" />
@@ -334,7 +334,7 @@ export default function SiswaAsesmenKerjakanPage() {
       )}
 
       {showGrid && (
-        <div className="mt-2 grid grid-cols-6 gap-1.5 rounded-xl border border-black/5 bg-[#FAF6EE] p-3 shadow-sm sm:grid-cols-10">
+        <div className="mt-2 grid grid-cols-6 gap-1.5 rounded-xl border border-black/5 bg-[#FFFFFF] p-3 shadow-sm sm:grid-cols-10">
           {soalTerfilter.map((s, i) => {
             const dijawab = (jawabanMap[s.id]?.opsiIds.length ?? 0) > 0 || !!jawabanMap[s.id]?.jawabanEssay;
             const ragu = jawabanMap[s.id]?.raguRagu;
@@ -348,7 +348,7 @@ export default function SiswaAsesmenKerjakanPage() {
                 className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-xs font-semibold"
                 style={
                   i === activeIndex
-                    ? { background: "#658864", color: "white" }
+                    ? { background: "#00D2D9", color: "white" }
                     : ragu
                     ? { background: "#FEF3C7", color: "#92400E" }
                     : dijawab
@@ -363,7 +363,7 @@ export default function SiswaAsesmenKerjakanPage() {
         </div>
       )}
 
-      <div className="mt-4 min-h-[280px] rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+      <div className="mt-4 min-h-[280px] rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
         {!currentSoal ? (
           <p className="text-sm text-[#9CA3AF]">Belum ada soal.</p>
         ) : (
@@ -403,14 +403,14 @@ export default function SiswaAsesmenKerjakanPage() {
                 onBlur={() => !isKuis && simpanJawaban(currentSoal.id, { jawabanEssay: jawabanMap[currentSoal.id]?.jawabanEssay ?? "" })}
                 rows={5}
                 placeholder="Tulis jawabanmu di sini..."
-                className="mt-4 w-full rounded-lg border border-[#D1D5DB] px-3 py-2 text-sm outline-none focus:border-[#658864]"
+                className="mt-4 w-full rounded-lg border border-[#D1D5DB] px-3 py-2 text-sm outline-none focus:border-[#00D2D9]"
               />
             ) : (
               <div className="mt-4 space-y-2">
                 {currentSoal.opsi.map((o) => {
                   const dipilih = jawabanSaatIni?.opsiIds.includes(o.id) ?? false;
                   return (
-                    <label key={o.id} className={`flex cursor-pointer items-center gap-2 rounded-lg border p-2.5 text-sm ${dipilih ? "border-[#658864] bg-[#658864]/5" : "border-black/5"}`}>
+                    <label key={o.id} className={`flex cursor-pointer items-center gap-2 rounded-lg border p-2.5 text-sm ${dipilih ? "border-[#00D2D9] bg-[#00D2D9]/5" : "border-black/5"}`}>
                       <input
                         type={currentSoal.tipe === "PILIHAN_GANDA" ? "radio" : "checkbox"}
                         checked={dipilih}

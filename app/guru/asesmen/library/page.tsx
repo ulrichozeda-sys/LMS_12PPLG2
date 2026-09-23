@@ -30,8 +30,8 @@ export default function GuruAsesmenLibraryPage() {
     <div>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <Link href="/guru/asesmen" className="text-xs font-semibold text-[#64748B] hover:text-[#658864]">
-            ← Kembali ke Asesmen
+          <Link href="/guru/asesmen" className="text-xs font-semibold text-[#64748B] hover:text-[#00D2D9]">
+            â† Kembali ke Asesmen
           </Link>
           <h1 className="mt-2 text-xl font-bold text-[#111827]">Library Asesmen</h1>
           <p className="mt-1 text-sm text-[#64748B]">Pilih asesmen yang sudah dibuat untuk dikirim ke satu atau beberapa kelas.</p>

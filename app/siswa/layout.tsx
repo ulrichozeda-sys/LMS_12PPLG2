@@ -8,7 +8,7 @@ import Image from "next/image";
 import Button from "@/components/ui/Button";
 import { showConfirm } from "@/lib/dialog";
 
-const BRAND = "#658864";
+const BRAND = "#00D2D9";
 
 type NavKey = "DASHBOARD" | "KELAS" | "ASESMEN" | "TUGAS" | "PERFORMA" | "PROFILE";
 
@@ -86,8 +86,8 @@ export default function SiswaLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#FAF6EE]" style={{ fontFamily: "Inter, sans-serif" }}>
-      <header className="sticky top-0 z-40 border-b border-black/5 bg-[#FAF6EE]">
+    <div className="flex min-h-screen flex-col bg-[#FFFFFF]" style={{ fontFamily: "Inter, sans-serif" }}>
+      <header className="sticky top-0 z-40 border-b border-black/5 bg-[#FFFFFF]">
         <div className="flex items-center justify-between px-4 py-3 sm:px-6">
           <div className="flex items-center gap-3">
             <button
@@ -105,7 +105,7 @@ export default function SiswaLayout({ children }: { children: React.ReactNode })
               </svg>
             </button>
             <div className="relative h-8 w-8 flex-shrink-0">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#658864] text-xs font-black text-white">S</div>
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#00D2D9] text-xs font-black text-white">S</div>
             </div>
             <span className="text-lg font-bold tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
               MyClass
@@ -133,11 +133,11 @@ export default function SiswaLayout({ children }: { children: React.ReactNode })
 
         <aside
           aria-label="Navigasi siswa"
-          className={`fixed inset-y-0 left-0 z-50 w-72 overflow-y-auto bg-[#FAF6EE] p-4 shadow-[8px_0_24px_rgba(15,23,42,0.12)] transition-transform duration-300 ease-out ${
+          className={`fixed inset-y-0 left-0 z-50 w-72 overflow-y-auto bg-[#FFFFFF] p-4 shadow-[8px_0_24px_rgba(15,23,42,0.12)] transition-transform duration-300 ease-out ${
             sidebarOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
-          <div className="flex min-h-full flex-col border-r border-black/5 bg-[#FAF6EE] p-4 shadow-sm">
+          <div className="flex min-h-full flex-col border-r border-black/5 bg-[#FFFFFF] p-4 shadow-sm">
             <p className="mb-3 px-2 pt-2 text-sm font-bold text-[#111827]">
               Dashboard Siswa
               <br />
@@ -185,7 +185,7 @@ export default function SiswaLayout({ children }: { children: React.ReactNode })
       <footer className="py-10 text-center text-white" style={{ background: BRAND }}>
         <p className="text-lg font-bold">MyClass</p>
         <p className="mt-8 border-t border-white/20 pt-6 text-xs text-white/80">
-          © 2026 MyClass. All Rights Reserved.
+          Â© 2026 MyClass. All Rights Reserved.
         </p>
       </footer>
     </div>

@@ -9,7 +9,7 @@ import Badge from "@/components/ui/Badge";
 import PengumumanCard from "@/components/PengumumanCard";
 import TugasCard from "@/components/TugasCard";
 
-const BRAND = "#658864";
+const BRAND = "#00D2D9";
 type KurikulumTab = "DASHBOARD" | "KELAS" | "SISWA" | "GURU" | "ASESMEN" | "PERFORMA";
 
 function TabIcon({ tab }: { tab: KurikulumTab }) {
@@ -104,11 +104,11 @@ export default function KurikulumKelasDetailPage() {
   }
 
   if (loading) {
-    return <div className="flex min-h-screen items-center justify-center bg-[#FAF6EE]"><p className="text-sm text-[#9CA3AF]">Memuat...</p></div>;
+    return <div className="flex min-h-screen items-center justify-center bg-[#FFFFFF]"><p className="text-sm text-[#9CA3AF]">Memuat...</p></div>;
   }
   if (error || !kelas) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-[#FAF6EE]">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-[#FFFFFF]">
         <p className="text-sm text-[#9CA3AF]">{error || "Kelas tidak ditemukan."}</p>
         <Button variant="outline" onClick={() => router.push("/kurikulum")}>Kembali</Button>
       </div>
@@ -129,8 +129,8 @@ export default function KurikulumKelasDetailPage() {
   }, {});
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#FAF6EE]" style={{ fontFamily: "Inter, sans-serif" }}>
-      <header className="sticky top-0 z-40 border-b border-black/5 bg-[#FAF6EE]">
+    <div className="flex min-h-screen flex-col bg-[#FFFFFF]" style={{ fontFamily: "Inter, sans-serif" }}>
+      <header className="sticky top-0 z-40 border-b border-black/5 bg-[#FFFFFF]">
         <div className="flex items-center justify-between px-4 py-3 sm:px-6">
           <div className="flex items-center gap-3">
             <button onClick={() => setSidebarOpen((v) => !v)} className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg hover:bg-black/5">
@@ -149,8 +149,8 @@ export default function KurikulumKelasDetailPage() {
       </header>
 
       {sidebarOpen && <div onClick={() => setSidebarOpen(false)} className="fixed inset-0 z-40 bg-black/30 backdrop-blur-[1px]" />}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-72 overflow-y-auto bg-[#FAF6EE] p-4 shadow-[8px_0_24px_rgba(15,23,42,0.12)] transition-transform duration-300 ease-out ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
-        <div className="min-h-full border-r border-black/5 bg-[#FAF6EE] p-4 shadow-sm">
+      <aside className={`fixed inset-y-0 left-0 z-50 w-72 overflow-y-auto bg-[#FFFFFF] p-4 shadow-[8px_0_24px_rgba(15,23,42,0.12)] transition-transform duration-300 ease-out ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
+        <div className="min-h-full border-r border-black/5 bg-[#FFFFFF] p-4 shadow-sm">
           <p className="mb-3 px-2 pt-2 text-sm font-bold text-[#111827]">Dashboard Kurikulum<br /><span style={{ color: BRAND }}>- Kelas</span></p>
           <nav className="flex flex-col gap-1">
             {TABS.map((tab) => (
@@ -181,7 +181,7 @@ export default function KurikulumKelasDetailPage() {
             {Object.keys(siswaGrouped).length === 0 ? <p className="text-sm text-[#9CA3AF]">Belum ada siswa di kelas ini.</p> : Object.entries(siswaGrouped).map(([label, list]) => {
               const isOpen = expandedRombel === label;
               return (
-                <div key={label} className="overflow-hidden rounded-2xl border border-black/5 bg-[#FAF6EE] shadow-sm">
+                <div key={label} className="overflow-hidden rounded-2xl border border-black/5 bg-[#FFFFFF] shadow-sm">
                   <button onClick={() => setExpandedRombel(isOpen ? null : label)} className="flex w-full cursor-pointer items-center justify-between px-5 py-3.5 text-left">
                     <div className="flex items-center gap-2"><p className="text-sm font-bold text-[#111827]">{label}</p><Badge tone="brand">{list.length} Siswa</Badge></div>
                     <svg viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" className={`h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""}`}><path d="m6 9 6 6 6-6" /></svg>
@@ -211,7 +211,7 @@ export default function KurikulumKelasDetailPage() {
                 <p className="mb-2 text-xs font-bold uppercase tracking-wide text-[#9CA3AF]">{mapel}</p>
                 <div className="space-y-2">
                   {list.map((gm) => (
-                    <button key={gm.id} onClick={() => router.push(`/profil/${gm.guru.id}`)} className="flex w-full cursor-pointer items-center gap-3 rounded-xl border border-black/5 bg-[#FAF6EE] p-3 text-left shadow-sm hover:bg-black/5">
+                    <button key={gm.id} onClick={() => router.push(`/profil/${gm.guru.id}`)} className="flex w-full cursor-pointer items-center gap-3 rounded-xl border border-black/5 bg-[#FFFFFF] p-3 text-left shadow-sm hover:bg-black/5">
                       <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#E5E7EB] text-xs font-bold text-[#6B7280]">
                         {gm.guru.fotoProfil ? <img src={gm.guru.fotoProfil} alt={gm.guru.nama} className="h-full w-full object-cover" /> : gm.guru.nama.charAt(0)}
                       </div>
@@ -236,14 +236,14 @@ export default function KurikulumKelasDetailPage() {
                   <button
                     key={`a-${i}`}
                     onClick={() => router.push(`/kurikulum/asesmen/${a.id}`)}
-                    className="block w-full cursor-pointer rounded-2xl border border-black/5 bg-[#FAF6EE] p-4 text-left shadow-sm transition-shadow hover:shadow-md"
+                    className="block w-full cursor-pointer rounded-2xl border border-black/5 bg-[#FFFFFF] p-4 text-left shadow-sm transition-shadow hover:shadow-md"
                   >
                     <div className="flex items-center gap-2">
                       <Badge tone="brand">{a.tipe === "KUIS" ? "Kuis" : "Ujian Online"}</Badge>
                       {a.mapel && <Badge tone="gray">{a.mapel.nama}</Badge>}
                     </div>
                     <p className="mt-2 text-sm font-bold text-[#111827]">{a.judul}</p>
-                    <p className="mt-1 text-xs text-[#9CA3AF]">{a._count?.soal ?? 0} soal · oleh {a.guru?.nama} — lihat ujian & jawaban siswa</p>
+                    <p className="mt-1 text-xs text-[#9CA3AF]">{a._count?.soal ?? 0} soal Â· oleh {a.guru?.nama} â€” lihat ujian & jawaban siswa</p>
                   </button>
                 );
               })}
@@ -258,7 +258,7 @@ export default function KurikulumKelasDetailPage() {
             <p className="text-lg font-bold">MyClass</p>
           </div>
         </div>
-        <p className="mt-8 border-t border-white/20 pt-6 text-center text-xs text-white/80">© 2026 MyClass. All Rights Reserved.</p>
+        <p className="mt-8 border-t border-white/20 pt-6 text-center text-xs text-white/80">Â© 2026 MyClass. All Rights Reserved.</p>
       </footer>
     </div>
   );

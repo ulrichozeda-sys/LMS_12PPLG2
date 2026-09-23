@@ -11,7 +11,7 @@ interface BadgeProps {
 }
 
 const toneClasses: Record<Tone, string> = {
-  brand: "bg-[#658864]/10 text-[#658864]",
+  brand: "bg-[#00D2D9]/10 text-[#00D2D9]",
   gray: "bg-gray-100 text-gray-600",
   green: "bg-green-100 text-green-700",
   red: "bg-red-100 text-red-600",

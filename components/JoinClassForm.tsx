@@ -61,20 +61,20 @@ export default function JoinClassForm({ onSuccess }: JoinClassFormProps) {
   }
 
   return (
-    <div className="mb-5 rounded-2xl border border-black/5 bg-[#FAF6EE] p-4 shadow-sm">
+    <div className="mb-5 rounded-2xl border border-black/5 bg-[#FFFFFF] p-4 shadow-sm">
       <form onSubmit={handleSubmit} className="flex flex-col gap-2 sm:flex-row">
         <input
           type="text"
           value={value}
           onChange={(event) => setValue(event.target.value)}
           placeholder="Masukkan kode kelas atau link undangan"
-          className="min-w-0 flex-1 rounded-lg border border-[#D1D5DB] px-3.5 py-2.5 text-sm outline-none transition-shadow focus:border-[#658864] focus:ring-2 focus:ring-[#658864]/20"
+          className="min-w-0 flex-1 rounded-lg border border-[#D1D5DB] px-3.5 py-2.5 text-sm outline-none transition-shadow focus:border-[#00D2D9] focus:ring-2 focus:ring-[#00D2D9]/20"
           disabled={loading}
         />
         <button
           type="submit"
           disabled={loading || !value.trim()}
-          className="rounded-lg bg-[#658864] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#557654] disabled:cursor-not-allowed disabled:opacity-60"
+          className="rounded-lg bg-[#00D2D9] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#557654] disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading ? "Memproses..." : "Gabung Kelas"}
         </button>

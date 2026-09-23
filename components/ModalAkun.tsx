@@ -217,7 +217,7 @@ export default function ModalAkun({ open, onClose, onSuccess, mode, defaultRole 
                 className="cursor-pointer rounded-lg border py-2 text-sm font-medium transition-colors"
                 style={
                   role === r
-                    ? { background: "#658864", borderColor: "#658864", color: "white" }
+                    ? { background: "#00D2D9", borderColor: "#00D2D9", color: "white" }
                     : { borderColor: "#D1D5DB", color: "#374151" }
                 }
               >
@@ -290,10 +290,10 @@ export default function ModalAkun({ open, onClose, onSuccess, mode, defaultRole 
         {/* Pilih Kelas (opsional) -- fitur Walas dihapus total dari sini */}
         <div>
           <label className="mb-1.5 block text-xs font-semibold text-[#374151]">
-            Pilih Kelas (opsional, bisa lebih dari 1 — kosongkan kalau cuma mau simpan datanya dulu)
+            Pilih Kelas (opsional, bisa lebih dari 1 â€” kosongkan kalau cuma mau simpan datanya dulu)
           </label>
           <select
-            className="w-full rounded-lg border border-[#D1D5DB] px-3.5 py-2.5 text-sm outline-none focus:border-[#658864]"
+            className="w-full rounded-lg border border-[#D1D5DB] px-3.5 py-2.5 text-sm outline-none focus:border-[#00D2D9]"
             value=""
             onChange={(e) => e.target.value && toggleKelas(e.target.value)}
           >
@@ -315,7 +315,7 @@ export default function ModalAkun({ open, onClose, onSuccess, mode, defaultRole 
                   <Badge key={id} tone="brand" className="flex items-center gap-1">
                     {k?.label}
                     <button type="button" onClick={() => toggleKelas(id)} className="cursor-pointer hover:text-red-500">
-                      ×
+                      Ã—
                     </button>
                   </Badge>
                 );
@@ -329,7 +329,7 @@ export default function ModalAkun({ open, onClose, onSuccess, mode, defaultRole 
             Foto Profil {role === "SISWA" ? "/ Selfie" : ""} (opsional)
           </label>
           <div className="flex gap-2">
-            <label className="relative flex h-20 w-20 cursor-pointer flex-col items-center justify-center gap-1 overflow-hidden rounded-lg border border-dashed border-[#D1D5DB] text-[#9CA3AF] transition-colors hover:border-[#658864]">
+            <label className="relative flex h-20 w-20 cursor-pointer flex-col items-center justify-center gap-1 overflow-hidden rounded-lg border border-dashed border-[#D1D5DB] text-[#9CA3AF] transition-colors hover:border-[#00D2D9]">
               {fotoProfil ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={fotoProfil} alt="Preview" className="h-full w-full object-cover" />
@@ -352,7 +352,7 @@ export default function ModalAkun({ open, onClose, onSuccess, mode, defaultRole 
               />
             </label>
 
-            <label className="relative flex h-20 w-20 cursor-pointer flex-col items-center justify-center gap-1 overflow-hidden rounded-lg border border-dashed border-[#D1D5DB] text-[#9CA3AF] transition-colors hover:border-[#658864]">
+            <label className="relative flex h-20 w-20 cursor-pointer flex-col items-center justify-center gap-1 overflow-hidden rounded-lg border border-dashed border-[#D1D5DB] text-[#9CA3AF] transition-colors hover:border-[#00D2D9]">
               {uploadingFoto ? (
                 <span className="text-[10px] font-medium">Upload...</span>
               ) : (

@@ -49,7 +49,7 @@ const RANGE_OPTIONS: Array<{ key: RangeKey; label: string }> = [
 
 function StatCard({ label, value, helper }: { label: string; value: string; helper: string }) {
   return (
-    <div className="rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+    <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
       <p className="text-xs font-semibold uppercase tracking-wide text-[#94A3B8]">{label}</p>
       <p className="mt-2 text-3xl font-bold text-[#111827]">{value}</p>
       <p className="mt-1 text-xs text-[#64748B]">{helper}</p>
@@ -105,7 +105,7 @@ function HorizontalBars({ items, suffix = "" }: { items: Array<{ label: string; 
             </div>
             <div className="h-2.5 w-full overflow-hidden rounded-full bg-[#E2E8F0]">
               <div
-                className="h-full rounded-full bg-[#658864]"
+                className="h-full rounded-full bg-[#00D2D9]"
                 style={{ width: `${(item.value / maxValue) * 100}%` }}
               />
             </div>
@@ -195,13 +195,13 @@ export default function GuruPerformaAkademikPage() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+        <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
           <div className="h-6 w-40 animate-pulse rounded bg-slate-200" />
           <div className="mt-4 h-10 w-72 animate-pulse rounded bg-slate-200" />
         </div>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {Array.from({ length: 4 }).map((_, index) => (
-            <div key={index} className="h-32 animate-pulse rounded-2xl bg-[#FAF6EE] p-5 shadow-sm" />
+            <div key={index} className="h-32 animate-pulse rounded-2xl bg-[#FFFFFF] p-5 shadow-sm" />
           ))}
         </div>
       </div>
@@ -222,7 +222,7 @@ export default function GuruPerformaAkademikPage() {
 
   if (!data) {
     return (
-      <div className="rounded-2xl border border-dashed border-[#CBD5E1] bg-[#FAF6EE] p-6 text-center shadow-sm">
+      <div className="rounded-2xl border border-dashed border-[#CBD5E1] bg-[#FFFFFF] p-6 text-center shadow-sm">
         <p className="text-lg font-semibold text-[#111827]">Belum ada data performa</p>
         <p className="mt-2 text-sm text-[#64748B]">Data akan muncul setelah Anda membuat dan mengirim asesmen atau tugas.</p>
       </div>
@@ -231,7 +231,7 @@ export default function GuruPerformaAkademikPage() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl p-6 text-white shadow-sm" style={{ background: "#658864" }}>
+      <div className="rounded-2xl p-6 text-white shadow-sm" style={{ background: "#00D2D9" }}>
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-white/75">Performa Akademik</p>
@@ -269,22 +269,22 @@ export default function GuruPerformaAkademikPage() {
       </div>
 
       {!hasData ? (
-        <div className="rounded-2xl border border-dashed border-[#CBD5E1] bg-[#FAF6EE] p-6 text-center shadow-sm">
+        <div className="rounded-2xl border border-dashed border-[#CBD5E1] bg-[#FFFFFF] p-6 text-center shadow-sm">
           <p className="text-lg font-semibold text-[#111827]">Belum ada data pada rentang waktu ini.</p>
           <p className="mt-2 text-sm text-[#64748B]">Buat kuis, ujian, atau tugas untuk melihat performa akdemik di sini.</p>
         </div>
       ) : (
         <>
           <div className="grid gap-5 xl:grid-cols-2">
-            <div className="rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+            <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
               <p className="text-sm font-bold text-[#111827]">Perbandingan Kuis & Ujian</p>
               <div className="mt-5 flex items-end gap-6">
-                <ChartBar label="Kuis" value={data.summary.totalKuis} max={comparisonMax} color="#658864" />
+                <ChartBar label="Kuis" value={data.summary.totalKuis} max={comparisonMax} color="#00D2D9" />
                 <ChartBar label="Ujian" value={data.summary.totalUjian} max={comparisonMax} color="#A78BFA" />
               </div>
             </div>
 
-            <div className="rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+            <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
               <p className="text-sm font-bold text-[#111827]">Progress Tugas Dibuat vs Dikumpulkan</p>
               <div className="mt-5 space-y-4">
                 <div>
@@ -293,7 +293,7 @@ export default function GuruPerformaAkademikPage() {
                     <strong>{data.summary.totalTugasDibuat}</strong>
                   </div>
                   <div className="h-3 overflow-hidden rounded-full bg-[#E2E8F0]">
-                    <div className="h-full rounded-full bg-[#658864]" style={{ width: "100%" }} />
+                    <div className="h-full rounded-full bg-[#00D2D9]" style={{ width: "100%" }} />
                   </div>
                 </div>
                 <div>
@@ -317,14 +317,14 @@ export default function GuruPerformaAkademikPage() {
           </div>
 
           <div className="grid gap-5 xl:grid-cols-2">
-            <div className="rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+            <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
               <p className="text-sm font-bold text-[#111827]">Rata-rata Nilai per Kelas</p>
               <div className="mt-5">
                 <HorizontalBars items={classChart} suffix="" />
               </div>
             </div>
 
-            <div className="rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+            <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
               <p className="text-sm font-bold text-[#111827]">Rata-rata Nilai per Mata Pelajaran</p>
               <div className="mt-5">
                 <HorizontalBars items={mapelChart} suffix="" />
@@ -332,7 +332,7 @@ export default function GuruPerformaAkademikPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+          <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
             <div className="flex items-center justify-between gap-3">
               <p className="text-sm font-bold text-[#111827]">Siswa dengan tugas atau essay belum dinilai</p>
               <Badge tone="amber">{data.summary.siswaBelumDinilai.length} siswa</Badge>
@@ -361,7 +361,7 @@ export default function GuruPerformaAkademikPage() {
                     </div>
                     <ul className="mt-3 space-y-2 text-sm text-[#334155]">
                       {student.items.map((item, index) => (
-                        <li key={`${student.id}-${index}`} className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-[#FAF6EE] px-3 py-2">
+                        <li key={`${student.id}-${index}`} className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-[#FFFFFF] px-3 py-2">
                           <span>{item.label}</span>
                           <span className="text-xs text-[#64748B]">
                             {item.type === "TUGAS" && item.submittedAt ? new Date(item.submittedAt).toLocaleDateString("id-ID") : "Essay menunggu review"}

@@ -151,7 +151,7 @@ export default function SoalBuilder({ asesmenId, onSaved, editingSoal, onCancelE
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+    <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
       <p className="text-sm font-bold text-[#111827]">{isEditing ? "Edit Soal" : "Tambah Soal"}</p>
 
       <div className="grid grid-cols-3 gap-2">
@@ -163,7 +163,7 @@ export default function SoalBuilder({ asesmenId, onSaved, editingSoal, onCancelE
             className="cursor-pointer rounded-lg border py-2 text-xs font-semibold transition-colors"
             style={
               tipe === t
-                ? { background: "#658864", borderColor: "#658864", color: "white" }
+                ? { background: "#00D2D9", borderColor: "#00D2D9", color: "white" }
                 : { borderColor: "#D1D5DB", color: "#374151" }
             }
           >
@@ -209,7 +209,7 @@ export default function SoalBuilder({ asesmenId, onSaved, editingSoal, onCancelE
                   value={opsi.teks}
                   onChange={(e) => handleOpsiTeksChange(i, e.target.value)}
                   placeholder={`Opsi ${i + 1}`}
-                  className="flex-1 rounded-lg border border-[#D1D5DB] px-3 py-2 text-sm outline-none focus:border-[#658864]"
+                  className="flex-1 rounded-lg border border-[#D1D5DB] px-3 py-2 text-sm outline-none focus:border-[#00D2D9]"
                 />
                 {opsiList.length > 2 && (
                   <button
@@ -228,7 +228,7 @@ export default function SoalBuilder({ asesmenId, onSaved, editingSoal, onCancelE
           <button
             type="button"
             onClick={handleAddOpsi}
-            className="mt-2 cursor-pointer text-xs font-semibold text-[#658864] hover:underline"
+            className="mt-2 cursor-pointer text-xs font-semibold text-[#00D2D9] hover:underline"
           >
             + Tambah Opsi
           </button>

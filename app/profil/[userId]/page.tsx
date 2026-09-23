@@ -9,7 +9,7 @@ import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import ModalEditProfil from "@/components/ModalEditProfil";
 
-const BRAND = "#658864";
+const BRAND = "#00D2D9";
 
 type Role = "ADMIN" | "KEPSEK" | "KURIKULUM" | "GURU" | "SISWA";
 
@@ -184,8 +184,8 @@ export default function ProfilPage() {
   const isGuru = profil?.role === "GURU";
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#FAF6EE]" style={{ fontFamily: "Inter, sans-serif" }}>
-      <header className="no-print sticky top-0 z-40 border-b border-black/5 bg-[#FAF6EE]">
+    <div className="flex min-h-screen flex-col bg-[#FFFFFF]" style={{ fontFamily: "Inter, sans-serif" }}>
+      <header className="no-print sticky top-0 z-40 border-b border-black/5 bg-[#FFFFFF]">
         <div className="flex items-center justify-between px-4 py-3 sm:px-6">
           <div className="flex items-center gap-3">
             <button
@@ -198,7 +198,7 @@ export default function ProfilPage() {
               </svg>
             </button>
             <div className="relative h-8 w-8 flex-shrink-0">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#658864] text-xs font-black text-white">S</div>
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#00D2D9] text-xs font-black text-white">S</div>
             </div>
             <span className="text-lg font-bold tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
               MyClass
@@ -232,12 +232,12 @@ export default function ProfilPage() {
       )}
 
       <aside
-        className={`no-print fixed inset-y-0 left-0 z-50 w-72 overflow-y-auto bg-[#FAF6EE] p-4 shadow-[8px_0_24px_rgba(15,23,42,0.12)] transition-transform duration-300 ease-out ${
+        className={`no-print fixed inset-y-0 left-0 z-50 w-72 overflow-y-auto bg-[#FFFFFF] p-4 shadow-[8px_0_24px_rgba(15,23,42,0.12)] transition-transform duration-300 ease-out ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
         aria-label="Navigasi"
       >
-        <div className="flex min-h-full flex-col border-r border-black/5 bg-[#FAF6EE] p-4 shadow-sm">
+        <div className="flex min-h-full flex-col border-r border-black/5 bg-[#FFFFFF] p-4 shadow-sm">
           <p className="mb-3 px-2 pt-2 text-sm font-bold text-[#111827]">
             {dashboardLabel}
             <br />
@@ -317,7 +317,7 @@ export default function ProfilPage() {
             <div className="profile-card overflow-hidden rounded-2xl shadow-sm">
               <div className="profile-card-header" style={{ background: BRAND }}>
               <div className="flex items-start justify-between gap-3 p-5 pb-0">
-                <span className="rounded-full bg-[#FAF6EE]/20 px-3 py-1 text-xs font-semibold text-white">
+                <span className="rounded-full bg-[#FFFFFF]/20 px-3 py-1 text-xs font-semibold text-white">
                   Profil {roleLabel[profil.role]}
                 </span>
                 <div className="no-print flex items-center gap-2">
@@ -325,7 +325,7 @@ export default function ProfilPage() {
                     type="button"
                     onClick={() => window.print()}
                     title="Cetak profil"
-                    className="flex cursor-pointer items-center gap-1.5 rounded-full bg-[#FAF6EE] px-3 py-1.5 text-xs font-semibold text-[#658864] shadow-sm hover:bg-[#FAF6EE]/90"
+                    className="flex cursor-pointer items-center gap-1.5 rounded-full bg-[#FFFFFF] px-3 py-1.5 text-xs font-semibold text-[#00D2D9] shadow-sm hover:bg-[#FFFFFF]/90"
                   >
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-3.5 w-3.5">
                       <path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
@@ -336,7 +336,7 @@ export default function ProfilPage() {
                   {profil.isSelf && (
                     <button
                       onClick={() => setShowEdit(true)}
-                      className="cursor-pointer rounded-full bg-[#FAF6EE] px-3 py-1.5 text-xs font-semibold text-[#658864] hover:bg-[#FAF6EE]/90"
+                      className="cursor-pointer rounded-full bg-[#FFFFFF] px-3 py-1.5 text-xs font-semibold text-[#00D2D9] hover:bg-[#FFFFFF]/90"
                     >
                       Edit Profile
                     </button>
@@ -345,7 +345,7 @@ export default function ProfilPage() {
               </div>
               <div className="p-5">
                 <p className="text-lg font-bold text-white">{profil.nama.split(" ")[0]}</p>
-                <div className="mt-3 h-32 w-32 overflow-hidden rounded-2xl bg-[#FAF6EE]/20">
+                <div className="mt-3 h-32 w-32 overflow-hidden rounded-2xl bg-[#FFFFFF]/20">
                   {profil.fotoProfil ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={profil.fotoProfil} alt={profil.nama} className="h-full w-full object-cover" />
@@ -358,7 +358,7 @@ export default function ProfilPage() {
               </div>
               </div>
 
-            <div className="profile-card-details rounded-b-2xl border border-t-0 border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+            <div className="profile-card-details rounded-b-2xl border border-t-0 border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
               <p className="text-lg font-bold text-[#111827]">{profil.nama}</p>
 
               <div className="mt-2 flex flex-wrap gap-2">
@@ -368,7 +368,7 @@ export default function ProfilPage() {
 
               <div className="mt-4 grid grid-cols-2 gap-3">
                 {isSiswa && (
-                  <div className="rounded-xl bg-[#FAF6EE] p-3">
+                  <div className="rounded-xl bg-[#FFFFFF] p-3">
                     <p className="text-[10px] font-semibold uppercase tracking-wide text-[#9CA3AF]">
                       {profil.isSelf ? "NIS" : "Status"}
                     </p>
@@ -378,7 +378,7 @@ export default function ProfilPage() {
                   </div>
                 )}
                 {isGuru && (
-                  <div className="rounded-xl bg-[#FAF6EE] p-3">
+                  <div className="rounded-xl bg-[#FFFFFF] p-3">
                     <p className="text-[10px] font-semibold uppercase tracking-wide text-[#9CA3AF]">
                       {profil.isSelf ? "NIK" : "Status"}
                     </p>
@@ -388,19 +388,19 @@ export default function ProfilPage() {
                   </div>
                 )}
 
-                <div className="rounded-xl bg-[#FAF6EE] p-3">
+                <div className="rounded-xl bg-[#FFFFFF] p-3">
                   <p className="text-[10px] font-semibold uppercase tracking-wide text-[#9CA3AF]">Status</p>
                   <p className="mt-0.5 text-sm font-bold text-[#111827]">{roleLabel[profil.role]}</p>
                 </div>
 
                 {isSiswa && (
-                  <div className="rounded-xl bg-[#FAF6EE] p-3">
+                  <div className="rounded-xl bg-[#FFFFFF] p-3">
                     <p className="text-[10px] font-semibold uppercase tracking-wide text-[#9CA3AF]">Jurusan</p>
                     <p className="mt-0.5 text-sm font-bold text-[#111827]">{profil.jurusan ?? "-"}</p>
                   </div>
                 )}
                 {isGuru && (
-                  <div className="rounded-xl bg-[#FAF6EE] p-3">
+                  <div className="rounded-xl bg-[#FFFFFF] p-3">
                     <p className="text-[10px] font-semibold uppercase tracking-wide text-[#9CA3AF]">Mapel</p>
                     <p className="mt-0.5 text-sm font-bold text-[#111827]">
                       {profil.mapel.length > 0 ? profil.mapel.join(", ") : "-"}
@@ -408,12 +408,12 @@ export default function ProfilPage() {
                   </div>
                 )}
 
-                <div className="col-span-2 rounded-xl bg-[#FAF6EE] p-3">
+                <div className="col-span-2 rounded-xl bg-[#FFFFFF] p-3">
                   <p className="text-[10px] font-semibold uppercase tracking-wide text-[#9CA3AF]">Jenis Kelamin</p>
                   <p className="mt-0.5 text-sm font-bold text-[#111827]">{profil.jenisKelamin ?? "-"}</p>
                 </div>
 
-                <div className="col-span-2 rounded-xl bg-[#FAF6EE] p-3">
+                <div className="col-span-2 rounded-xl bg-[#FFFFFF] p-3">
                   <p className="text-[10px] font-semibold uppercase tracking-wide text-[#9CA3AF]">Deskripsi</p>
                   <p className="mt-1 whitespace-pre-wrap text-sm text-[#374151]">{profil.deskripsi || "-"}</p>
                 </div>
@@ -423,7 +423,7 @@ export default function ProfilPage() {
 
             <div className="print-only-card">
               <div className="print-card-identity">
-                <span className="print-card-label">MYCLASS · PROFIL {roleLabel[profil.role].toUpperCase()}</span>
+                <span className="print-card-label">MYCLASS Â· PROFIL {roleLabel[profil.role].toUpperCase()}</span>
                 <div className="print-card-photo">
                   {profil.fotoProfil ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -481,7 +481,7 @@ export default function ProfilPage() {
       <footer className="no-print py-10 text-center text-white" style={{ background: BRAND }}>
         <p className="text-lg font-bold">MyClass</p>
         <p className="mt-8 border-t border-white/20 pt-6 text-xs text-white/80">
-          © 2026 MyClass. All Rights Reserved.
+          Â© 2026 MyClass. All Rights Reserved.
         </p>
       </footer>
     </div>

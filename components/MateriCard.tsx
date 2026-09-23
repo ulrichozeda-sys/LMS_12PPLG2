@@ -25,7 +25,7 @@ export default function MateriCard({ data, isEditable = false, onEdit, onDelete 
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div className="flex items-start gap-3 rounded-2xl border border-black/5 bg-[#FAF6EE] p-4 shadow-sm transition-shadow hover:shadow-md">
+    <div className="flex items-start gap-3 rounded-2xl border border-black/5 bg-[#FFFFFF] p-4 shadow-sm transition-shadow hover:shadow-md">
       <div
         className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl"
         style={{ background: data.tipe === "PDF" ? "#FEE2E2" : "#DBEAFE" }}
@@ -50,7 +50,7 @@ export default function MateriCard({ data, isEditable = false, onEdit, onDelete 
           href={data.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="block truncate text-sm font-bold text-[#111827] hover:text-[#658864]"
+          className="block truncate text-sm font-bold text-[#111827] hover:text-[#00D2D9]"
         >
           {data.judul}
         </a>
@@ -81,7 +81,7 @@ export default function MateriCard({ data, isEditable = false, onEdit, onDelete 
           </button>
 
           {menuOpen && (
-            <div className="absolute right-0 top-8 z-20 w-28 overflow-hidden rounded-lg border border-black/5 bg-[#FAF6EE] shadow-lg">
+            <div className="absolute right-0 top-8 z-20 w-28 overflow-hidden rounded-lg border border-black/5 bg-[#FFFFFF] shadow-lg">
               <button
                 onClick={() => {
                   setMenuOpen(false);

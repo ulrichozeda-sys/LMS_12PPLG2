@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-const BRAND = "#658864";
+const BRAND = "#00D2D9";
 
 export default function GantiPasswordAwalPage() {
   const router = useRouter();
@@ -58,10 +58,10 @@ export default function GantiPasswordAwalPage() {
         backgroundColor: "#1F2937",
       }}
     >
-      <div className="w-full max-w-sm rounded-2xl bg-[#FAF6EE] p-8 shadow-2xl">
+      <div className="w-full max-w-sm rounded-2xl bg-[#FFFFFF] p-8 shadow-2xl">
         <div className="flex flex-col items-center text-center">
           <div className="relative h-10 w-10 flex-shrink-0">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#658864] text-sm font-black text-white">S</div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#00D2D9] text-sm font-black text-white">S</div>
           </div>
           <p className="mt-2 text-base font-bold" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
             MyClass
@@ -82,7 +82,7 @@ export default function GantiPasswordAwalPage() {
             placeholder="Password Baru"
             value={passwordBaru}
             onChange={(e) => setPasswordBaru(e.target.value)}
-            className="w-full rounded-lg border border-[#D1D5DB] px-4 py-2.5 text-sm outline-none focus:border-[#658864]"
+            className="w-full rounded-lg border border-[#D1D5DB] px-4 py-2.5 text-sm outline-none focus:border-[#00D2D9]"
           />
           <input
             type="password"
@@ -90,7 +90,7 @@ export default function GantiPasswordAwalPage() {
             placeholder="Konfirmasi Password Baru"
             value={konfirmasi}
             onChange={(e) => setKonfirmasi(e.target.value)}
-            className="w-full rounded-lg border border-[#D1D5DB] px-4 py-2.5 text-sm outline-none focus:border-[#658864]"
+            className="w-full rounded-lg border border-[#D1D5DB] px-4 py-2.5 text-sm outline-none focus:border-[#00D2D9]"
           />
 
           {error && <p className="text-xs font-medium text-red-500">{error}</p>}

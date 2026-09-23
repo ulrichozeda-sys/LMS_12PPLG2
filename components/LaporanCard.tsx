@@ -103,7 +103,7 @@ export default function LaporanCard({ data, onUpdated }: LaporanCardProps) {
   }
 
   return (
-    <div className="rounded-2xl border border-black/5 bg-[#FAF6EE] p-5 shadow-sm">
+    <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
       <div className="flex items-start gap-3">
         <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#E5E7EB] text-sm font-bold text-[#6B7280]">
           {data.user.fotoProfil ? (
@@ -121,7 +121,7 @@ export default function LaporanCard({ data, onUpdated }: LaporanCardProps) {
             <Badge tone="gray">{data.user.role === "SISWA" ? "Siswa" : "Guru"}</Badge>
           </div>
           <p className="text-xs text-[#9CA3AF]">
-            email: {data.email} · {identitas}
+            email: {data.email} Â· {identitas}
           </p>
           <p className="mt-1 text-xs italic text-[#6B7280]">Alasan: {data.alasan}</p>
         </div>
@@ -151,7 +151,7 @@ export default function LaporanCard({ data, onUpdated }: LaporanCardProps) {
                     <div
                       key={i}
                       className="flex h-10 w-10 items-center justify-center rounded-lg text-lg font-bold text-white"
-                      style={{ background: "#658864" }}
+                      style={{ background: "#00D2D9" }}
                     >
                       {digit}
                     </div>
@@ -159,7 +159,7 @@ export default function LaporanCard({ data, onUpdated }: LaporanCardProps) {
                 </div>
                 <button
                   onClick={handleCopyOtp}
-                  className="cursor-pointer text-xs font-medium text-[#658864] hover:underline"
+                  className="cursor-pointer text-xs font-medium text-[#00D2D9] hover:underline"
                 >
                   {copied ? "Tersalin!" : "Salin Kode OTP"}
                 </button>

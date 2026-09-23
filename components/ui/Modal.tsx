@@ -34,7 +34,7 @@ export default function Modal({ open, onClose, title, children, maxWidth = "max-
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`w-full ${maxWidth} max-h-[90vh] overflow-y-auto rounded-2xl bg-[#FAF6EE] shadow-2xl animate-[fadeUp_0.2s_ease-out]`}
+        className={`w-full ${maxWidth} max-h-[90vh] overflow-y-auto rounded-2xl bg-[#FFFFFF] shadow-2xl animate-[fadeUp_0.2s_ease-out]`}
       >
         <div className="flex items-center justify-between border-b border-black/5 px-6 py-4">
           <h3 className="text-sm font-bold text-[#111827]">{title}</h3>

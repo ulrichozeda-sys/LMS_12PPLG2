@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #FAF6EE;
+  --background: #FFFFFF;
   --foreground: #171717;
 }
 
@@ -14,7 +14,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #FAF6EE;
+    --background: #FFFFFF;
     --foreground: #171717;
   }
 }
@@ -41,7 +41,7 @@ body {
   }
 
   body {
-    background: #FAF6EE !important;
+    background: #FFFFFF !important;
     width: 85.6mm;
     height: 53.98mm;
     -webkit-print-color-adjust: exact;
@@ -85,8 +85,8 @@ body {
     flex-direction: column;
     justify-content: center;
     padding: 4mm;
-    color: #FAF6EE;
-    background: #658864;
+    color: #FFFFFF;
+    background: #00D2D9;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
@@ -141,12 +141,12 @@ body {
     flex-direction: column;
     padding: 5mm;
     color: #172033;
-    background: #FAF6EE;
+    background: #FFFFFF;
   }
 
   .print-card-eyebrow {
     margin: 0;
-    color: #658864;
+    color: #00D2D9;
   }
 
   .print-card-title {

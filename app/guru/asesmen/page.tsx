@@ -123,7 +123,7 @@ export default function GuruAsesmenPage() {
               className="cursor-pointer rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors"
               style={
                 statusFilter === s
-                  ? { background: "#658864", borderColor: "#658864", color: "white" }
+                  ? { background: "#00D2D9", borderColor: "#00D2D9", color: "white" }
                   : { borderColor: "#D1D5DB", color: "#374151" }
               }
             >
@@ -141,7 +141,7 @@ export default function GuruAsesmenPage() {
       ) : (
         <div className="mt-6 space-y-5">
           {kelompok.map((group) => group.data.length > 0 && (
-            <section key={group.key} className="overflow-hidden rounded-2xl border border-black/5 bg-[#FAF6EE] p-4 shadow-sm sm:p-5">
+            <section key={group.key} className="overflow-hidden rounded-2xl border border-black/5 bg-[#FFFFFF] p-4 shadow-sm sm:p-5">
               <button
                 type="button"
                 onClick={() => setVisibleGroups((current) => ({ ...current, [group.key]: !current[group.key] }))}

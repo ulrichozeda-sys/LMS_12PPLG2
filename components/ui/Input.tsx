@@ -2,7 +2,7 @@
 
 import { InputHTMLAttributes, TextareaHTMLAttributes, SelectHTMLAttributes, forwardRef } from "react";
 
-const focusRing = "focus:border-[#658864] focus:ring-2 focus:ring-[#658864]/20";
+const focusRing = "focus:border-[#00D2D9] focus:ring-2 focus:ring-[#00D2D9]/20";
 const baseField = `w-full rounded-lg border border-[#D1D5DB] px-3.5 py-2.5 text-sm outline-none transition-shadow ${focusRing}`;
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -52,7 +52,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
   ({ label, error, placeholder, className = "", children, ...props }, ref) => (
     <div className="w-full">
       {label && <label className="mb-1.5 block text-xs font-semibold text-[#374151]">{label}</label>}
-      <select ref={ref} className={`${baseField} bg-[#FAF6EE] ${error ? "border-red-400" : ""} ${className}`} {...props}>
+      <select ref={ref} className={`${baseField} bg-[#FFFFFF] ${error ? "border-red-400" : ""} ${className}`} {...props}>
         {placeholder && (
           <option value="" disabled>
             {placeholder}
