@@ -8,7 +8,7 @@ import Button from "@/components/ui/Button";
 
 const BRAND = "#00D2D9";
 
-type NavKey = "DASHBOARD" | "KELAS" | "ASESMEN" | "TUGAS" | "PERFORMA" | "PROFILE";
+type NavKey = "DASHBOARD" | "KELAS" | "ASESMEN" | "TUGAS" | "MATERI" | "PERFORMA" | "PROFILE";
 
 function NavIcon({ nav }: { nav: NavKey }) {
   const paths: Record<NavKey, React.ReactNode> = {
@@ -16,6 +16,7 @@ function NavIcon({ nav }: { nav: NavKey }) {
     KELAS: <path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6" />,
     ASESMEN: <path d="M12 2l3 6 6.5.9-4.7 4.6L18 20l-6-3.4L6 20l1.2-6.5L2.5 8.9 9 8l3-6Z" />,
     TUGAS: <path d="M9 3h6l1 3H8l1-3ZM6 6h12v15H6zM9 11h6M9 15h6" />,
+    MATERI: <path d="M6 3h9l4 4v14H6zM15 3v5h5M9 12h7M9 16h7" />,
     PERFORMA: <path d="M4 19V5M4 19h17M8 16v-4M13 16V8M18 16V4" />,
     PROFILE: <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" />,
   };
@@ -50,6 +51,7 @@ export default function GuruLayout({ children }: { children: React.ReactNode }) 
     { key: "KELAS", label: "Kelas", href: "/guru/kelas" },
     { key: "ASESMEN", label: "Asesmen", href: "/guru/asesmen" },
     { key: "TUGAS", label: "Tugas", href: "/guru/tugas" },
+    { key: "MATERI", label: "Materi", href: "/guru/materi" },
     { key: "PERFORMA", label: "Performa Akademik", href: "/guru/performa-akademik" },
     { key: "PROFILE", label: "Profile", href: me ? `/profil/${me.id}` : "#" },
   ];
@@ -83,14 +85,6 @@ export default function GuruLayout({ children }: { children: React.ReactNode }) 
 
           <div className="flex items-center gap-3">
             {me && <span className="hidden text-sm font-semibold text-[#111827] sm:block">{me.nama}</span>}
-            <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-[#E5E7EB] text-xs font-bold text-[#6B7280]">
-              {me?.fotoProfil ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={me.fotoProfil} alt={me.nama} className="h-full w-full object-cover" />
-              ) : (
-                me?.nama?.charAt(0) ?? "G"
-              )}
-            </div>
           </div>
         </div>
       </header>
@@ -107,6 +101,11 @@ export default function GuruLayout({ children }: { children: React.ReactNode }) 
           }`}
         >
           <div className="flex min-h-full flex-col border-r border-black/5 bg-[#FFFFFF] p-4 shadow-sm">
+            <div className="mb-3 flex px-2 pt-2">
+              <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-[#E5E7EB] text-sm font-bold text-[#6B7280]">
+                {me?.fotoProfil ? <Image src={me.fotoProfil} alt={me.nama} width={48} height={48} className="h-full w-full object-cover" /> : me?.nama?.charAt(0) ?? "G"}
+              </div>
+            </div>
             <p className="mb-3 px-2 pt-2 text-sm font-bold text-[#111827]">
               Dashboard Guru
               <br />

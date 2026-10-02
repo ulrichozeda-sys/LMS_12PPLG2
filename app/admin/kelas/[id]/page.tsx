@@ -11,10 +11,13 @@ import { Select } from "@/components/ui/Input";
 import ModalKelas from "@/components/ModalKelas";
 import PengumumanCard from "@/components/PengumumanCard";
 import TugasCard from "@/components/TugasCard";
-import { showConfirm } from "@/lib/dialog";
+import MateriCard, { MateriData } from "@/components/MateriCard";
+import FeedCategoryFilter, { FeedCategory } from "@/components/FeedCategoryFilter";
+import { ClassDetailOverview, ClassDirectoryNavigation } from "@/components/ClassDetailOverview";
+import { showAlert, showConfirm } from "@/lib/dialog";
 
 const BRAND = "#00D2D9";
-type AdminTab = "KELAS" | "AKUN" | "SISWA" | "GURU" | "LAPORAN";
+type AdminTab = "KELAS" | "AKUN" | "LAPORAN";
 type GuruNav = "KELAS" | "ASESMEN" | "TUGAS" | "PROFILE";
 
 function GuruNavIcon({ nav }: { nav: GuruNav }) {
@@ -36,8 +39,6 @@ function TabIcon({ tab }: { tab: AdminTab }) {
   const paths: Record<AdminTab, React.ReactNode> = {
     KELAS: <path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6" />,
     AKUN: <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM19 8v6M22 11h-6" />,
-    SISWA: <path d="M12 3 2 8l10 5 8-4v6M6 10.5V16c0 1.5 3 3 6 3s6-1.5 6-3v-5.5" />,
-    GURU: <path d="M4 19V5a2 2 0 0 1 2-2h11l3 3v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z M9 8h7 M9 12h7 M9 16h4" />,
     LAPORAN: <path d="M6 2h9l5 5v15H6V2Zm9 0v5h5M9 13h6M9 17h4" />,
   };
 
@@ -50,9 +51,7 @@ function TabIcon({ tab }: { tab: AdminTab }) {
 
 const ADMIN_TABS: { key: AdminTab; label: string }[] = [
   { key: "KELAS", label: "Buat Kelas" },
-  { key: "AKUN", label: "Buat Akun" },
-  { key: "SISWA", label: "Daftar Siswa" },
-  { key: "GURU", label: "Daftar Guru" },
+  { key: "AKUN", label: "Daftar Akun" },
   { key: "LAPORAN", label: "Laporan" },
 ];
 
@@ -73,7 +72,7 @@ interface GuruDiKelas {
   mapel: { id: string; nama: string };
 }
 interface FeedItem {
-  tipe: "PENGUMUMAN" | "ASESMEN" | "TUGAS";
+  tipe: "PENGUMUMAN" | "ASESMEN" | "TUGAS" | "MATERI";
   timestamp: string;
   data: any;
 }
@@ -99,6 +98,7 @@ export default function AdminKelasDetailPage() {
 
   const [section, setSection] = useState<"SISWA" | "GURU" | null>(null);
   const [expandedRombel, setExpandedRombel] = useState<string | null>(null);
+  const [feedCategory, setFeedCategory] = useState<FeedCategory>("SEMUA");
 
   const [showEditKelas, setShowEditKelas] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -199,6 +199,7 @@ export default function AdminKelasDetailPage() {
     acc[label].push(gm);
     return acc;
   }, {});
+  const visibleFeed = kelas.feed.filter((item) => feedCategory === "SEMUA" || item.tipe === feedCategory);
 
   return (
     <div className="flex min-h-screen flex-col bg-[#FFFFFF]" style={{ fontFamily: "Inter, sans-serif" }}>
@@ -225,7 +226,7 @@ export default function AdminKelasDetailPage() {
                 <p className="text-xs text-[#9CA3AF]">{me.role}</p>
               </div>
             )}
-            <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-[#E5E7EB] text-xs font-bold text-[#6B7280]">
+            <div className="hidden h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-[#E5E7EB] text-xs font-bold text-[#6B7280] sm:flex">
               {me?.fotoProfil ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={me.fotoProfil} alt={me.nama} className="h-full w-full object-cover" />
@@ -302,43 +303,9 @@ export default function AdminKelasDetailPage() {
         </div>
       </aside>
 
-      <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-6 sm:px-6">
-        <div className="overflow-hidden rounded-2xl text-white shadow-sm" style={{ background: BRAND }}>
-          <div className="flex flex-wrap items-start justify-between gap-3 p-5">
-            <div>
-              <p className="text-lg font-bold">{kelas.judul}</p>
-              {kelas.deskripsi && <p className="mt-1 text-sm text-white/85">&quot;{kelas.deskripsi}&quot;</p>}
-            </div>
-            <div className="rounded-xl bg-[#FFFFFF]/15 px-3 py-2 text-right">
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-white/80">Kode Kelas</p>
-              <p className="text-sm font-bold">{kelas.inviteToken}</p>
-              <button
-                onClick={handleCopyInvite}
-                className="mt-1 flex items-center gap-1 text-[11px] font-medium text-white/90 hover:underline"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-3 w-3">
-                  <rect x="9" y="9" width="12" height="12" rx="2" />
-                  <path d="M5 15V5a2 2 0 0 1 2-2h10" />
-                </svg>
-                {copied ? "Tersalin!" : "Salin Link Undangan"}
-              </button>
-            </div>
-          </div>
-          <div className="border-t border-white/20 px-5 py-2.5">
-            {canManageClass && <button onClick={() => setShowEditKelas(true)} className="cursor-pointer text-xs font-semibold text-white hover:underline">
-              Edit Kelas
-            </button>}
-          </div>
-        </div>
-
-        <div className="mt-4 flex flex-wrap gap-2">
-          <Button variant={section === "SISWA" ? "primary" : "outline"} onClick={() => setSection(section === "SISWA" ? null : "SISWA")}>
-            Lihat Deretan Siswa
-          </Button>
-          <Button variant={section === "GURU" ? "primary" : "outline"} onClick={() => setSection(section === "GURU" ? null : "GURU")}>
-            Lihat Deretan Guru
-          </Button>
-        </div>
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6">
+        <ClassDetailOverview title={kelas.judul} description={kelas.deskripsi} studentCount={kelas.siswa.length} teacherCount={kelas.guruMapel.length} inviteToken={kelas.inviteToken} copied={copied} onCopyInvite={handleCopyInvite} onEdit={canManageClass ? () => setShowEditKelas(true) : undefined} />
+        <ClassDirectoryNavigation section={section} onChange={setSection} studentCount={kelas.siswa.length} teacherCount={kelas.guruMapel.length} />
 
         {section === "SISWA" && (
           <div className="mt-4">
@@ -471,17 +438,21 @@ export default function AdminKelasDetailPage() {
         {section === null && (
           <div className="mt-6">
             <p className="mb-3 text-sm font-bold text-[#111827]">Aktivitas Hari Ini</p>
+            <FeedCategoryFilter value={feedCategory} onChange={setFeedCategory} />
             <div className="space-y-3">
               {kelas.feed.length === 0 ? (
                 <p className="text-sm text-[#9CA3AF]">Belum ada aktivitas di kelas ini.</p>
+              ) : visibleFeed.length === 0 ? (
+                <p className="text-sm text-[#9CA3AF]">Tidak ada aktivitas untuk filter ini.</p>
               ) : (
-                kelas.feed.map((item, i) => {
+                visibleFeed.map((item, i) => {
                   if (item.tipe === "PENGUMUMAN") {
                     return <PengumumanCard key={`p-${i}`} data={item.data} currentUserId={me?.id ?? ""} />;
                   }
                   if (item.tipe === "TUGAS") {
                     return <TugasCard key={`t-${i}`} data={item.data} currentUserId={me?.id ?? ""} role="ADMIN" />;
                   }
+                  if (item.tipe === "MATERI") return <MateriCard key={`m-${item.data.id}`} data={item.data as MateriData} />;
                   const a = item.data;
                   return (
                     <div key={`a-${i}`} className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-4 shadow-sm">
@@ -509,6 +480,7 @@ export default function AdminKelasDetailPage() {
         onClose={() => setShowTambahSiswa(false)}
         onSuccess={loadKelas}
         kelasId={kelasId}
+        kelasName={kelas.judul}
         siswaSudahAda={kelas.siswa.map((ks) => ks.siswaId)}
       />}
 
@@ -528,12 +500,14 @@ function ModalTambahSiswa({
   onClose,
   onSuccess,
   kelasId,
+  kelasName,
   siswaSudahAda,
 }: {
   open: boolean;
   onClose: () => void;
   onSuccess: () => void;
   kelasId: string;
+  kelasName: string;
   siswaSudahAda: string[];
 }) {
   const [rombelList, setRombelList] = useState<{ id: string; label: string }[]>([]);
@@ -542,12 +516,14 @@ function ModalTambahSiswa({
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [bulkError, setBulkError] = useState("");
 
   useEffect(() => {
     if (!open) return;
     setRombelId("");
     setKandidat([]);
     setSelectedIds([]);
+    setBulkError("");
     fetch("/api/kelas-referensi")
       .then((res) => res.json())
       .then((data) => setRombelList(data.data ?? []))
@@ -573,6 +549,34 @@ function ModalTambahSiswa({
 
   function toggle(id: string) {
     setSelectedIds((prev) => (prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]));
+  }
+
+  async function handleAddAllRombel() {
+    const rombel = rombelList.find((item) => item.id === rombelId);
+    if (!rombel || kandidat.length === 0) return;
+    if (!(await showConfirm(`Tambahkan semua ${kandidat.length} siswa yang belum tergabung dari rombel ${rombel.label} ke kelas ${kelasName}? Siswa yang sudah ada akan dilewati.`))) return;
+
+    setSubmitting(true);
+    setBulkError("");
+    try {
+      const response = await fetch(`/api/kelas/${encodeURIComponent(kelasId)}/siswa/bulk`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rombelId }),
+      });
+      const payload = await response.json();
+      if (!response.ok) {
+        setBulkError(payload.error ?? "Siswa rombel gagal ditambahkan.");
+        return;
+      }
+      await showAlert(`${payload.data.ditambahkan} siswa ditambahkan; ${payload.data.dilewati} siswa dilewati karena sudah tergabung di ${payload.data.kelas}.`);
+      onSuccess();
+      onClose();
+    } catch {
+      setBulkError("Siswa rombel gagal ditambahkan. Coba lagi.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   async function handleSubmit() {
@@ -607,6 +611,11 @@ function ModalTambahSiswa({
             </option>
           ))}
         </Select>
+
+        <Button className="w-full" variant="outline" loading={submitting} disabled={!rombelId || kandidat.length === 0 || loading || submitting} onClick={() => void handleAddAllRombel()}>
+          Tambah semua siswa rombel{kandidat.length > 0 ? ` (${kandidat.length})` : ""}
+        </Button>
+        {bulkError && <p role="alert" className="text-sm text-red-700">{bulkError}</p>}
 
         {loading && <p className="text-xs text-[#9CA3AF]">Memuat...</p>}
 

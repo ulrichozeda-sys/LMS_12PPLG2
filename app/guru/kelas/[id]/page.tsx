@@ -7,6 +7,11 @@ import Badge from "@/components/ui/Badge";
 import PengumumanCard, { PengumumanData } from "@/components/PengumumanCard";
 import TugasCard, { TugasData } from "@/components/TugasCard";
 import ModalPengumuman from "@/components/ModalPengumuman";
+import MateriCard, { MateriData } from "@/components/MateriCard";
+import FeedCategoryFilter, { FeedCategory } from "@/components/FeedCategoryFilter";
+import { ClassDetailOverview, ClassDirectoryNavigation } from "@/components/ClassDetailOverview";
+import ModalMateri from "@/components/Modalmateri";
+import Modal from "@/components/ui/Modal";
 import ModalBuatAsesmen from "@/components/Modalbuatasesmen";
 import ModalEditAsesmen from "@/components/ModalEditAsesmen";
 import ModalTugas from "@/components/ModalTugas";
@@ -28,7 +33,7 @@ interface GuruDiKelas {
   mapel: { id: string; nama: string };
 }
 interface FeedItem {
-  tipe: "PENGUMUMAN" | "ASESMEN" | "TUGAS";
+  tipe: "PENGUMUMAN" | "ASESMEN" | "TUGAS" | "MATERI";
   timestamp: string;
   data: any;
 }
@@ -51,6 +56,7 @@ export default function GuruKelasDetailPage() {
   const [loading, setLoading] = useState(true);
   const [me, setMe] = useState<{ id: string } | null>(null);
   const [error, setError] = useState("");
+  const [feedCategory, setFeedCategory] = useState<FeedCategory>("SEMUA");
 
   const [section, setSection] = useState<"SISWA" | "GURU" | null>(null);
   const [expandedRombel, setExpandedRombel] = useState<string | null>(null);
@@ -58,6 +64,9 @@ export default function GuruKelasDetailPage() {
 
   const [showModalPengumuman, setShowModalPengumuman] = useState(false);
   const [editingPengumuman, setEditingPengumuman] = useState<PengumumanData | null>(null);
+  const [showContentChooser, setShowContentChooser] = useState(false);
+  const [showModalMateri, setShowModalMateri] = useState(false);
+  const [editingMateri, setEditingMateri] = useState<MateriData | null>(null);
   const [showModalAsesmen, setShowModalAsesmen] = useState(false);
   const [asesmenFixedTipe, setAsesmenFixedTipe] = useState<"KUIS" | "UJIAN">("KUIS");
   const [editingAsesmen, setEditingAsesmen] = useState<AsesmenData | null>(null);
@@ -138,6 +147,17 @@ export default function GuruKelasDetailPage() {
     loadKelas();
   }
 
+  async function handleDeleteMateri(id: string) {
+    if (!(await showConfirm("Hapus materi ini?"))) return;
+    const response = await fetch(`/api/materi/${id}`, { method: "DELETE" });
+    if (!response.ok) {
+      const payload = await response.json().catch(() => null);
+      await showAlert(payload?.error ?? "Materi gagal dihapus.");
+      return;
+    }
+    loadKelas();
+  }
+
   function openBuatTugas() {
     setEditingTugas(null);
     setShowModalTugas(true);
@@ -187,37 +207,12 @@ export default function GuruKelasDetailPage() {
     acc[label].push(gm);
     return acc;
   }, {});
+  const visibleFeed = kelas.feed.filter((item) => feedCategory === "SEMUA" || item.tipe === feedCategory);
 
   return (
     <div>
-      <div className="overflow-hidden rounded-2xl text-white shadow-sm" style={{ background: BRAND }}>
-        <div className="flex flex-wrap items-start justify-between gap-3 p-5">
-          <div>
-            <p className="text-lg font-bold">{kelas.judul}</p>
-            {kelas.deskripsi && <p className="mt-1 text-sm text-white/85">&quot;{kelas.deskripsi}&quot;</p>}
-          </div>
-          <div className="rounded-xl bg-[#FFFFFF]/15 px-3 py-2 text-right">
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-white/80">Kode Kelas</p>
-            <p className="text-sm font-bold">{kelas.inviteToken}</p>
-            <button onClick={handleCopyInvite} className="mt-1 flex items-center gap-1 text-[11px] font-medium text-white/90 hover:underline">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-3 w-3">
-                <rect x="9" y="9" width="12" height="12" rx="2" />
-                <path d="M5 15V5a2 2 0 0 1 2-2h10" />
-              </svg>
-              {copied ? "Tersalin!" : "Salin Link Undangan"}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-4 flex flex-wrap gap-2">
-        <Button variant={section === "SISWA" ? "primary" : "outline"} onClick={() => setSection(section === "SISWA" ? null : "SISWA")}>
-          Lihat Deretan Siswa
-        </Button>
-        <Button variant={section === "GURU" ? "primary" : "outline"} onClick={() => setSection(section === "GURU" ? null : "GURU")}>
-          Lihat Deretan Guru
-        </Button>
-      </div>
+      <ClassDetailOverview title={kelas.judul} description={kelas.deskripsi} studentCount={kelas.siswa.length} teacherCount={kelas.guruMapel.length} inviteToken={kelas.inviteToken} copied={copied} onCopyInvite={handleCopyInvite} />
+      <ClassDirectoryNavigation section={section} onChange={setSection} studentCount={kelas.siswa.length} teacherCount={kelas.guruMapel.length} />
 
       {section === "SISWA" && (
         <div className="mt-4 space-y-3">
@@ -299,9 +294,9 @@ export default function GuruKelasDetailPage() {
 
       {section === null && (
         <>
-          <div className="mt-6 flex flex-wrap gap-2">
-            <Button size="sm" onClick={() => setShowModalPengumuman(true)}>
-              + Buat Pengumuman
+          <div className="mt-6 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+            <Button size="sm" onClick={() => setShowContentChooser(true)}>
+              + Buat Konten
             </Button>
             <Button size="sm" variant="outline" onClick={openBuatQuiz}>
               + Buat Quiz
@@ -314,11 +309,15 @@ export default function GuruKelasDetailPage() {
             </Button>
           </div>
 
-          <div className="mt-4 space-y-3">
+          <div className="mt-4">
+        <FeedCategoryFilter value={feedCategory} onChange={setFeedCategory} />
+        <div className="space-y-3">
         {kelas.feed.length === 0 ? (
           <p className="text-sm text-[#9CA3AF]">Belum ada aktivitas di kelas ini.</p>
+        ) : visibleFeed.length === 0 ? (
+          <p className="text-sm text-[#9CA3AF]">Tidak ada aktivitas untuk filter ini.</p>
         ) : (
-          kelas.feed.map((item, i) => {
+          visibleFeed.map((item, i) => {
             if (item.tipe === "PENGUMUMAN") {
               return (
                 <PengumumanCard
@@ -341,6 +340,17 @@ export default function GuruKelasDetailPage() {
                   onEdit={openEditTugas}
                   onDelete={handleDeleteTugas}
                   onSend={setSendingTugas}
+                />
+              );
+            }
+            if (item.tipe === "MATERI") {
+              return (
+                <MateriCard
+                  key={`m-${item.data.id}`}
+                  data={item.data as MateriData}
+                  isEditable={item.data.guru?.id === me?.id}
+                  onEdit={setEditingMateri}
+                  onDelete={handleDeleteMateri}
                 />
               );
             }
@@ -397,6 +407,7 @@ export default function GuruKelasDetailPage() {
             );
           })
         )}
+        </div>
           </div>
         </>
       )}
@@ -411,6 +422,29 @@ export default function GuruKelasDetailPage() {
         mode={editingPengumuman ? "edit" : "create"}
         initialData={editingPengumuman}
         kelasId={kelasId}
+      />
+
+      <Modal open={showContentChooser} onClose={() => setShowContentChooser(false)} title="Buat Konten">
+        <p className="mb-4 text-sm text-[#64748B]">Pilih jenis konten untuk kelas ini.</p>
+        <div className="grid gap-2 sm:grid-cols-2">
+          <button type="button" onClick={() => { setShowContentChooser(false); setShowModalPengumuman(true); }} className="border border-[#CBD5E1] px-4 py-3 text-left hover:border-[#00D2D9] hover:bg-[#F8FAFC]">
+            <span className="block text-sm font-semibold text-[#111827]">Pengumuman</span>
+            <span className="mt-1 block text-xs text-[#64748B]">Informasi dan lampiran kelas</span>
+          </button>
+          <button type="button" onClick={() => { setShowContentChooser(false); setEditingMateri(null); setShowModalMateri(true); }} className="border border-[#CBD5E1] px-4 py-3 text-left hover:border-[#00D2D9] hover:bg-[#F8FAFC]">
+            <span className="block text-sm font-semibold text-[#111827]">Materi</span>
+            <span className="mt-1 block text-xs text-[#64748B]">Tautan atau file pembelajaran</span>
+          </button>
+        </div>
+      </Modal>
+
+      <ModalMateri
+        open={showModalMateri || !!editingMateri}
+        onClose={() => { setShowModalMateri(false); setEditingMateri(null); }}
+        onSuccess={loadKelas}
+        mode={editingMateri ? "edit" : "create"}
+        initialData={editingMateri}
+        defaultKelasId={kelasId}
       />
 
       <ModalBuatAsesmen

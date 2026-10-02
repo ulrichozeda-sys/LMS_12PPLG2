@@ -7,6 +7,9 @@ import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import PengumumanCard from "@/components/PengumumanCard";
 import TugasCard from "@/components/TugasCard";
+import MateriCard, { MateriData } from "@/components/MateriCard";
+import FeedCategoryFilter, { FeedCategory } from "@/components/FeedCategoryFilter";
+import { ClassDetailOverview, ClassDirectoryNavigation } from "@/components/ClassDetailOverview";
 
 const BRAND = "#00D2D9";
 
@@ -20,7 +23,7 @@ interface GuruDiKelas {
   mapel: { id: string; nama: string };
 }
 interface FeedItem {
-  tipe: "PENGUMUMAN" | "ASESMEN" | "TUGAS";
+  tipe: "PENGUMUMAN" | "ASESMEN" | "TUGAS" | "MATERI";
   timestamp: string;
   data: any;
 }
@@ -42,6 +45,7 @@ export default function SiswaKelasDetailPage() {
   const [loading, setLoading] = useState(true);
   const [me, setMe] = useState<{ id: string } | null>(null);
   const [error, setError] = useState("");
+  const [feedCategory, setFeedCategory] = useState<FeedCategory>("SEMUA");
 
   const [section, setSection] = useState<"SISWA" | "GURU" | null>(null);
   const [expandedRombel, setExpandedRombel] = useState<string | null>(null);
@@ -103,24 +107,12 @@ export default function SiswaKelasDetailPage() {
     acc[label].push(gm);
     return acc;
   }, {});
+  const visibleFeed = kelas.feed.filter((item) => feedCategory === "SEMUA" || item.tipe === feedCategory);
 
   return (
     <div>
-      <div className="overflow-hidden rounded-2xl text-white shadow-sm" style={{ background: BRAND }}>
-        <div className="p-5">
-          <p className="text-lg font-bold">{kelas.judul}</p>
-          {kelas.deskripsi && <p className="mt-1 text-sm text-white/85">&quot;{kelas.deskripsi}&quot;</p>}
-        </div>
-      </div>
-
-      <div className="mt-4 flex flex-wrap gap-2">
-        <Button variant={section === "SISWA" ? "primary" : "outline"} onClick={() => setSection(section === "SISWA" ? null : "SISWA")}>
-          Lihat Deretan Siswa
-        </Button>
-        <Button variant={section === "GURU" ? "primary" : "outline"} onClick={() => setSection(section === "GURU" ? null : "GURU")}>
-          Lihat Deretan Guru
-        </Button>
-      </div>
+      <ClassDetailOverview title={kelas.judul} description={kelas.deskripsi} studentCount={kelas.siswa.length} teacherCount={kelas.guruMapel.length} />
+      <ClassDirectoryNavigation section={section} onChange={setSection} studentCount={kelas.siswa.length} teacherCount={kelas.guruMapel.length} />
 
       {section === "SISWA" && (
         <div className="mt-4 space-y-3">
@@ -207,11 +199,14 @@ export default function SiswaKelasDetailPage() {
       {section === null && (
         <div className="mt-6">
           <p className="mb-3 text-sm font-bold text-[#111827]">Aktivitas Kelas</p>
+          <FeedCategoryFilter value={feedCategory} onChange={setFeedCategory} />
           <div className="space-y-3">
             {kelas.feed.length === 0 ? (
               <p className="text-sm text-[#9CA3AF]">Belum ada aktivitas di kelas ini.</p>
+            ) : visibleFeed.length === 0 ? (
+              <p className="text-sm text-[#9CA3AF]">Tidak ada aktivitas untuk filter ini.</p>
             ) : (
-              kelas.feed.map((item, i) => {
+              visibleFeed.map((item, i) => {
                 if (item.tipe === "PENGUMUMAN") {
                   // gak dikasih onEdit/onDelete -> tombol itu otomatis gak muncul buat siswa
                   return <PengumumanCard key={`p-${i}`} data={item.data} currentUserId={me?.id ?? ""} />;
@@ -219,6 +214,7 @@ export default function SiswaKelasDetailPage() {
                 if (item.tipe === "TUGAS") {
                   return <TugasCard key={`t-${i}`} data={item.data} currentUserId={me?.id ?? ""} role="SISWA" />;
                 }
+                if (item.tipe === "MATERI") return <MateriCard key={`m-${item.data.id}`} data={item.data as MateriData} />;
                 // ASESMEN: murni tampilan, gak diklik dari feed -- siswa ngerjain dari tab Asesmen
                 const a = item.data;
                 return (

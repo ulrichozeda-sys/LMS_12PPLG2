@@ -123,6 +123,10 @@ export default function GuruJawabanPage() {
             judulAsesmen={hasil.asesmen.judul}
             nilaiList={selectedRows}
             onReset={loadData}
+            kelasId={selectedKelasId}
+            namaKelas={kelasTujuan.find(({ kelas }) => kelas.id === selectedKelasId)?.kelas.judul}
+            tipeAsesmen={hasil.asesmen.tipe}
+            namaMapel={hasil.asesmen.mapel ?? "-"}
           />
         </div>
       )}

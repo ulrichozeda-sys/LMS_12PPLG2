@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import Badge from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
+import MateriCard, { MateriData } from "@/components/MateriCard";
+import PengumumanCard, { PengumumanData } from "@/components/PengumumanCard";
 
 type DashboardData = {
   siswa: {
@@ -60,6 +62,8 @@ type DashboardData = {
     mapel: string;
     submittedAt: string | null;
   }>;
+  pengumumanKelas: Array<PengumumanData & { kelas: { id: string; judul: string } }>;
+  materiHariIni: MateriData[];
 };
 
 function StatCard({ label, value, helper }: { label: string; value: string; helper: string }) {
@@ -154,6 +158,39 @@ export default function SiswaDashboardPage() {
         <h1 className="mt-2 text-2xl font-bold">Selamat Datang, {data.siswa.nama}</h1>
         <p className="mt-2 text-sm text-white/85">{data.siswa.kelasJurusan}</p>
       </div>
+
+      <section>
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+          <h2 className="text-sm font-bold text-[#111827]">Pengumuman Kelas</h2>
+          <Link href="/siswa/kelas" className="text-xs font-semibold text-[#008C91] hover:underline">Lihat kelas</Link>
+        </div>
+        {data.pengumumanKelas.length === 0 ? (
+          <p className="border-t border-[#E2E8F0] py-4 text-sm text-[#64748B]">Belum ada pengumuman dari kelas yang diikuti.</p>
+        ) : (
+          <div className="space-y-3">
+            {data.pengumumanKelas.map((item) => (
+              <div key={item.id}>
+                <p className="mb-1 text-xs font-semibold text-[#64748B]">{item.kelas.judul}</p>
+                <PengumumanCard data={item} currentUserId={data.siswa.id} />
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section>
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+          <h2 className="text-sm font-bold text-[#111827]">Materi Hari Ini</h2>
+          <Link href="/siswa/materi" className="text-xs font-semibold text-[#008C91] hover:underline">Lihat semua materi</Link>
+        </div>
+        {data.materiHariIni.length === 0 ? (
+          <p className="border-t border-[#E2E8F0] py-4 text-sm text-[#64748B]">Belum ada materi baru hari ini.</p>
+        ) : (
+          <div className="space-y-3">
+            {data.materiHariIni.map((materi) => <MateriCard key={materi.id} data={materi} />)}
+          </div>
+        )}
+      </section>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Total Kelas" value={String(data.statistik.totalKelas)} helper="Kelas yang diikuti" />

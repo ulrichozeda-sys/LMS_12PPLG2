@@ -8,16 +8,18 @@ import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import PengumumanCard from "@/components/PengumumanCard";
 import TugasCard from "@/components/TugasCard";
+import MateriCard, { MateriData } from "@/components/MateriCard";
+import FeedCategoryFilter, { FeedCategory } from "@/components/FeedCategoryFilter";
+import { ClassDetailOverview, ClassDirectoryNavigation } from "@/components/ClassDetailOverview";
 
 const BRAND = "#00D2D9";
-type KurikulumTab = "DASHBOARD" | "KELAS" | "SISWA" | "GURU" | "ASESMEN" | "PERFORMA";
+type KurikulumTab = "DASHBOARD" | "KELAS" | "AKUN" | "ASESMEN" | "PERFORMA";
 
 function TabIcon({ tab }: { tab: KurikulumTab }) {
   const paths: Record<KurikulumTab, React.ReactNode> = {
     DASHBOARD: <path d="M4 13h6V4H4v9Zm0 7h6v-4H4v4Zm10 0h6v-9h-6v9Zm0-16v4h6V4h-6Z" />,
     KELAS: <path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6" />,
-    SISWA: <path d="M12 3 2 8l10 5 8-4v6M6 10.5V16c0 1.5 3 3 6 3s6-1.5 6-3v-5.5" />,
-    GURU: <path d="M4 19V5a2 2 0 0 1 2-2h11l3 3v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z M9 8h7 M9 12h7 M9 16h4" />,
+    AKUN: <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM19 8v6M22 11h-6" />,
     ASESMEN: <path d="M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm3 4h4m-4 4h4m-4 4h4" />,
     PERFORMA: <path d="M4 19V5M4 19h17M8 16v-4M13 16V8M18 16V4" />,
   };
@@ -34,7 +36,7 @@ interface GuruDiKelas {
   mapel: { id: string; nama: string };
 }
 interface FeedItem {
-  tipe: "PENGUMUMAN" | "ASESMEN" | "TUGAS";
+  tipe: "PENGUMUMAN" | "ASESMEN" | "TUGAS" | "MATERI";
   timestamp: string;
   data: any;
 }
@@ -50,8 +52,7 @@ interface KelasDetail {
 const TABS: { key: KurikulumTab; label: string; href: string }[] = [
   { key: "DASHBOARD", label: "Dashboard", href: "/kurikulum" },
   { key: "KELAS", label: "Kelas", href: "/kurikulum?tab=KELAS" },
-  { key: "SISWA", label: "Daftar Siswa", href: "/kurikulum?tab=SISWA" },
-  { key: "GURU", label: "Daftar Guru", href: "/kurikulum?tab=GURU" },
+  { key: "AKUN", label: "Daftar Akun", href: "/kurikulum?tab=AKUN" },
   { key: "ASESMEN", label: "Asesmen", href: "/kurikulum?tab=ASESMEN" },
   { key: "PERFORMA", label: "Performa Akademik", href: "/kurikulum?tab=PERFORMA" },
 ];
@@ -68,6 +69,7 @@ export default function KurikulumKelasDetailPage() {
   const [section, setSection] = useState<"SISWA" | "GURU" | null>(null);
   const [expandedRombel, setExpandedRombel] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [feedCategory, setFeedCategory] = useState<FeedCategory>("SEMUA");
 
   useEffect(() => {
     fetch("/api/me").then((r) => r.json()).then((d) => setMe(d.data)).catch(() => {});
@@ -127,6 +129,7 @@ export default function KurikulumKelasDetailPage() {
     acc[label].push(gm);
     return acc;
   }, {});
+  const visibleFeed = kelas.feed.filter((item) => feedCategory === "SEMUA" || item.tipe === feedCategory);
 
   return (
     <div className="flex min-h-screen flex-col bg-[#FFFFFF]" style={{ fontFamily: "Inter, sans-serif" }}>
@@ -140,7 +143,7 @@ export default function KurikulumKelasDetailPage() {
           </div>
           <div className="flex items-center gap-3">
             {me && <div className="hidden text-right sm:block"><p className="text-sm font-semibold text-[#111827]">{me.nama}</p><p className="text-xs text-[#9CA3AF]">{me.role}</p></div>}
-            <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-[#E5E7EB] text-xs font-bold text-[#6B7280]">
+            <div className="hidden h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-[#E5E7EB] text-xs font-bold text-[#6B7280] sm:flex">
               {me?.fotoProfil ? <img src={me.fotoProfil} alt={me.nama} className="h-full w-full object-cover" /> : me?.nama?.charAt(0) ?? "K"}
             </div>
             <Button size="sm" variant="outline" onClick={() => router.push("/kurikulum")}>Back</Button>
@@ -163,18 +166,9 @@ export default function KurikulumKelasDetailPage() {
         </div>
       </aside>
 
-      <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-6 sm:px-6">
-        <div className="overflow-hidden rounded-2xl text-white shadow-sm" style={{ background: BRAND }}>
-          <div className="p-5">
-            <p className="text-lg font-bold">{kelas.judul}</p>
-            {kelas.deskripsi && <p className="mt-1 text-sm text-white/85">&quot;{kelas.deskripsi}&quot;</p>}
-          </div>
-        </div>
-
-        <div className="mt-4 flex flex-wrap gap-2">
-          <Button variant={section === "SISWA" ? "primary" : "outline"} onClick={() => setSection(section === "SISWA" ? null : "SISWA")}>Lihat Deretan Siswa</Button>
-          <Button variant={section === "GURU" ? "primary" : "outline"} onClick={() => setSection(section === "GURU" ? null : "GURU")}>Lihat Deretan Guru</Button>
-        </div>
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6">
+        <ClassDetailOverview title={kelas.judul} description={kelas.deskripsi} studentCount={kelas.siswa.length} teacherCount={kelas.guruMapel.length} />
+        <ClassDirectoryNavigation section={section} onChange={setSection} studentCount={kelas.siswa.length} teacherCount={kelas.guruMapel.length} />
 
         {section === "SISWA" && (
           <div className="mt-4 space-y-3">
@@ -227,10 +221,13 @@ export default function KurikulumKelasDetailPage() {
         {section === null && (
           <div className="mt-6">
             <p className="mb-3 text-sm font-bold text-[#111827]">Aktivitas Kelas</p>
+            <FeedCategoryFilter value={feedCategory} onChange={setFeedCategory} />
             <div className="space-y-3">
-              {kelas.feed.length === 0 ? <p className="text-sm text-[#9CA3AF]">Belum ada aktivitas di kelas ini.</p> : kelas.feed.map((item, i) => {
+              {kelas.feed.length === 0 ? <p className="text-sm text-[#9CA3AF]">Belum ada aktivitas di kelas ini.</p> : visibleFeed.length === 0 ? <p className="text-sm text-[#9CA3AF]">Tidak ada aktivitas untuk filter ini.</p> : visibleFeed.map((item, i) => {
                 if (item.tipe === "PENGUMUMAN") return <PengumumanCard key={`p-${i}`} data={item.data} currentUserId={me?.id ?? ""} />;
                 if (item.tipe === "TUGAS") return <TugasCard key={`t-${i}`} data={item.data} currentUserId={me?.id ?? ""} role="KURIKULUM" />;
+                if (item.tipe === "MATERI") return <MateriCard key={`m-${item.data.id}`} data={item.data as MateriData} />;
+                if (item.tipe !== "ASESMEN") return null;
                 const a = item.data;
                 return (
                   <button

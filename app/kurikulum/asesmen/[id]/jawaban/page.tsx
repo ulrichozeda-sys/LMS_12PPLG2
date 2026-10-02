@@ -120,7 +120,7 @@ export default function KurikulumJawabanPage() {
 
       {selectedKelasId && (
         <div className="mt-6">
-          <TabelNilai asesmenId={asesmenId} judulAsesmen={hasil.asesmen.judul} nilaiList={selectedRows} readOnly basePath="/kurikulum/asesmen" />
+          <TabelNilai asesmenId={asesmenId} judulAsesmen={hasil.asesmen.judul} nilaiList={selectedRows} readOnly basePath="/kurikulum/asesmen" kelasId={selectedKelasId} namaKelas={kelasTujuan.find(({ kelas }) => kelas.id === selectedKelasId)?.kelas.judul} tipeAsesmen={hasil.asesmen.tipe} namaMapel={hasil.asesmen.mapel ?? "-"} />
         </div>
       )}
     </div></KurikulumShell>

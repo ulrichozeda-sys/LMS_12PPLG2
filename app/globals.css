@@ -197,3 +197,135 @@ body {
 .print-only-card {
   display: none;
 }
+
+.score-print-root {
+  display: none;
+}
+
+@page score-report {
+  size: A4 portrait;
+  margin: 12mm;
+}
+
+@media print {
+  body.score-report-printing {
+    width: auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  .score-print-hidden {
+    display: none !important;
+  }
+
+  .score-print-context {
+    width: 100% !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: #FFFFFF !important;
+    box-shadow: none !important;
+  }
+
+  .score-print-root {
+    display: block !important;
+    page: score-report;
+    color: #111827;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 8pt;
+  }
+
+  .score-print-header {
+    margin-bottom: 7mm;
+    text-align: center;
+  }
+
+  .score-print-header h1 {
+    margin: 0;
+    font-size: 18pt;
+    font-weight: 700;
+  }
+
+  .score-print-assessment {
+    margin-top: 3mm;
+    font-size: 12pt;
+    font-weight: 700;
+  }
+
+  .score-print-header dl {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 3mm;
+    margin: 6mm 0 0;
+    text-align: left;
+  }
+
+  .score-print-header dt {
+    color: #475569;
+    font-size: 7pt;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .score-print-header dd {
+    margin: 1mm 0 0;
+    overflow-wrap: anywhere;
+    font-size: 8pt;
+  }
+
+  .score-print-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 7pt;
+  }
+
+  .score-print-table th,
+  .score-print-table td {
+    border: 0.25mm solid #94A3B8;
+    padding: 1.5mm 1mm;
+    overflow-wrap: anywhere;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .score-print-table th {
+    background: #EAF3F3 !important;
+    font-weight: 700;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .score-print-table thead {
+    display: table-header-group;
+  }
+
+  .score-print-table tr {
+    break-inside: avoid;
+  }
+
+  .score-print-signatures {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16mm;
+    margin-top: 18mm;
+    text-align: center;
+  }
+
+  .score-print-signatures p {
+    min-height: 8mm;
+    margin: 0;
+    font-weight: 700;
+  }
+
+  .score-print-signatures span {
+    display: block;
+    height: 18mm;
+    border-bottom: 0.25mm solid #334155;
+  }
+}

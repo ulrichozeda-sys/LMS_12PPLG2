@@ -120,7 +120,7 @@ export default function KepsekJawabanPage() {
 
       {selectedKelasId && (
         <div className="mt-6">
-          <TabelNilai asesmenId={asesmenId} judulAsesmen={hasil.asesmen.judul} nilaiList={selectedRows} readOnly basePath="/kepsek/asesmen" />
+          <TabelNilai asesmenId={asesmenId} judulAsesmen={hasil.asesmen.judul} nilaiList={selectedRows} readOnly basePath="/kepsek/asesmen" kelasId={selectedKelasId} namaKelas={kelasTujuan.find(({ kelas }) => kelas.id === selectedKelasId)?.kelas.judul} tipeAsesmen={hasil.asesmen.tipe} namaMapel={hasil.asesmen.mapel ?? "-"} />
         </div>
       )}
     </div></KepsekShell>

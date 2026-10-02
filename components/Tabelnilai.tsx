@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Button from "./ui/Button";
 import Badge from "./ui/Badge";
@@ -25,11 +25,17 @@ interface TabelNilaiProps {
   onReset?: () => void;
   readOnly?: boolean;
   basePath?: string;
+  kelasId?: string;
+  namaKelas?: string;
+  tipeAsesmen?: "KUIS" | "UJIAN";
+  namaMapel?: string;
 }
 
-export default function TabelNilai({ asesmenId, judulAsesmen, nilaiList, onReset, readOnly = false, basePath = "/guru/asesmen" }: TabelNilaiProps) {
+export default function TabelNilai({ asesmenId, judulAsesmen, nilaiList, onReset, readOnly = false, basePath = "/guru/asesmen", kelasId, namaKelas = "-", tipeAsesmen, namaMapel = "-" }: TabelNilaiProps) {
   const router = useRouter();
+  const printRootRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
   const [resettingSubmissionId, setResettingSubmissionId] = useState<string | null>(null);
   const [resetRequest, setResetRequest] = useState<{
     type: "asesmen" | "nilai";
@@ -40,7 +46,9 @@ export default function TabelNilai({ asesmenId, judulAsesmen, nilaiList, onReset
   async function handleDownload() {
     setDownloading(true);
     try {
-      const res = await fetch(`/api/asesmen/${asesmenId}/nilai?format=xlsx`);
+      const query = new URLSearchParams({ format: "xlsx" });
+      if (kelasId) query.set("kelasId", kelasId);
+      const res = await fetch(`/api/asesmen/${asesmenId}/nilai?${query.toString()}`);
       if (!res.ok) throw new Error();
 
       const blob = await res.blob();
@@ -57,6 +65,39 @@ export default function TabelNilai({ asesmenId, judulAsesmen, nilaiList, onReset
     } finally {
       setDownloading(false);
     }
+  }
+
+  function handlePrintPdf() {
+    const printRoot = printRootRef.current;
+    if (!printRoot) return;
+
+    const changedElements: HTMLElement[] = [];
+    let current: HTMLElement | null = printRoot;
+    while (current && current !== document.body) {
+      current.classList.add("score-print-context");
+      changedElements.push(current);
+      const parent: HTMLElement | null = current.parentElement;
+      if (parent) {
+        for (const sibling of Array.from(parent.children)) {
+          if (sibling !== current && sibling instanceof HTMLElement) {
+            sibling.classList.add("score-print-hidden");
+            changedElements.push(sibling);
+          }
+        }
+      }
+      current = parent;
+    }
+
+    document.body.classList.add("score-report-printing");
+    const cleanup = () => {
+      document.body.classList.remove("score-report-printing");
+      changedElements.forEach((element) => {
+        element.classList.remove("score-print-context", "score-print-hidden");
+      });
+    };
+    window.addEventListener("afterprint", cleanup, { once: true });
+    setShowExportModal(false);
+    window.print();
   }
 
   async function handleResetSubmission(submissionId: string) {
@@ -113,8 +154,8 @@ export default function TabelNilai({ asesmenId, judulAsesmen, nilaiList, onReset
       <div className="flex items-center justify-between">
         <p className="text-sm font-bold text-[#111827]">Nilai Siswa</p>
         <div className="flex gap-2">
-          <Button size="sm" loading={downloading} onClick={handleDownload}>
-            Generate Excel
+          <Button size="sm" onClick={() => setShowExportModal(true)}>
+            Generate Nilai
           </Button>
         </div>
       </div>
@@ -215,6 +256,49 @@ export default function TabelNilai({ asesmenId, judulAsesmen, nilaiList, onReset
           </Button>
         </div>
       </Modal>
+
+      <Modal open={showExportModal} onClose={() => setShowExportModal(false)} title="Generate Nilai">
+        <p className="text-sm text-[#475569]">Pilih format ekspor untuk kelas {namaKelas}.</p>
+        <div className="mt-5 grid gap-2 sm:grid-cols-2">
+          <Button loading={downloading} onClick={() => { setShowExportModal(false); void handleDownload(); }}>
+            Excel (.xlsx)
+          </Button>
+          <Button variant="outline" onClick={handlePrintPdf}>
+            PDF
+          </Button>
+        </div>
+      </Modal>
+
+      <div ref={printRootRef} className="score-print-root" aria-hidden="true">
+        <header className="score-print-header">
+          <h1>Rekap Nilai</h1>
+          <p className="score-print-assessment">{judulAsesmen}</p>
+          <p>{tipeAsesmen === "KUIS" ? "Kuis" : tipeAsesmen === "UJIAN" ? "Ujian Online" : "Asesmen"}</p>
+          <dl>
+            <div><dt>Mata Pelajaran</dt><dd>{namaMapel}</dd></div>
+            <div><dt>Kelas</dt><dd>{namaKelas}</dd></div>
+            <div><dt>Tanggal Cetak</dt><dd>{new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}</dd></div>
+          </dl>
+        </header>
+        <table className="score-print-table">
+          <thead>
+            <tr>
+              <th>No</th><th>Nama Siswa</th><th>NIS</th><th>Kelas/Jurusan</th><th>Soal Terjawab</th><th>Nilai Objektif</th><th>Nilai Akhir</th>
+            </tr>
+          </thead>
+          <tbody>
+            {nilaiList.map((row, index) => (
+              <tr key={row.submissionId}>
+                <td>{index + 1}</td><td>{row.nama}</td><td>{row.nis}</td><td>{row.kelasReferensi}</td><td>{row.totalSoalTerjawab}</td><td>{row.nilaiObjektif}</td><td>{row.nilaiAkhir ?? "-"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div className="score-print-signatures">
+          <div><p>Kepala Sekolah</p><span /></div>
+          <div><p>Wakil Kepala Sekolah Bidang Kurikulum</p><span /></div>
+        </div>
+      </div>
     </div>
   );
 }
