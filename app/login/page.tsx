@@ -3,9 +3,19 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
-
-const BRAND = "#00D2D9";
+import { Check } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Logo } from "@/components/shared/logo";
+import { ThemeToggle } from "@/components/shared/theme-toggle";
+import { SiteFooter } from "@/components/shared/site-footer";
+import {
+  Field,
+  FormError,
+  InlineButton,
+  PrimaryButton,
+  TextArea,
+  TextInput,
+} from "@/components/shared/form-controls";
 
 type Portal = "ADMIN" | "PETUGAS" | "SISWA";
 type View = "LOGIN" | "LAPOR" | "OTP" | "PASSWORD_BARU" | "SUKSES";
@@ -18,6 +28,15 @@ const PORTAL_CONFIG: Record<
   PETUGAS: { label: "Petugas", title: "Login Sebagai Petugas", identifierLabel: "NIK", identifierPlaceholder: "Nik" },
   SISWA: { label: "Siswa", title: "Login Sebagai Siswa", identifierLabel: "NIS", identifierPlaceholder: "Nis" },
 };
+
+function ViewHeading({ eyebrow, title }: { eyebrow: string; title: string }) {
+  return (
+    <div>
+      <p className="text-xs font-medium text-muted-foreground">{eyebrow}</p>
+      <h2 className="mt-1 text-sm font-semibold leading-snug">{title}</h2>
+    </div>
+  );
+}
 
 export default function LoginPage() {
   const router = useRouter();
@@ -186,343 +205,294 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FFFFFF]" style={{ fontFamily: "Inter, sans-serif" }}>
-      {/* NAVBAR */}
-      <header className="border-b border-black/5 bg-[#FFFFFF]">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="relative h-8 w-8 flex-shrink-0">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#00D2D9] text-xs font-black text-white">S</div>
-            </div>
-            <span className="text-lg font-bold tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-              MyClass
-            </span>
-          </Link>
-
+    <div className="flex min-h-dvh flex-col bg-background text-foreground">
+      {/* HEADER */}
+      <header className="border-b">
+        <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
           <Link
             href="/"
-            className="rounded-full px-6 py-2 text-sm font-semibold text-white transition-transform hover:scale-105"
-            style={{ background: BRAND }}
+            aria-label="MyClass, beranda"
+            className="rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
-            Back
+            <Logo />
           </Link>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Link
+              href="/"
+              className="inline-flex h-10 items-center rounded-md border px-3 text-sm font-medium transition-colors duration-150 hover:bg-accent outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            >
+              Kembali
+            </Link>
+          </div>
         </div>
       </header>
 
-      {/* HERO + CARD */}
-      <section
-        className="relative flex min-h-[640px] items-center justify-center bg-cover bg-center px-6 py-16"
-        style={{
-          backgroundImage:
-            "linear-gradient(180deg, rgba(17,24,39,0.4), rgba(17,24,39,0.58)), url('/hero-sekolah.svg')",
-          backgroundColor: "#1F2937",
-        }}
-      >
-        <h1
-          className="absolute top-16 text-center text-2xl font-bold text-white md:text-3xl opacity-0 animate-[fadeUp_0.6s_ease-out_forwards]"
-          style={{ fontFamily: "'Space Grotesk', sans-serif", animationDelay: "0.1s" }}
-        >
-          Selamat Datang di MyClass
-        </h1>
-
-        <div className="mt-20 w-full max-w-sm rounded-2xl bg-[#FFFFFF] p-8 shadow-2xl opacity-0 animate-[fadeUp_0.6s_ease-out_forwards]">
-          {/* header logo + tagline, tampil di semua view */}
-          <div className="flex flex-col items-center text-center">
-            <div className="relative h-8 w-8 flex-shrink-0">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#00D2D9] text-xs font-black text-white">S</div>
-            </div>
-            <p className="mt-2 text-base font-bold" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-              MyClass
+      {/* KONTEN */}
+      <main className="flex flex-1 items-center justify-center px-4 py-10 sm:px-6">
+        <div className="w-full max-w-sm">
+          <div className="mb-5">
+            <h1 className="text-xl font-semibold tracking-tight">Selamat Datang di MyClass</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Ayo Belajar Lebih Cerdas Bersama MyClass
             </p>
-            <p className="mt-1 text-sm font-semibold text-[#111827]">Ayo Belajar Lebih Cerdas Bersama MyClass</p>
           </div>
 
-          {/* ============ VIEW: LOGIN ============ */}
-          {view === "LOGIN" && (
-            <>
-              <p className="mt-6 text-xs font-semibold text-[#6B7280]">Portal Administrasi</p>
-              <div className="mt-2 grid grid-cols-3 gap-2">
-                {(Object.keys(PORTAL_CONFIG) as Portal[]).map((key) => (
-                  <button
-                    key={key}
-                    type="button"
-                    onClick={() => handlePortalChange(key)}
-                    className="cursor-pointer rounded-lg border py-2 text-sm font-medium transition-colors"
-                    style={
-                      portal === key
-                        ? { background: BRAND, borderColor: BRAND, color: "white" }
-                        : { borderColor: "#D1D5DB", color: "#374151" }
-                    }
-                  >
-                    {PORTAL_CONFIG[key].label}
-                  </button>
-                ))}
-              </div>
-
-              <p className="mt-6 text-xs text-[#9CA3AF]">Login Sebagai {config.label}</p>
-              <p className="text-sm font-bold text-[#111827]">{config.title}</p>
-
-              <form onSubmit={handleLoginSubmit} className="mt-4 space-y-3">
-                <input
-                  type={portal === "ADMIN" ? "email" : "text"}
-                  required
-                  placeholder={config.identifierPlaceholder}
-                  value={loginIdentifier}
-                  onChange={(e) => setLoginIdentifier(e.target.value)}
-                  className="w-full rounded-lg border border-[#D1D5DB] px-4 py-2.5 text-sm outline-none focus:border-[#00D2D9]"
-                />
-                <input
-                  type="password"
-                  required
-                  placeholder="Password"
-                  value={loginPassword}
-                  onChange={(e) => setLoginPassword(e.target.value)}
-                  className="w-full rounded-lg border border-[#D1D5DB] px-4 py-2.5 text-sm outline-none focus:border-[#00D2D9]"
-                />
-
-                {error && <p className="text-xs font-medium text-red-500">{error}</p>}
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full rounded-lg py-2.5 text-sm font-semibold text-white transition-transform hover:scale-[1.02] disabled:opacity-60"
-                  style={{ background: BRAND }}
+          <div className="rounded-lg border bg-card p-6 text-card-foreground">
+            {/* ============ VIEW: LOGIN ============ */}
+            {view === "LOGIN" && (
+              <>
+                <p className="text-xs font-medium text-muted-foreground">Portal Administrasi</p>
+                <div
+                  role="group"
+                  aria-label="Pilih portal"
+                  className="mt-2 grid grid-cols-3 gap-1 rounded-md border bg-muted p-1"
                 >
-                  {loading ? "Memproses..." : "Masuk"}
-                </button>
-
-                {portal !== "ADMIN" && (
-                  <p className="text-center text-xs text-[#9CA3AF]">
-                    Lupa Password?{" "}
+                  {(Object.keys(PORTAL_CONFIG) as Portal[]).map((key) => (
                     <button
+                      key={key}
                       type="button"
-                      onClick={() => {
-                        resetLupaState();
-                        setView("LAPOR");
-                      }}
-                      className="cursor-pointer font-semibold hover:underline"
-                      style={{ color: BRAND }}
+                      aria-pressed={portal === key}
+                      onClick={() => handlePortalChange(key)}
+                      className={cn(
+                        "h-9 cursor-pointer rounded-sm text-sm font-medium transition-colors duration-150 outline-none",
+                        "focus-visible:ring-2 focus-visible:ring-ring",
+                        portal === key
+                          ? "bg-brand text-brand-foreground"
+                          : "text-muted-foreground hover:text-foreground",
+                      )}
                     >
-                      Ubah Password
+                      {PORTAL_CONFIG[key].label}
                     </button>
-                  </p>
-                )}
-              </form>
-            </>
-          )}
-
-          {/* ============ VIEW: LAPOR (step 1) ============ */}
-          {view === "LAPOR" && (
-            <>
-              <p className="mt-6 text-xs font-semibold text-[#6B7280]">Buat Laporan Password</p>
-              <p className="text-sm font-bold text-[#111827]">
-                Gunakan NIS/NIK, email, tanggal lahir, dan alasan untuk ubah password
-              </p>
-
-              {info ? (
-                <div className="mt-4 rounded-lg bg-[#F0FDF4] p-4 text-center">
-                  <p className="text-sm text-[#166534]">{info}</p>
-                  <button
-                    type="button"
-                    onClick={kembaliKeLogin}
-                    className="mt-3 cursor-pointer text-xs font-semibold hover:underline"
-                    style={{ color: BRAND }}
-                  >
-                    Kembali ke Login
-                  </button>
-                </div>
-              ) : (
-                <form onSubmit={handleLaporSubmit} className="mt-4 space-y-3">
-                  <input
-                    required
-                    placeholder="NIS / NIK"
-                    value={identifier}
-                    onChange={(e) => setIdentifier(e.target.value)}
-                    className="w-full rounded-lg border border-[#D1D5DB] px-4 py-2.5 text-sm outline-none focus:border-[#00D2D9]"
-                  />
-                  <input
-                    type="email"
-                    required
-                    placeholder="Email"
-                    value={lupaEmail}
-                    onChange={(e) => setLupaEmail(e.target.value)}
-                    className="w-full rounded-lg border border-[#D1D5DB] px-4 py-2.5 text-sm outline-none focus:border-[#00D2D9]"
-                  />
-                  <input
-                    type="date"
-                    required
-                    value={tanggalLahir}
-                    onChange={(e) => setTanggalLahir(e.target.value)}
-                    className="w-full rounded-lg border border-[#D1D5DB] px-4 py-2.5 text-sm outline-none focus:border-[#00D2D9]"
-                  />
-                  <textarea
-                    required
-                    placeholder="Alasan lupa password"
-                    value={alasan}
-                    onChange={(e) => setAlasan(e.target.value)}
-                    rows={3}
-                    className="w-full resize-none rounded-lg border border-[#D1D5DB] px-4 py-2.5 text-sm outline-none focus:border-[#00D2D9]"
-                  />
-
-                  {error && <p className="text-xs font-medium text-red-500">{error}</p>}
-
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full rounded-lg py-2.5 text-sm font-semibold text-white transition-transform hover:scale-[1.02] disabled:opacity-60"
-                    style={{ background: BRAND }}
-                  >
-                    {loading ? "Mengirim..." : "Buat Laporan"}
-                  </button>
-
-                  <div className="flex items-center justify-between text-xs text-[#9CA3AF]">
-                    <button type="button" onClick={kembaliKeLogin} className="cursor-pointer hover:underline">
-                      Kembali ke login
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setView("OTP")}
-                      className="cursor-pointer font-semibold hover:underline"
-                      style={{ color: BRAND }}
-                    >
-                      Sudah punya kode OTP?
-                    </button>
-                  </div>
-                </form>
-              )}
-            </>
-          )}
-
-          {/* ============ VIEW: OTP (step 2) ============ */}
-          {view === "OTP" && (
-            <>
-              <p className="mt-6 text-xs font-semibold text-[#6B7280]">Ubah Password</p>
-              <p className="text-sm font-bold text-[#111827]">
-                Ketik NIS/NIK lalu masukkan kode OTP 4 digit yang dikirim admin melalui email
-              </p>
-
-              <form onSubmit={handleVerifyOtp} className="mt-4 space-y-3">
-                <input
-                  required
-                  placeholder="NIS / NIK"
-                  value={identifier}
-                  onChange={(e) => setIdentifier(e.target.value)}
-                  className="w-full rounded-lg border border-[#D1D5DB] px-4 py-2.5 text-sm outline-none focus:border-[#00D2D9]"
-                />
-
-                <div className="flex justify-center gap-3">
-                  {otpDigits.map((digit, i) => (
-                    <input
-                      key={i}
-                      id={`otp-${i}`}
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={1}
-                      value={digit}
-                      onChange={(e) => handleOtpChange(i, e.target.value)}
-                      className="h-12 w-12 rounded-lg border border-[#D1D5DB] text-center text-lg font-bold outline-none focus:border-[#00D2D9]"
-                    />
                   ))}
                 </div>
 
-                {error && <p className="text-center text-xs font-medium text-red-500">{error}</p>}
+                <h2 className="mt-6 text-sm font-semibold">{config.title}</h2>
 
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full rounded-lg py-2.5 text-sm font-semibold text-white transition-transform hover:scale-[1.02] disabled:opacity-60"
-                  style={{ background: BRAND }}
-                >
-                  {loading ? "Memverifikasi..." : "Lanjut"}
-                </button>
+                <form onSubmit={handleLoginSubmit} className="mt-4 space-y-3">
+                  <Field label={config.identifierLabel}>
+                    <TextInput
+                      type={portal === "ADMIN" ? "email" : "text"}
+                      required
+                      autoComplete="username"
+                      placeholder={config.identifierPlaceholder}
+                      value={loginIdentifier}
+                      onChange={(e) => setLoginIdentifier(e.target.value)}
+                      className={portal !== "ADMIN" ? "font-mono" : undefined}
+                    />
+                  </Field>
+                  <Field label="Password">
+                    <TextInput
+                      type="password"
+                      required
+                      autoComplete="current-password"
+                      placeholder="Password"
+                      value={loginPassword}
+                      onChange={(e) => setLoginPassword(e.target.value)}
+                    />
+                  </Field>
 
-                <p className="text-center text-xs text-[#9CA3AF]">
-                  <button type="button" onClick={kembaliKeLogin} className="cursor-pointer hover:underline">
-                    Kembali ke login
-                  </button>
-                  {" Â· "}
-                  <button
-                    type="button"
-                    onClick={() => setView("LAPOR")}
-                    className="cursor-pointer font-semibold hover:underline"
-                    style={{ color: BRAND }}
-                  >
-                    Belum lapor?
-                  </button>
-                </p>
-              </form>
-            </>
-          )}
+                  {error && <FormError>{error}</FormError>}
 
-          {/* ============ VIEW: PASSWORD BARU (step 3) ============ */}
-          {view === "PASSWORD_BARU" && (
-            <>
-              <p className="mt-6 text-xs font-semibold text-[#6B7280]">Portal Administrasi</p>
-              <p className="text-sm font-bold text-[#111827]">Buat Password Baru</p>
+                  <PrimaryButton type="submit" disabled={loading}>
+                    {loading ? "Memproses..." : "Masuk"}
+                  </PrimaryButton>
 
-              <form onSubmit={handleResetPassword} className="mt-4 space-y-3">
-                <input
-                  type="password"
-                  required
-                  placeholder="Password Baru"
-                  value={passwordBaru}
-                  onChange={(e) => setPasswordBaru(e.target.value)}
-                  className="w-full rounded-lg border border-[#D1D5DB] px-4 py-2.5 text-sm outline-none focus:border-[#00D2D9]"
+                  {portal !== "ADMIN" && (
+                    <p className="text-center text-xs text-muted-foreground">
+                      Lupa Password?{" "}
+                      <InlineButton
+                        onClick={() => {
+                          resetLupaState();
+                          setView("LAPOR");
+                        }}
+                      >
+                        Ubah Password
+                      </InlineButton>
+                    </p>
+                  )}
+                </form>
+              </>
+            )}
+
+            {/* ============ VIEW: LAPOR (step 1) ============ */}
+            {view === "LAPOR" && (
+              <>
+                <ViewHeading
+                  eyebrow="Buat Laporan Password"
+                  title="Gunakan NIS/NIK, email, tanggal lahir, dan alasan untuk ubah password"
                 />
 
-                {error && <p className="text-xs font-medium text-red-500">{error}</p>}
+                {info ? (
+                  <div role="status" className="mt-4 rounded-md border bg-brand-subtle p-4 text-center">
+                    <p className="text-sm">{info}</p>
+                    <InlineButton onClick={kembaliKeLogin} className="mt-2">
+                      Kembali ke Login
+                    </InlineButton>
+                  </div>
+                ) : (
+                  <form onSubmit={handleLaporSubmit} className="mt-4 space-y-3">
+                    <Field label="NIS / NIK">
+                      <TextInput
+                        required
+                        placeholder="NIS / NIK"
+                        value={identifier}
+                        onChange={(e) => setIdentifier(e.target.value)}
+                        className="font-mono"
+                      />
+                    </Field>
+                    <Field label="Email">
+                      <TextInput
+                        type="email"
+                        required
+                        placeholder="Email"
+                        value={lupaEmail}
+                        onChange={(e) => setLupaEmail(e.target.value)}
+                      />
+                    </Field>
+                    <Field label="Tanggal lahir">
+                      <TextInput
+                        type="date"
+                        required
+                        value={tanggalLahir}
+                        onChange={(e) => setTanggalLahir(e.target.value)}
+                      />
+                    </Field>
+                    <Field label="Alasan lupa password">
+                      <TextArea
+                        required
+                        placeholder="Alasan lupa password"
+                        value={alasan}
+                        onChange={(e) => setAlasan(e.target.value)}
+                        rows={3}
+                      />
+                    </Field>
 
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full rounded-lg py-2.5 text-sm font-semibold text-white transition-transform hover:scale-[1.02] disabled:opacity-60"
-                  style={{ background: BRAND }}
-                >
-                  {loading ? "Menyimpan..." : "Buat Password"}
-                </button>
+                    {error && <FormError>{error}</FormError>}
 
-                <p className="text-center text-xs text-[#9CA3AF]">
-                  <button type="button" onClick={kembaliKeLogin} className="cursor-pointer hover:underline">
-                    Kembali ke login
-                  </button>
+                    <PrimaryButton type="submit" disabled={loading}>
+                      {loading ? "Mengirim..." : "Buat Laporan"}
+                    </PrimaryButton>
+
+                    <div className="flex items-center justify-between">
+                      <InlineButton tone="muted" onClick={kembaliKeLogin}>
+                        Kembali ke login
+                      </InlineButton>
+                      <InlineButton onClick={() => setView("OTP")}>
+                        Sudah punya kode OTP?
+                      </InlineButton>
+                    </div>
+                  </form>
+                )}
+              </>
+            )}
+
+            {/* ============ VIEW: OTP (step 2) ============ */}
+            {view === "OTP" && (
+              <>
+                <ViewHeading
+                  eyebrow="Ubah Password"
+                  title="Ketik NIS/NIK lalu masukkan kode OTP 4 digit yang dikirim admin melalui email"
+                />
+
+                <form onSubmit={handleVerifyOtp} className="mt-4 space-y-4">
+                  <Field label="NIS / NIK">
+                    <TextInput
+                      required
+                      placeholder="NIS / NIK"
+                      value={identifier}
+                      onChange={(e) => setIdentifier(e.target.value)}
+                      className="font-mono"
+                    />
+                  </Field>
+
+                  <div>
+                    <p className="mb-1.5 text-xs font-medium text-muted-foreground">Kode OTP</p>
+                    <div className="flex justify-center gap-3">
+                      {otpDigits.map((digit, i) => (
+                        <input
+                          key={i}
+                          id={`otp-${i}`}
+                          type="text"
+                          inputMode="numeric"
+                          maxLength={1}
+                          aria-label={`Digit OTP ${i + 1}`}
+                          value={digit}
+                          onChange={(e) => handleOtpChange(i, e.target.value)}
+                          className="size-12 rounded-md border border-input bg-background text-center font-mono text-lg font-semibold text-foreground outline-none transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {error && <FormError className="text-center">{error}</FormError>}
+
+                  <PrimaryButton type="submit" disabled={loading}>
+                    {loading ? "Memverifikasi..." : "Lanjut"}
+                  </PrimaryButton>
+
+                  <div className="flex items-center justify-between">
+                    <InlineButton tone="muted" onClick={kembaliKeLogin}>
+                      Kembali ke login
+                    </InlineButton>
+                    <InlineButton onClick={() => setView("LAPOR")}>Belum lapor?</InlineButton>
+                  </div>
+                </form>
+              </>
+            )}
+
+            {/* ============ VIEW: PASSWORD BARU (step 3) ============ */}
+            {view === "PASSWORD_BARU" && (
+              <>
+                <ViewHeading eyebrow="Portal Administrasi" title="Buat Password Baru" />
+
+                <form onSubmit={handleResetPassword} className="mt-4 space-y-3">
+                  <Field label="Password baru">
+                    <TextInput
+                      type="password"
+                      required
+                      autoComplete="new-password"
+                      placeholder="Password Baru"
+                      value={passwordBaru}
+                      onChange={(e) => setPasswordBaru(e.target.value)}
+                    />
+                  </Field>
+
+                  {error && <FormError>{error}</FormError>}
+
+                  <PrimaryButton type="submit" disabled={loading}>
+                    {loading ? "Menyimpan..." : "Buat Password"}
+                  </PrimaryButton>
+
+                  <div className="text-center">
+                    <InlineButton tone="muted" onClick={kembaliKeLogin}>
+                      Kembali ke login
+                    </InlineButton>
+                  </div>
+                </form>
+              </>
+            )}
+
+            {/* ============ VIEW: SUKSES ============ */}
+            {view === "SUKSES" && (
+              <div role="status" className="text-center">
+                <div className="mx-auto flex size-10 items-center justify-center rounded-md bg-brand text-brand-foreground">
+                  <Check className="size-5" strokeWidth={2} aria-hidden="true" />
+                </div>
+                <h2 className="mt-3 text-sm font-semibold">Password Berhasil Diubah</h2>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Silakan login dengan password baru anda.
                 </p>
-              </form>
-            </>
-          )}
-
-          {/* ============ VIEW: SUKSES ============ */}
-          {view === "SUKSES" && (
-            <div className="mt-6 text-center">
-              <div
-                className="mx-auto flex h-12 w-12 items-center justify-center rounded-full"
-                style={{ background: "#DCFCE7" }}
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" className="h-6 w-6">
-                  <path d="M5 13l4 4L19 7" />
-                </svg>
+                <PrimaryButton type="button" onClick={kembaliKeLogin} className="mt-4">
+                  Kembali ke Login
+                </PrimaryButton>
               </div>
-              <p className="mt-3 text-sm font-bold text-[#111827]">Password Berhasil Diubah</p>
-              <p className="mt-1 text-xs text-[#6B7280]">Silakan login dengan password baru anda.</p>
-              <button
-                type="button"
-                onClick={kembaliKeLogin}
-                className="mt-4 w-full rounded-lg py-2.5 text-sm font-semibold text-white transition-transform hover:scale-[1.02]"
-                style={{ background: BRAND }}
-              >
-                Kembali ke Login
-              </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
-      </section>
+      </main>
 
-      {/* FOOTER */}
-      <footer className="py-12 text-center text-white" style={{ background: BRAND }}>
-        <p className="text-lg font-bold">MyClass</p>
-        <p className="mt-10 border-t border-white/20 pt-6 text-xs text-white/80">
-          Â© 2026 MyClass. All Rights Reserved.
-        </p>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

@@ -1,28 +1,88 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:is(.dark, .dark *));
 
+/* =========================================================
+   TOKENS — MyClass
+   Brand  : #00D2D9 (teks di atasnya selalu hitam)
+   Netral : putih / hitam + turunan opacity
+   ========================================================= */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.76 0.13 195);
-  --primary-foreground: oklch(0.18 0.03 195);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.96 0.025 195);
-  --accent-foreground: oklch(0.205 0.03 195);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.76 0.13 195);
-  --radius: 0.625rem;
+  --background: #ffffff;
+  --foreground: #000000;
+  --card: #ffffff;
+  --card-foreground: #000000;
+  --popover: #ffffff;
+  --popover-foreground: #000000;
+
+  /* Brand */
+  --brand: #00d2d9;
+  --brand-foreground: #000000;
+  --brand-subtle: rgba(0, 210, 217, 0.12);
+
+  /* shadcn: primary = brand */
+  --primary: #00d2d9;
+  --primary-foreground: #000000;
+
+  /* shadcn: accent = tint hover netral (BUKAN brand) */
+  --accent: rgba(0, 0, 0, 0.04);
+  --accent-foreground: #000000;
+
+  --secondary: rgba(0, 0, 0, 0.04);
+  --secondary-foreground: #000000;
+  --muted: rgba(0, 0, 0, 0.03);
+  --muted-foreground: rgba(0, 0, 0, 0.6);
+
+  --border: rgba(0, 0, 0, 0.1);
+  --input: rgba(0, 0, 0, 0.14);
+  --ring: #00d2d9;
+
+  --destructive: #d64545;
+  --danger: #d64545;
+
+  --scrollbar: rgba(0, 0, 0, 0.18);
+
+  --chart-1: #00d2d9;
+  --chart-2: rgba(0, 210, 217, 0.7);
+  --chart-3: rgba(0, 210, 217, 0.5);
+  --chart-4: rgba(0, 210, 217, 0.32);
+  --chart-5: rgba(0, 210, 217, 0.18);
+
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ffffff;
+  --card: #121212;
+  --card-foreground: #ffffff;
+  --popover: #121212;
+  --popover-foreground: #ffffff;
+
+  --brand: #00d2d9;
+  --brand-foreground: #000000;
+  --brand-subtle: rgba(0, 210, 217, 0.14);
+
+  --primary: #00d2d9;
+  --primary-foreground: #000000;
+
+  --accent: rgba(255, 255, 255, 0.06);
+  --accent-foreground: #ffffff;
+
+  --secondary: rgba(255, 255, 255, 0.06);
+  --secondary-foreground: #ffffff;
+  --muted: rgba(255, 255, 255, 0.05);
+  --muted-foreground: rgba(255, 255, 255, 0.64);
+
+  --border: rgba(255, 255, 255, 0.12);
+  --input: rgba(255, 255, 255, 0.16);
+  --ring: #00d2d9;
+
+  --destructive: #f06a6a;
+  --danger: #f06a6a;
+
+  --scrollbar: rgba(255, 255, 255, 0.2);
 }
 
 @theme inline {
@@ -32,6 +92,11 @@
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
+
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-brand-subtle: var(--brand-subtle);
+
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
@@ -41,44 +106,84 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  --color-danger: var(--danger);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 8px;
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
 }
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.82 0.12 195);
-  --primary-foreground: oklch(0.2 0.03 195);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.3 0.04 195);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.82 0.12 195);
+/* =========================================================
+   BASE
+   ========================================================= */
+@layer base {
+  * {
+    border-color: var(--border);
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar) transparent;
+  }
+
+  html {
+    color-scheme: light;
+  }
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.01em;
+  }
+
+  a:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: rgba(0, 210, 217, 0.3);
+    color: inherit;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
-
+/* Dipertahankan: mungkin dipakai komponen existing */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -88,7 +193,21 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* =========================================================
+   PRINT — KARTU PROFIL (ukuran 85.6mm x 53.98mm tidak berubah)
+   ========================================================= */
 @media print {
+  /* Cetak selalu pakai palet terang, walau tema aktif dark */
+  :root,
+  .dark {
+    --background: #ffffff;
+    --foreground: #000000;
+    --card: #ffffff;
+    --card-foreground: #000000;
+    --muted-foreground: rgba(0, 0, 0, 0.6);
+    --border: rgba(0, 0, 0, 0.12);
+  }
+
   @page {
     size: 85.6mm 53.98mm;
     margin: 0;
@@ -96,6 +215,7 @@ body {
 
   body {
     background: #FFFFFF !important;
+    color: #000000;
     width: 85.6mm;
     height: 53.98mm;
     -webkit-print-color-adjust: exact;
@@ -123,9 +243,9 @@ body {
     width: 85.6mm;
     height: 53.98mm;
     overflow: hidden;
-    border: 0.35mm solid #dbe3ff;
+    border: 0.35mm solid rgba(0, 0, 0, 0.2);
     border-radius: 4mm;
-    background: #f7f9ff;
+    background: #FFFFFF;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
     box-shadow: none;
@@ -139,7 +259,7 @@ body {
     flex-direction: column;
     justify-content: center;
     padding: 4mm;
-    color: #FFFFFF;
+    color: #000000;
     background: #00D2D9;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
@@ -156,7 +276,7 @@ body {
   }
 
   .print-card-label {
-    color: #e7ebff;
+    color: rgba(0, 0, 0, 0.7);
   }
 
   .print-card-photo {
@@ -167,9 +287,9 @@ body {
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    border: 0.7mm solid rgba(255, 255, 255, 0.45);
+    border: 0.7mm solid rgba(0, 0, 0, 0.35);
     border-radius: 3mm;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.35);
   }
 
   .print-card-photo img {
@@ -194,13 +314,13 @@ body {
     flex: 1;
     flex-direction: column;
     padding: 5mm;
-    color: #172033;
+    color: #000000;
     background: #FFFFFF;
   }
 
   .print-card-eyebrow {
     margin: 0;
-    color: #00D2D9;
+    color: rgba(0, 0, 0, 0.6);
   }
 
   .print-card-title {
@@ -222,7 +342,7 @@ body {
   .print-card-fields span,
   .print-card-description span {
     display: block;
-    color: #8994a8;
+    color: rgba(0, 0, 0, 0.55);
   }
 
   .print-card-fields strong,
@@ -239,7 +359,7 @@ body {
   .print-card-description {
     margin-top: auto;
     padding-top: 2mm;
-    border-top: 0.25mm solid #edf0f7;
+    border-top: 0.25mm solid rgba(0, 0, 0, 0.12);
   }
 
   .print-card-description strong {
@@ -256,6 +376,9 @@ body {
   display: none;
 }
 
+/* =========================================================
+   PRINT — LAPORAN NILAI (struktur & ukuran tidak berubah)
+   ========================================================= */
 @page score-report {
   size: A4 portrait;
   margin: 12mm;
@@ -289,7 +412,7 @@ body {
   .score-print-root {
     display: block !important;
     page: score-report;
-    color: #111827;
+    color: #000000;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 8pt;
   }
@@ -320,7 +443,7 @@ body {
   }
 
   .score-print-header dt {
-    color: #475569;
+    color: rgba(0, 0, 0, 0.6);
     font-size: 7pt;
     font-weight: 700;
     text-transform: uppercase;
@@ -341,7 +464,7 @@ body {
 
   .score-print-table th,
   .score-print-table td {
-    border: 0.25mm solid #94A3B8;
+    border: 0.25mm solid rgba(0, 0, 0, 0.45);
     padding: 1.5mm 1mm;
     overflow-wrap: anywhere;
     text-align: left;
@@ -349,7 +472,7 @@ body {
   }
 
   .score-print-table th {
-    background: #EAF3F3 !important;
+    background: rgba(0, 0, 0, 0.06) !important;
     font-weight: 700;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
@@ -380,6 +503,6 @@ body {
   .score-print-signatures span {
     display: block;
     height: 18mm;
-    border-bottom: 0.25mm solid #334155;
+    border-bottom: 0.25mm solid #000000;
   }
 }
