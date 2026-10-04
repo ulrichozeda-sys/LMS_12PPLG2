@@ -209,7 +209,7 @@ export default function Home() {
               <p>
                 MyClass adalah website Learning Management System (LMS) untuk
                 mengatur kegiatan belajar sekolah secara online. Guru dan siswa
-                mengelola kelas dan kegiatan belajar dalam satu platform.
+                mengelola kelas dan kegiatan belajar mengajar dalam satu platform.
               </p>
               <p>
                 MyClass bukan sekadar tempat video call. Fokusnya ada pada
