@@ -5,6 +5,8 @@ import Button from "@/components/ui/Button";
 import MateriCard, { MateriData } from "@/components/MateriCard";
 import ModalMateri from "@/components/Modalmateri";
 import { showAlert, showConfirm } from "@/lib/dialog";
+import { EmptyState, LoadingBlock, PageTitle } from "@/components/shared/data-display";
+import { Field, SelectInput } from "@/components/shared/form-controls";
 
 type MateriRole = "GURU" | "SISWA";
 type KelasOption = { id: string; label: string };
@@ -71,9 +73,9 @@ export default function MateriPageContent({ role }: { role: MateriRole }) {
   function renderSection(title: string, items: MateriData[], emptyText: string) {
     return (
       <section className="mt-7">
-        <h2 className="mb-3 text-sm font-bold text-[#111827]">{title}</h2>
+        <h2 className="mb-3 text-base font-semibold tracking-tight">{title}</h2>
         {items.length === 0 ? (
-          <p className="border-t border-[#E2E8F0] py-4 text-sm text-[#64748B]">{emptyText}</p>
+          <EmptyState>{emptyText}</EmptyState>
         ) : (
           <div className="space-y-3">
             {items.map((materi) => (
@@ -93,23 +95,32 @@ export default function MateriPageContent({ role }: { role: MateriRole }) {
 
   return (
     <div>
-      <header className="border-b border-[#E2E8F0] pb-4">
-        <h1 className="text-xl font-bold text-[#111827]">Materi</h1>
-        <p className="mt-1 text-sm text-[#64748B]">{role === "GURU" ? "Kelola materi untuk kelas yang Anda ajar." : "Materi dari kelas yang Anda ikuti."}</p>
-      </header>
+      <PageTitle
+        title="Materi"
+        description={role === "GURU" ? "Kelola materi untuk kelas yang Anda ajar." : "Materi dari kelas yang Anda ikuti."}
+      />
 
-      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        {role === "GURU" && <Button onClick={() => { setEditingMateri(null); setModalOpen(true); }}>+ Buat Materi</Button>}
-        <label className="flex w-full flex-col gap-1 text-xs font-semibold text-[#475569] sm:ml-auto sm:max-w-xs">
-          Filter kelas
-          <select className="min-h-10 w-full border border-[#CBD5E1] bg-white px-3 text-sm" value={kelasId} onChange={(event) => setKelasId(event.target.value)}>
-            <option value="">Semua Kelas</option>
-            {kelasOptions.map((kelas) => <option key={kelas.id} value={kelas.id}>{kelas.label}</option>)}
-          </select>
-        </label>
+      <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        {role === "GURU" && (
+          <Button onClick={() => { setEditingMateri(null); setModalOpen(true); }}>+ Buat Materi</Button>
+        )}
+        <div className="w-full sm:ml-auto sm:max-w-xs">
+          <Field label="Filter kelas">
+            <SelectInput value={kelasId} onChange={(event) => setKelasId(event.target.value)}>
+              <option value="">Semua Kelas</option>
+              {kelasOptions.map((kelas) => (
+                <option key={kelas.id} value={kelas.id}>{kelas.label}</option>
+              ))}
+            </SelectInput>
+          </Field>
+        </div>
       </div>
 
-      {loading ? <p className="mt-5 text-sm text-[#64748B]">Memuat materi...</p> : error ? <p role="alert" className="mt-5 text-sm text-red-700">{error}</p> : (
+      {loading ? (
+        <div className="mt-5"><LoadingBlock /></div>
+      ) : error ? (
+        <p role="alert" className="mt-5 text-sm font-medium text-danger">{error}</p>
+      ) : (
         <>
           {renderSection("Materi Hari Ini", todayMateri, "Belum ada materi hari ini.")}
           {renderSection("History", historyMateri, "Belum ada riwayat materi.")}

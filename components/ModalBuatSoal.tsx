@@ -167,12 +167,11 @@ export default function ModalBuatSoal({ open, onClose, onSuccess, asesmenId, mod
               type="button"
               disabled={mode === "edit"}
               onClick={() => setTipe(t)}
-              className="cursor-pointer rounded-lg border py-2 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50"
-              style={
+              className={`min-h-11 cursor-pointer rounded-md border px-2 text-xs font-medium transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 ${
                 tipe === t
-                  ? { background: "#00D2D9", borderColor: "#00D2D9", color: "white" }
-                  : { borderColor: "#D1D5DB", color: "#374151" }
-              }
+                  ? "border-transparent bg-brand text-brand-foreground"
+                  : "border-border bg-background text-foreground hover:bg-accent"
+              }`}
             >
               {t === "PILIHAN_GANDA" ? "Pilihan Ganda" : t === "CHECKBOX" ? "Checkbox" : "Essay"}
             </button>
@@ -182,12 +181,12 @@ export default function ModalBuatSoal({ open, onClose, onSuccess, asesmenId, mod
         <Textarea label="Pertanyaan" value={pertanyaan} onChange={(e) => setPertanyaan(e.target.value)} rows={3} required />
 
         <div>
-          <label className="mb-1.5 block text-xs font-semibold text-[#374151]">Gambar (opsional)</label>
+          <label className="mb-1.5 block text-xs font-semibold text-foreground">Gambar (opsional)</label>
           {gambarPreview && !gambarFile && (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={gambarPreview} alt="Preview" className="mb-2 max-h-40 rounded-lg object-contain" />
           )}
-          <label className="inline-block cursor-pointer rounded-lg border border-[#D1D5DB] px-3 py-1.5 text-xs font-medium text-[#374151] hover:bg-black/5">
+          <label className="inline-block cursor-pointer rounded-lg border border-input px-3 py-1.5 text-xs font-medium text-foreground hover:bg-accent">
             {uploading ? "Mengunggah..." : gambarFile ? gambarFile.name : "+ Kirim Foto"}
             <input
               type="file"
@@ -206,7 +205,7 @@ export default function ModalBuatSoal({ open, onClose, onSuccess, asesmenId, mod
 
         {tipe !== "ESSAY" && (
           <div className="space-y-2">
-            <label className="block text-xs font-semibold text-[#374151]">
+            <label className="block text-xs font-semibold text-foreground">
               Opsi Jawaban {tipe === "PILIHAN_GANDA" ? "(pilih 1 jawaban benar)" : "(bisa pilih lebih dari 1)"}
             </label>
             {opsiList.map((o, i) => (
@@ -214,7 +213,7 @@ export default function ModalBuatSoal({ open, onClose, onSuccess, asesmenId, mod
                 <input type={tipe === "PILIHAN_GANDA" ? "radio" : "checkbox"} name="jawabanBenar" checked={o.isBenar} onChange={() => handlePilihJawabanBenar(i)} />
                 <Input value={o.teks} onChange={(e) => handleUbahTeksOpsi(i, e.target.value)} placeholder={`Opsi ${String.fromCharCode(65 + i)}`} className="flex-1" />
                 {opsiList.length > 2 && (
-                  <button type="button" onClick={() => handleHapusOpsi(i)} className="cursor-pointer text-xs font-medium text-red-500 hover:underline">
+                  <button type="button" onClick={() => handleHapusOpsi(i)} className="cursor-pointer text-xs font-medium text-danger hover:underline">
                     Hapus
                   </button>
                 )}
@@ -226,7 +225,7 @@ export default function ModalBuatSoal({ open, onClose, onSuccess, asesmenId, mod
           </div>
         )}
 
-        {error && <p className="text-xs font-medium text-red-500">{error}</p>}
+        {error && <p className="text-xs font-medium text-danger">{error}</p>}
 
         <div className="flex gap-2">
           <Button type="button" variant="outline" onClick={onClose} className="flex-1">

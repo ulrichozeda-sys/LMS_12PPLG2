@@ -35,23 +35,26 @@ export default function SiswaKelasPage() {
   return (
     <div>
       <div className="mb-6">
-        <p className="text-xs font-semibold uppercase tracking-wide text-[#94A3B8]">Kelas Saya</p>
-        <h1 className="mt-1 text-2xl font-bold text-[#111827]">Daftar Kelas</h1>
-        <p className="mt-1 text-sm text-[#64748B]">Kelas yang sudah ditugaskan untukmu oleh admin.</p>
+        <h1 className="text-2xl font-semibold tracking-tight">Daftar Kelas</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Kelas yang sudah ditugaskan untukmu oleh admin.</p>
       </div>
 
-      {loading && <p className="mt-4 text-sm text-[#9CA3AF]">Memuat kelas...</p>}
-
-      {!loading && error && (
-        <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-          {error}
+      {loading && (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" role="status" aria-label="Memuat kelas">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div key={index} className="h-32 animate-pulse rounded-lg border bg-muted" />
+          ))}
         </div>
       )}
 
+      {!loading && error && (
+        <div className="rounded-lg border border-danger p-4 text-sm text-danger">{error}</div>
+      )}
+
       {!loading && !error && kelasList.length === 0 && (
-        <div className="rounded-2xl border border-dashed border-[#CBD5E1] bg-[#FFFFFF] p-6 text-center shadow-sm">
-          <p className="text-lg font-semibold text-[#111827]">Belum ada kelas</p>
-          <p className="mt-2 text-sm text-[#64748B]">Kamu belum tergabung di kelas yang dibuat admin.</p>
+        <div className="rounded-lg border border-dashed p-6 text-center">
+          <p className="text-base font-semibold">Belum ada kelas</p>
+          <p className="mt-1 text-sm text-muted-foreground">Kamu belum tergabung di kelas yang dibuat admin.</p>
         </div>
       )}
 

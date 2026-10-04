@@ -152,9 +152,9 @@ export default function ModalPengumuman({ open, onClose, onSuccess, kelasId, mod
         />
 
         <div>
-          <label className="mb-1.5 block text-xs font-semibold text-[#374151]">Kirim ke Kelas</label>
+          <label className="mb-1.5 block text-xs font-semibold text-foreground">Kirim ke Kelas</label>
           <select
-            className="w-full rounded-lg border border-[#D1D5DB] px-3.5 py-2.5 text-sm outline-none focus:border-[#00D2D9]"
+            className="w-full min-h-10 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground outline-none placeholder:text-muted-foreground transition-colors duration-150 focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             value=""
             onChange={(event) => event.target.value && setSelectedKelasId(event.target.value)}
           >
@@ -169,7 +169,7 @@ export default function ModalPengumuman({ open, onClose, onSuccess, kelasId, mod
             <div className="mt-2 flex flex-wrap gap-2">
               <Badge tone="brand" className="flex items-center gap-1">
                 {kelasList.find((kelas) => kelas.id === selectedKelasId)?.judul ?? "Kelas terpilih"}
-                <button type="button" onClick={() => setSelectedKelasId("")} className="cursor-pointer hover:text-red-500">x</button>
+                <button type="button" onClick={() => setSelectedKelasId("")} className="cursor-pointer hover:text-danger">x</button>
               </Badge>
             </div>
           )}
@@ -179,15 +179,15 @@ export default function ModalPengumuman({ open, onClose, onSuccess, kelasId, mod
         {lampiranList.length > 0 && (
           <div className="space-y-2">
             {lampiranList.map((l, i) => (
-              <div key={i} className="flex items-center justify-between rounded-lg border border-black/5 bg-[#FFFFFF] p-2.5">
+              <div key={i} className="flex items-center justify-between rounded-lg border border-border bg-card p-2.5">
                 <div className="min-w-0">
-                  <p className="truncate text-xs font-semibold text-[#111827]">{l.judul || l.url}</p>
-                  <p className="text-[10px] text-[#9CA3AF]">{l.tipe}</p>
+                  <p className="truncate text-xs font-semibold text-foreground">{l.judul || l.url}</p>
+                  <p className="text-[10px] text-muted-foreground">{l.tipe}</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => handleRemoveLampiran(i)}
-                  className="cursor-pointer text-xs font-medium text-red-500 hover:underline"
+                  className="cursor-pointer text-xs font-medium text-danger hover:underline"
                 >
                   Hapus
                 </button>
@@ -196,10 +196,10 @@ export default function ModalPengumuman({ open, onClose, onSuccess, kelasId, mod
           </div>
         )}
 
-        <div className="rounded-lg border border-dashed border-[#D1D5DB] p-3">
-          <p className="mb-2 text-xs font-semibold text-[#374151]">Tambah Lampiran (opsional)</p>
+        <div className="rounded-lg border border-dashed border-input p-3">
+          <p className="mb-2 text-xs font-semibold text-foreground">Tambah Lampiran (opsional)</p>
           <div className="flex flex-wrap items-center gap-2">
-            <label className="cursor-pointer rounded-lg border border-[#D1D5DB] px-3 py-2 text-sm font-medium text-[#374151] hover:bg-black/5">
+            <label className="cursor-pointer rounded-lg border border-input px-3 py-2 text-sm font-medium text-foreground hover:bg-accent">
               {uploadingLampiran ? "Mengunggah..." : "+ Upload File"}
               <input
                 type="file"
@@ -225,7 +225,7 @@ export default function ModalPengumuman({ open, onClose, onSuccess, kelasId, mod
           </div>
         </div>
 
-        {error && <p className="text-xs font-medium text-red-500">{error}</p>}
+        {error && <p className="text-xs font-medium text-danger">{error}</p>}
 
         <div className="flex gap-2">
           <Button type="button" variant="outline" onClick={onClose} className="flex-1">

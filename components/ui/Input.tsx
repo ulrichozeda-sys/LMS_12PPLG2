@@ -2,8 +2,12 @@
 
 import { InputHTMLAttributes, TextareaHTMLAttributes, SelectHTMLAttributes, forwardRef } from "react";
 
-const focusRing = "focus:border-[#00D2D9] focus:ring-2 focus:ring-[#00D2D9]/20";
-const baseField = `w-full rounded-lg border border-[#D1D5DB] px-3.5 py-2.5 text-sm outline-none transition-shadow ${focusRing}`;
+const focusRing =
+  "outline-none transition-colors duration-150 focus-visible:border-ring focus-visible:ring-2 " +
+  "focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+const baseField =
+  `w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm text-foreground ` +
+  `placeholder:text-muted-foreground ${focusRing} disabled:cursor-not-allowed disabled:opacity-60`;
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -11,11 +15,21 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, className = "", ...props }, ref) => (
+  ({ label, error, className = "", id, "aria-invalid": ariaInvalid, ...props }, ref) => (
     <div className="w-full">
-      {label && <label className="mb-1.5 block text-xs font-semibold text-[#374151]">{label}</label>}
-      <input ref={ref} className={`${baseField} ${error ? "border-red-400" : ""} ${className}`} {...props} />
-      {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
+      {label && (
+        <label htmlFor={id} className="mb-1.5 block text-xs font-medium text-foreground">
+          {label}
+        </label>
+      )}
+      <input
+        ref={ref}
+        id={id}
+        aria-invalid={error ? true : ariaInvalid}
+        className={`${baseField} ${error ? "border-danger" : ""} ${className}`}
+        {...props}
+      />
+      {error && <p role="alert" className="mt-1.5 text-xs text-danger">{error}</p>}
     </div>
   )
 );
@@ -27,16 +41,22 @@ interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
 }
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ label, error, className = "", ...props }, ref) => (
+  ({ label, error, className = "", id, "aria-invalid": ariaInvalid, ...props }, ref) => (
     <div className="w-full">
-      {label && <label className="mb-1.5 block text-xs font-semibold text-[#374151]">{label}</label>}
+      {label && (
+        <label htmlFor={id} className="mb-1.5 block text-xs font-medium text-foreground">
+          {label}
+        </label>
+      )}
       <textarea
         ref={ref}
+        id={id}
         rows={3}
-        className={`${baseField} resize-none ${error ? "border-red-400" : ""} ${className}`}
+        aria-invalid={error ? true : ariaInvalid}
+        className={`${baseField} resize-y ${error ? "border-danger" : ""} ${className}`}
         {...props}
       />
-      {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
+      {error && <p role="alert" className="mt-1.5 text-xs text-danger">{error}</p>}
     </div>
   )
 );
@@ -49,10 +69,20 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
 }
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
-  ({ label, error, placeholder, className = "", children, ...props }, ref) => (
+  ({ label, error, placeholder, className = "", children, id, "aria-invalid": ariaInvalid, ...props }, ref) => (
     <div className="w-full">
-      {label && <label className="mb-1.5 block text-xs font-semibold text-[#374151]">{label}</label>}
-      <select ref={ref} className={`${baseField} bg-[#FFFFFF] ${error ? "border-red-400" : ""} ${className}`} {...props}>
+      {label && (
+        <label htmlFor={id} className="mb-1.5 block text-xs font-medium text-foreground">
+          {label}
+        </label>
+      )}
+      <select
+        ref={ref}
+        id={id}
+        aria-invalid={error ? true : ariaInvalid}
+        className={`${baseField} ${error ? "border-danger" : ""} ${className}`}
+        {...props}
+      >
         {placeholder && (
           <option value="" disabled>
             {placeholder}
@@ -60,7 +90,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
         )}
         {children}
       </select>
-      {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
+      {error && <p role="alert" className="mt-1.5 text-xs text-danger">{error}</p>}
     </div>
   )
 );

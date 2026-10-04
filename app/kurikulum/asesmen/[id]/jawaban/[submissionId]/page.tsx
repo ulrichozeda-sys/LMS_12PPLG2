@@ -3,11 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, LayoutGrid } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import KurikulumShell from "@/components/KurikulumShell";
-
-const BRAND = "#00D2D9";
 
 interface OpsiSoal {
   id: string;
@@ -58,6 +57,22 @@ const STATUS_BADGE: Record<StatusSoal, { label: string; tone: "green" | "red" | 
   SUDAH_DINILAI: { label: "Sudah Dinilai", tone: "green" },
 };
 
+// Warna kotak nomor soal (hanya brand, danger, dan netral)
+const GRID_TONE: Record<StatusSoal, string> = {
+  BENAR: "border-brand bg-brand-subtle",
+  SUDAH_DINILAI: "border-brand bg-brand-subtle",
+  SALAH: "border-danger bg-danger/10 text-danger",
+  SEBAGIAN_BENAR: "border-dashed border-foreground/50",
+  BELUM_DINILAI: "border-dashed border-foreground/50",
+  BELUM_DIJAWAB: "text-muted-foreground",
+};
+
+const focusRing =
+  "outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+
+const iconBtn =
+  `inline-flex size-10 cursor-pointer items-center justify-center rounded-md border bg-background text-foreground transition-colors duration-150 hover:bg-accent disabled:cursor-not-allowed disabled:opacity-40 ${focusRing}`;
+
 function formatTanggal(value: string | null) {
   if (!value) return "-";
   return new Date(value).toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" });
@@ -74,29 +89,39 @@ function SoalView({ soal, nomor }: { soal: SoalDetail; nomor: number }) {
         <Badge tone={STATUS_BADGE[soal.status].tone}>{STATUS_BADGE[soal.status].label}</Badge>
       </div>
 
-      <p className="mt-5 text-base font-semibold leading-relaxed text-[#111827]">
+      <p className="mt-4 text-base font-semibold leading-relaxed">
         {nomor}. {soal.pertanyaan}
       </p>
 
       {soal.gambar && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={soal.gambar} alt="Gambar soal" className="mt-3 max-h-64 rounded-xl object-contain" />
+        <img src={soal.gambar} alt="Gambar soal" className="mt-3 max-h-64 rounded-lg border object-contain" />
       )}
 
       {soal.tipe !== "ESSAY" ? (
         <div className="mt-4 space-y-2">
           {soal.opsi.map((o) => {
             const dipilihSiswa = soal.jawabanSiswa?.opsiDipilihIds.includes(o.id) ?? false;
-            let borderStyle: React.CSSProperties = { borderColor: "#E2E8F0" };
-            if (o.isBenar && dipilihSiswa) borderStyle = { borderColor: "#16A34A", background: "#16A34A0D" };
-            else if (o.isBenar) borderStyle = { borderColor: "#16A34A" };
-            else if (dipilihSiswa) borderStyle = { borderColor: "#EF4444", background: "#EF44440D" };
+            const tone =
+              o.isBenar && dipilihSiswa
+                ? "border-brand bg-brand-subtle"
+                : o.isBenar
+                ? "border-brand"
+                : dipilihSiswa
+                ? "border-danger bg-danger/5"
+                : "";
 
             return (
-              <div key={o.id} className="flex items-center justify-between gap-3 rounded-lg border px-4 py-3 text-sm" style={borderStyle}>
+              <div key={o.id} className={`flex min-h-11 flex-wrap items-center justify-between gap-2 rounded-md border px-4 py-2.5 text-sm ${tone}`}>
                 <div className="flex items-center gap-3">
-                  <input type={soal.tipe === "PILIHAN_GANDA" ? "radio" : "checkbox"} checked={dipilihSiswa} readOnly disabled />
-                  <span className="text-[#374151]">{o.teks}</span>
+                  <input
+                    type={soal.tipe === "PILIHAN_GANDA" ? "radio" : "checkbox"}
+                    checked={dipilihSiswa}
+                    readOnly
+                    disabled
+                    className="size-4 accent-brand"
+                  />
+                  <span>{o.teks}</span>
                 </div>
                 <div className="flex gap-1.5">
                   {dipilihSiswa && <Badge tone="brand">Dipilih Siswa</Badge>}
@@ -108,13 +133,13 @@ function SoalView({ soal, nomor }: { soal: SoalDetail; nomor: number }) {
         </div>
       ) : (
         <div className="mt-4 space-y-3">
-          <div className="rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-4 text-sm text-[#374151]">
-            {soal.jawabanSiswa?.jawabanEssay || <span className="text-[#9CA3AF]">Siswa belum menjawab.</span>}
+          <div className="rounded-md border bg-muted p-4 text-sm">
+            {soal.jawabanSiswa?.jawabanEssay || <span className="text-muted-foreground">Siswa belum menjawab.</span>}
           </div>
 
           {soal.jawabanSiswa && (
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-[#64748B]">Nilai Essay (0-100)</span>
+              <span className="text-xs text-muted-foreground">Nilai Essay (0-100)</span>
               {soal.jawabanSiswa.nilaiSoal !== null ? (
                 <Badge tone="green">{soal.jawabanSiswa.nilaiSoal}</Badge>
               ) : (
@@ -185,183 +210,177 @@ export default function KurikulumDetailJawabanSiswaPage() {
     };
   }, [urutanSiswa, submissionId]);
 
-  if (loading) return <KurikulumShell><p className="mx-auto max-w-7xl px-4 text-sm text-[#9CA3AF] sm:px-6">Memuat jawaban siswa...</p></KurikulumShell>;
+  if (loading) {
+    return (
+      <KurikulumShell activeTab="ASESMEN">
+        <div className="space-y-3" role="status" aria-label="Memuat jawaban siswa">
+          <div className="h-24 animate-pulse rounded-lg border bg-muted" />
+          <div className="h-40 animate-pulse rounded-lg border bg-muted" />
+          <div className="h-72 animate-pulse rounded-lg border bg-muted" />
+        </div>
+      </KurikulumShell>
+    );
+  }
   if (error || !detail) {
     return (
-      <KurikulumShell><div className="flex flex-col items-center gap-3 py-10">
-        <p className="text-sm text-red-500">{error || "Jawaban siswa tidak ditemukan."}</p>
-        <Button variant="outline" onClick={() => router.push(`/kurikulum/asesmen/${asesmenId}/jawaban`)}>
-          Kembali
-        </Button>
-      </div></KurikulumShell>
+      <KurikulumShell activeTab="ASESMEN">
+        <div className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-lg border border-dashed px-4 py-10 text-center">
+          <p className="text-sm text-danger">{error || "Jawaban siswa tidak ditemukan."}</p>
+          <Button variant="outline" onClick={() => router.push(`/kurikulum/asesmen/${asesmenId}/jawaban`)}>
+            Kembali
+          </Button>
+        </div>
+      </KurikulumShell>
     );
   }
 
   const { rekap } = detail;
 
-  return (
-    <KurikulumShell activeTab="ASESMEN"><div className="mx-auto w-full max-w-7xl px-4 pb-10 sm:px-6">
-      <Link
-        href={`/kurikulum/asesmen/${asesmenId}/jawaban`}
-        className="mb-4 inline-flex items-center gap-1 text-sm font-semibold text-[#64748B] hover:text-[#00D2D9]"
-      >
-        &larr; Kembali ke Daftar Jawaban
-      </Link>
+  const summaryRows: { label: string; value: string }[] = [
+    { label: "Mulai", value: formatTanggal(detail.mulaiPada) },
+    { label: "Dikumpulkan", value: formatTanggal(detail.submittedAt) },
+    { label: "Pilihan Ganda Dikerjakan", value: `${rekap.totalObjektifDijawab}/${rekap.totalObjektif}` },
+    { label: "Essay Dikerjakan", value: `${rekap.totalEssayDijawab}/${rekap.totalEssay}` },
+    { label: "Jumlah Ragu-ragu", value: String(rekap.totalRaguRagu) },
+  ];
 
-      <div className="flex flex-wrap items-start justify-between gap-5 rounded-xl border border-black/5 border-t-4 border-t-[#00D2D9] bg-[#FFFFFF] p-6 shadow-[0_2px_8px_rgba(15,23,42,0.08)]">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-[#94A3B8]">Jawaban Siswa</p>
-          <h1 className="mt-1 text-2xl font-bold text-[#111827]">{detail.siswa.nama}</h1>
-          <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-            <Badge tone="gray">NIS {detail.siswa.nis}</Badge>
+  return (
+    <KurikulumShell activeTab="ASESMEN">
+      <div className="pb-10">
+        <Link
+          href={`/kurikulum/asesmen/${asesmenId}/jawaban`}
+          className={`mb-3 inline-flex min-h-10 items-center gap-1.5 rounded-sm text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground ${focusRing}`}
+        >
+          <ArrowLeft className="size-4" strokeWidth={1.75} aria-hidden="true" />
+          Kembali ke Daftar Jawaban
+        </Link>
+
+        <div className="rounded-lg border bg-card p-5 text-card-foreground">
+          <p className="text-xs text-muted-foreground">Jawaban Siswa</p>
+          <h1 className="mt-1 text-xl font-semibold tracking-tight">{detail.siswa.nama}</h1>
+          <div className="mt-2 flex flex-wrap items-center gap-1.5">
+            <Badge tone="gray">
+              NIS <span className="font-mono">{detail.siswa.nis}</span>
+            </Badge>
             <Badge tone="gray">{detail.siswa.kelasJurusan}</Badge>
             <Badge tone="gray">{detail.kelas}</Badge>
             {detail.asesmen.mapel && <Badge tone="brand">{detail.asesmen.mapel}</Badge>}
           </div>
-          <p className="mt-2 text-sm font-semibold text-[#374151]">{detail.asesmen.judul}</p>
+          <p className="mt-3 text-sm font-medium">{detail.asesmen.judul}</p>
         </div>
 
-      </div>
-
-      <div className="mt-4 overflow-hidden rounded-xl border border-black/5 bg-[#FFFFFF] shadow-sm">
-        <div className="grid lg:grid-cols-[1fr_220px]">
-          <div className="overflow-x-auto p-4 sm:p-5">
-            <table className="w-full min-w-[420px] text-left text-sm">
-              <thead>
-                <tr className="border-b border-[#E2E8F0] text-[11px] font-semibold uppercase tracking-wide text-[#94A3B8]">
-                  <th className="pb-3">Ringkasan</th>
-                  <th className="pb-3 text-right">Hasil</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#F1F5F9]">
-                <tr>
-                  <td className="py-3 text-[#64748B]">Mulai</td>
-                  <td className="py-3 text-right font-semibold text-[#111827]">{formatTanggal(detail.mulaiPada)}</td>
-                </tr>
-                <tr>
-                  <td className="py-3 text-[#64748B]">Dikumpulkan</td>
-                  <td className="py-3 text-right font-semibold text-[#111827]">{formatTanggal(detail.submittedAt)}</td>
-                </tr>
-                <tr>
-                  <td className="py-3 text-[#64748B]">Pilihan Ganda Dikerjakan</td>
-                  <td className="py-3 text-right font-bold text-[#111827]">{rekap.totalObjektifDijawab}/{rekap.totalObjektif}</td>
-                </tr>
-                <tr>
-                  <td className="py-3 text-[#64748B]">Essay Dikerjakan</td>
-                  <td className="py-3 text-right font-bold text-[#111827]">{rekap.totalEssayDijawab}/{rekap.totalEssay}</td>
-                </tr>
-                <tr>
-                  <td className="py-3 text-[#64748B]">Jumlah Ragu-ragu</td>
-                  <td className="py-3 text-right font-bold text-[#111827]">{rekap.totalRaguRagu}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div className="order-first flex items-center justify-center border-b border-[#E2E8F0] bg-[#F8FAFC] p-5 text-center lg:order-last lg:border-b-0 lg:border-l">
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-[#94A3B8]">Nilai Objektif</p>
-              <p className="mt-1 text-3xl font-bold text-green-600">{rekap.nilaiObjektif}</p>
-              <div className="my-4 h-px bg-[#E2E8F0]" />
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-[#94A3B8]">Nilai Akhir</p>
-              <p className="mt-1 text-3xl font-bold" style={{ color: BRAND }}>
-                {detail.nilaiAkhir ?? "-"}
-              </p>
+        <div className="mt-4 overflow-hidden rounded-lg border bg-card text-card-foreground">
+          <div className="grid lg:grid-cols-[1fr_220px]">
+            <div className="overflow-x-auto p-4">
+              <table className="w-full min-w-[320px] text-left text-sm">
+                <thead>
+                  <tr className="border-b text-xs text-muted-foreground">
+                    <th className="pb-2 font-medium">Ringkasan</th>
+                    <th className="pb-2 text-right font-medium">Hasil</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  {summaryRows.map((row) => (
+                    <tr key={row.label}>
+                      <td className="py-2.5 text-muted-foreground">{row.label}</td>
+                      <td className="py-2.5 text-right font-medium tabular-nums">{row.value}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="order-first grid grid-cols-2 border-b bg-muted lg:order-last lg:grid-cols-1 lg:border-b-0 lg:border-l">
+              <div className="p-4 text-center lg:border-b">
+                <p className="text-xs text-muted-foreground">Nilai Objektif</p>
+                <p className="mt-1 text-3xl font-semibold tabular-nums">{rekap.nilaiObjektif}</p>
+              </div>
+              <div className="border-l p-4 text-center lg:border-l-0">
+                <p className="text-xs text-muted-foreground">Nilai Akhir</p>
+                <p className="mt-1 text-3xl font-semibold tabular-nums">{detail.nilaiAkhir ?? "-"}</p>
+                <span aria-hidden="true" className="mx-auto mt-2 block h-0.5 w-8 rounded-sm bg-brand" />
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="mt-5 flex flex-wrap items-center gap-2">
-        <Button size="sm" variant="outline" disabled={!prevSiswaId} onClick={() => prevSiswaId && router.push(`/kurikulum/asesmen/${asesmenId}/jawaban/${prevSiswaId}`)}>
-          &larr; Siswa Sebelumnya
-        </Button>
-        <Button size="sm" variant="outline" disabled={!nextSiswaId} onClick={() => nextSiswaId && router.push(`/kurikulum/asesmen/${asesmenId}/jawaban/${nextSiswaId}`)}>
-          Siswa Berikutnya &rarr;
-        </Button>
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <Button size="sm" variant="outline" disabled={!prevSiswaId} onClick={() => prevSiswaId && router.push(`/kurikulum/asesmen/${asesmenId}/jawaban/${prevSiswaId}`)}>
+            <ArrowLeft className="size-4" strokeWidth={1.75} aria-hidden="true" />
+            Siswa Sebelumnya
+          </Button>
+          <Button size="sm" variant="outline" disabled={!nextSiswaId} onClick={() => nextSiswaId && router.push(`/kurikulum/asesmen/${asesmenId}/jawaban/${nextSiswaId}`)}>
+            Siswa Berikutnya
+            <ArrowRight className="size-4" strokeWidth={1.75} aria-hidden="true" />
+          </Button>
 
-        <div className="ml-auto flex items-center gap-1">
-          <button
-            aria-label="Soal sebelumnya"
-            onClick={() => setActiveIndex((i) => Math.max(0, i - 1))}
-            disabled={activeIndex === 0}
-            className="cursor-pointer rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] px-3 py-2 text-xs font-semibold text-[#475569] disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            {"<<"}
-          </button>
-          <span className="min-w-14 px-2 text-center text-xs font-bold text-[#475569]">
-            {detail.soal.length === 0 ? "0/0" : `${activeIndex + 1}/${detail.soal.length}`}
-          </span>
-          <button
-            aria-label="Soal berikutnya"
-            onClick={() => setActiveIndex((i) => Math.min(detail.soal.length - 1, i + 1))}
-            disabled={activeIndex >= detail.soal.length - 1}
-            className="cursor-pointer rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] px-3 py-2 text-xs font-semibold text-[#475569] disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            {">>"}
-          </button>
-          <button
-            onClick={() => setShowGrid((v) => !v)}
-            className="cursor-pointer rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] p-2 text-[#475569]"
-            title="Daftar Nomor Soal"
-            aria-label="Daftar Nomor Soal"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4">
-              <rect x="3" y="3" width="7" height="7" rx="1" />
-              <rect x="14" y="3" width="7" height="7" rx="1" />
-              <rect x="3" y="14" width="7" height="7" rx="1" />
-              <rect x="14" y="14" width="7" height="7" rx="1" />
-            </svg>
-          </button>
+          <div className="ml-auto flex items-center gap-1">
+            <button
+              aria-label="Soal sebelumnya"
+              onClick={() => setActiveIndex((i) => Math.max(0, i - 1))}
+              disabled={activeIndex === 0}
+              className={iconBtn}
+            >
+              <ChevronLeft className="size-4" strokeWidth={1.75} aria-hidden="true" />
+            </button>
+            <span className="min-w-14 px-1 text-center text-sm tabular-nums text-muted-foreground">
+              {detail.soal.length === 0 ? "0/0" : `${activeIndex + 1}/${detail.soal.length}`}
+            </span>
+            <button
+              aria-label="Soal berikutnya"
+              onClick={() => setActiveIndex((i) => Math.min(detail.soal.length - 1, i + 1))}
+              disabled={activeIndex >= detail.soal.length - 1}
+              className={iconBtn}
+            >
+              <ChevronRight className="size-4" strokeWidth={1.75} aria-hidden="true" />
+            </button>
+            <button
+              onClick={() => setShowGrid((v) => !v)}
+              aria-pressed={showGrid}
+              className={`${iconBtn} ${showGrid ? "bg-accent" : ""}`}
+              title="Daftar Nomor Soal"
+              aria-label="Daftar Nomor Soal"
+            >
+              <LayoutGrid className="size-4" strokeWidth={1.75} aria-hidden="true" />
+            </button>
+          </div>
         </div>
-      </div>
 
-      {showGrid && (
-        <div className="mt-3 rounded-xl border border-black/5 bg-[#FFFFFF] p-3 shadow-sm">
-          <p className="mb-2 text-xs font-semibold text-[#64748B]">Daftar Soal</p>
-          {detail.soal.length === 0 ? (
-            <p className="text-xs text-[#94A3B8]">Belum ada soal.</p>
-          ) : (
-            <div className="flex flex-wrap items-center gap-2">
-              {detail.soal.map((s, i) => {
-                const tone =
-                  s.status === "BENAR" || s.status === "SUDAH_DINILAI"
-                    ? "#16A34A"
-                    : s.status === "SALAH"
-                    ? "#EF4444"
-                    : s.status === "SEBAGIAN_BENAR" || s.status === "BELUM_DINILAI"
-                    ? "#D97706"
-                    : "#9CA3AF";
-                return (
+        {showGrid && (
+          <div className="mt-3 rounded-lg border bg-card p-3 text-card-foreground">
+            <p className="mb-3 text-sm font-medium">Daftar Soal</p>
+            {detail.soal.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Belum ada soal.</p>
+            ) : (
+              <div className="flex flex-wrap items-center gap-2">
+                {detail.soal.map((s, i) => (
                   <button
                     key={s.id}
                     onClick={() => {
                       setActiveIndex(i);
                       setShowGrid(false);
                     }}
-                    className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-xs font-semibold"
-                    style={
-                      i === activeIndex
-                        ? { background: BRAND, color: "white" }
-                        : { background: `${tone}1A`, color: tone, border: `1px solid ${tone}55` }
-                    }
+                    title={STATUS_BADGE[s.status].label}
+                    aria-label={`Soal ${i + 1}, ${STATUS_BADGE[s.status].label}`}
+                    className={`flex size-10 cursor-pointer items-center justify-center rounded-md border text-sm font-medium tabular-nums transition-colors duration-150 ${focusRing} ${
+                      i === activeIndex ? "border-brand bg-brand text-brand-foreground" : GRID_TONE[s.status]
+                    }`}
                   >
                     {i + 1}
                   </button>
-                );
-              })}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="mt-4 min-h-[360px] rounded-lg border bg-card p-5 text-card-foreground sm:p-6">
+          {detail.soal.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Siswa ini belum menjawab soal apapun.</p>
+          ) : currentSoal ? (
+            <SoalView soal={currentSoal} nomor={activeIndex + 1} />
+          ) : null}
         </div>
-      )}
-
-      <div className="mt-4 min-h-[360px] rounded-xl border border-black/5 bg-[#FFFFFF] p-6 shadow-[0_2px_8px_rgba(15,23,42,0.08)] sm:p-8">
-        {detail.soal.length === 0 ? (
-          <p className="text-sm text-[#9CA3AF]">Siswa ini belum menjawab soal apapun.</p>
-        ) : currentSoal ? (
-          <SoalView soal={currentSoal} nomor={activeIndex + 1} />
-        ) : null}
       </div>
-
-    </div></KurikulumShell>
+    </KurikulumShell>
   );
 }

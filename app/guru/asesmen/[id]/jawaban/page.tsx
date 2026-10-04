@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import Badge from "@/components/ui/Badge";
 import TabelNilai from "@/components/Tabelnilai";
 
@@ -27,6 +28,9 @@ interface NilaiResponse {
   kelas: string[];
   nilai: NilaiRow[];
 }
+
+const focusRing =
+  "outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
 
 export default function GuruJawabanPage() {
   const params = useParams();
@@ -70,31 +74,44 @@ export default function GuruJawabanPage() {
     [hasil, selectedKelasId]
   );
 
-  if (loading) return <p className="text-sm text-[#9CA3AF]">Memuat jawaban...</p>;
-  if (!hasil) return <p className="text-sm text-red-500">{error || "Jawaban tidak ditemukan."}</p>;
+  if (loading) {
+    return (
+      <div className="mx-auto max-w-6xl space-y-3" role="status" aria-label="Memuat jawaban">
+        <div className="h-24 animate-pulse rounded-lg border bg-muted" />
+        <div className="h-20 animate-pulse rounded-lg border bg-muted" />
+      </div>
+    );
+  }
+  if (!hasil) return <p className="text-sm text-danger">{error || "Jawaban tidak ditemukan."}</p>;
 
   return (
     <div className="mx-auto max-w-6xl pb-10">
-      <Link href={`/guru/asesmen/${asesmenId}`} className="text-sm font-semibold text-[#64748B] hover:text-[#00D2D9]">
-        &larr; Kembali ke Asesmen
+      <Link
+        href={`/guru/asesmen/${asesmenId}`}
+        className={`inline-flex min-h-10 items-center gap-1.5 rounded-sm text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground ${focusRing}`}
+      >
+        <ArrowLeft className="size-4" strokeWidth={1.75} aria-hidden="true" />
+        Kembali ke Asesmen
       </Link>
 
-      <div className="mt-4 rounded-xl border border-black/5 border-t-4 border-t-[#00D2D9] bg-[#FFFFFF] p-6 shadow-sm">
-        <p className="text-xs font-semibold uppercase tracking-wide text-[#94A3B8]">Jawaban Siswa</p>
-        <h1 className="mt-1 text-2xl font-bold text-[#111827]">{hasil.asesmen.judul}</h1>
-        <div className="mt-3 flex flex-wrap gap-2">
+      <div className="mt-3 rounded-lg border bg-card p-5 text-card-foreground">
+        <p className="text-xs text-muted-foreground">Jawaban Siswa</p>
+        <h1 className="mt-1 text-xl font-semibold tracking-tight">{hasil.asesmen.judul}</h1>
+        <div className="mt-3 flex flex-wrap gap-1.5">
           <Badge tone="brand">{hasil.asesmen.tipe === "KUIS" ? "Kuis" : "Ujian Online"}</Badge>
           {hasil.asesmen.mapel && <Badge tone="gray">{hasil.asesmen.mapel}</Badge>}
           <Badge tone="green">{hasil.nilai.length} sudah mengumpulkan</Badge>
         </div>
       </div>
 
-      {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
+      {error && <p className="mt-4 text-sm text-danger">{error}</p>}
 
       <div className="mt-6">
-        <h2 className="mb-3 text-base font-bold text-[#111827]">Daftar Perkelas</h2>
+        <h2 className="mb-3 text-base font-semibold">Daftar Perkelas</h2>
         {kelasTujuan.length === 0 ? (
-          <p className="text-sm text-[#94A3B8]">Belum ada kelas tujuan.</p>
+          <div className="rounded-lg border border-dashed px-4 py-8 text-center">
+            <p className="text-sm text-muted-foreground">Belum ada kelas tujuan.</p>
+          </div>
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {kelasTujuan.map(({ kelas }) => {
@@ -103,12 +120,18 @@ export default function GuruJawabanPage() {
               return (
                 <button
                   key={kelas.id}
+                  type="button"
+                  aria-pressed={active}
                   onClick={() => setSelectedKelasId(active ? null : kelas.id)}
-                  className="rounded-xl border bg-[#FFFFFF] p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-                  style={active ? { borderColor: "#00D2D9", boxShadow: "0 0 0 2px #00D2D933" } : { borderColor: "#E5E7EB" }}
+                  className={`flex min-h-16 cursor-pointer items-center justify-between gap-3 rounded-lg border bg-card p-4 text-left text-card-foreground transition-colors duration-150 hover:bg-accent ${focusRing} ${
+                    active ? "border-brand bg-brand-subtle hover:bg-brand-subtle" : ""
+                  }`}
                 >
-                  <p className="font-bold text-[#111827]">{kelas.judul}</p>
-                  <p className="mt-1 text-xs text-[#64748B]">{count} siswa mengumpulkan jawaban</p>
+                  <span className="min-w-0">
+                    <span className="block truncate text-sm font-semibold">{kelas.judul}</span>
+                    <span className="mt-0.5 block text-xs text-muted-foreground">siswa mengumpulkan jawaban</span>
+                  </span>
+                  <span className="shrink-0 text-xl font-semibold tabular-nums">{count}</span>
                 </button>
               );
             })}

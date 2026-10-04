@@ -22,19 +22,19 @@ export function ClassDetailOverview({
   onEdit?: () => void;
 }) {
   return (
-    <section className="border-b border-[#DCE3E8] pb-5">
+    <section className="border-b border-border pb-5">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase text-[#64748B]">Ruang kelas</p>
-          <h1 className="mt-1 break-words text-2xl font-bold text-[#111827]">{title}</h1>
-          {description && <p className="mt-2 max-w-2xl whitespace-pre-wrap break-words text-sm leading-6 text-[#475569]">{description}</p>}
+          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Ruang kelas</p>
+          <h1 className="mt-1 break-words text-xl font-semibold tracking-tight sm:text-2xl">{title}</h1>
+          {description && <p className="mt-2 max-w-2xl whitespace-pre-wrap break-words text-sm leading-6 text-muted-foreground">{description}</p>}
         </div>
         <div className="flex min-w-0 flex-wrap items-center gap-2">
           {inviteToken && onCopyInvite && (
-            <div className="min-w-0 border border-[#DCE3E8] px-3 py-2">
-              <p className="text-[10px] font-semibold uppercase text-[#64748B]">Kode kelas</p>
-              <p className="break-all text-sm font-bold text-[#111827]">{inviteToken}</p>
-              <button type="button" onClick={onCopyInvite} className="mt-1 text-xs font-semibold text-[#008C91] hover:underline">
+            <div className="min-w-0 rounded-md border border-border px-3 py-2">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Kode kelas</p>
+              <p className="break-all font-mono text-sm font-semibold">{inviteToken}</p>
+              <button type="button" onClick={onCopyInvite} className="mt-1 min-h-10 text-left text-xs font-medium text-foreground underline underline-offset-4 hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                 {copied ? "Tersalin" : "Salin link undangan"}
               </button>
             </div>
@@ -43,13 +43,13 @@ export function ClassDetailOverview({
         </div>
       </div>
       <div className="mt-5 grid grid-cols-2 gap-3 sm:max-w-md">
-        <div className="border-l-2 border-[#00A6AB] pl-3">
-          <p className="text-lg font-bold text-[#111827]">{studentCount}</p>
-          <p className="text-xs text-[#64748B]">Siswa terdaftar</p>
+        <div className="border-l-2 border-brand pl-3">
+          <p className="text-lg font-semibold tabular-nums">{studentCount}</p>
+          <p className="text-xs text-muted-foreground">Siswa terdaftar</p>
         </div>
-        <div className="border-l-2 border-[#7B8794] pl-3">
-          <p className="text-lg font-bold text-[#111827]">{teacherCount}</p>
-          <p className="text-xs text-[#64748B]">Guru pengajar</p>
+        <div className="border-l-2 border-border pl-3">
+          <p className="text-lg font-semibold tabular-nums">{teacherCount}</p>
+          <p className="text-xs text-muted-foreground">Guru pengajar</p>
         </div>
       </div>
     </section>
@@ -80,8 +80,8 @@ export function ClassDirectoryNavigation({
           type="button"
           aria-pressed={section === item.key}
           onClick={() => onChange(section === item.key ? null : item.key)}
-          className={`flex min-h-12 min-w-0 items-center justify-between gap-2 border px-3 py-2 text-left text-sm font-semibold ${
-            section === item.key ? "border-[#008C91] bg-[#E6FAFA] text-[#006F73]" : "border-[#DCE3E8] bg-white text-[#334155] hover:bg-[#F8FAFC]"
+          className={`flex min-h-12 min-w-0 items-center justify-between gap-2 rounded-md border px-3 py-2 text-left text-sm font-medium transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+            section === item.key ? "border-transparent bg-brand text-brand-foreground" : "border-border bg-card text-muted-foreground hover:bg-accent hover:text-foreground"
           }`}
         >
           <span>{item.label}</span>

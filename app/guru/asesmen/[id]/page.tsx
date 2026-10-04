@@ -3,12 +3,11 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
+import { ArrowLeft, ChevronLeft, ChevronRight, LayoutGrid, Search, X } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import ModalBuatSoal from "@/components/ModalBuatSoal";
 import { showAlert, showConfirm } from "@/lib/dialog";
-
-const BRAND = "#00D2D9";
 
 interface OpsiJawaban {
   id: string;
@@ -33,6 +32,15 @@ interface AsesmenDetail {
   mapel: { id: string; nama: string } | null;
   soal: Soal[];
 }
+
+const focusRing =
+  "outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+
+const inputCls =
+  "h-10 rounded-md border border-input bg-background px-3 text-sm outline-none transition-colors duration-150 placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:h-9";
+
+const iconBtn =
+  `inline-flex size-10 cursor-pointer items-center justify-center rounded-md border bg-background text-foreground transition-colors duration-150 hover:bg-accent disabled:cursor-not-allowed disabled:opacity-40 sm:size-9 ${focusRing}`;
 
 export default function GuruAsesmenDetailPage() {
   const router = useRouter();
@@ -168,11 +176,19 @@ export default function GuruAsesmenDetailPage() {
     }
   }
 
-  if (loading) return <p className="text-sm text-[#9CA3AF]">Memuat...</p>;
+  if (loading) {
+    return (
+      <div className="mx-auto max-w-6xl space-y-3" role="status" aria-label="Memuat asesmen">
+        <div className="h-24 animate-pulse rounded-lg border bg-muted" />
+        <div className="h-10 animate-pulse rounded-lg border bg-muted" />
+        <div className="h-72 animate-pulse rounded-lg border bg-muted" />
+      </div>
+    );
+  }
   if (error || !asesmen) {
     return (
-      <div className="flex flex-col items-center gap-3 py-10">
-        <p className="text-sm text-[#9CA3AF]">{error || "Asesmen tidak ditemukan."}</p>
+      <div className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-lg border border-dashed px-4 py-10 text-center">
+        <p className="text-sm text-muted-foreground">{error || "Asesmen tidak ditemukan."}</p>
         <Button variant="outline" onClick={() => router.push("/guru/asesmen")}>
           Kembali
         </Button>
@@ -184,37 +200,53 @@ export default function GuruAsesmenDetailPage() {
 
   return (
     <div className="mx-auto max-w-6xl pb-10">
-      <Link href="/guru/asesmen" className="mb-4 inline-flex items-center gap-1 text-sm font-semibold text-[#64748B] hover:text-[#00D2D9]">
-        â† Kembali ke Asesmen
+      <Link
+        href="/guru/asesmen"
+        className={`mb-4 inline-flex min-h-10 items-center gap-1.5 rounded-sm text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground ${focusRing}`}
+      >
+        <ArrowLeft className="size-4" strokeWidth={1.75} aria-hidden="true" />
+        Kembali ke Asesmen
       </Link>
 
-      <div className="flex flex-wrap items-start justify-between gap-5 rounded-xl border border-black/5 border-t-4 border-t-[#00D2D9] bg-[#FFFFFF] p-6 shadow-[0_2px_8px_rgba(15,23,42,0.08)]">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-[#111827]">{asesmen.judul}</h1>
-          <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+      <div className="flex flex-wrap items-start justify-between gap-4 rounded-lg border bg-card p-5 text-card-foreground">
+        <div className="min-w-0">
+          <h1 className="text-xl font-semibold tracking-tight">{asesmen.judul}</h1>
+          <div className="mt-2 flex flex-wrap items-center gap-1.5">
             <Badge tone="brand">{asesmen.tipe === "KUIS" ? "Kuis" : "Ujian Online"}</Badge>
             {asesmen.mapel && <Badge tone="gray">{asesmen.mapel.nama}</Badge>}
             <Badge tone={asesmen.status === "SELESAI" ? "green" : "amber"}>{asesmen.status === "SELESAI" ? "Selesai" : "Proses"}</Badge>
           </div>
         </div>
 
-        <div className="text-right">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#94A3B8]">Durasi pengerjaan</p>
+        <div className="sm:text-right">
+          <p className="text-xs text-muted-foreground">Durasi pengerjaan</p>
           {editingDurasi ? (
-            <div className="mt-1 flex items-center gap-1">
-              <input type="number" min={1} value={durasiInput} onChange={(e) => setDurasiInput(e.target.value)} className="w-16 rounded-lg border border-[#D1D5DB] px-2 py-1 text-sm outline-none focus:border-[#00D2D9]" />
+            <div className="mt-1 flex items-center gap-2">
+              <input
+                type="number"
+                min={1}
+                value={durasiInput}
+                onChange={(e) => setDurasiInput(e.target.value)}
+                aria-label="Durasi pengerjaan (menit)"
+                className={`${inputCls} w-20 tabular-nums`}
+              />
               <Button size="sm" onClick={handleSaveDurasi}>Simpan</Button>
             </div>
           ) : (
-            <button onClick={() => isEditable && setEditingDurasi(true)} disabled={!isEditable} className="mt-1 text-sm font-bold text-[#111827] disabled:cursor-default">
+            <button
+              type="button"
+              onClick={() => isEditable && setEditingDurasi(true)}
+              disabled={!isEditable}
+              className={`mt-1 inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-sm text-sm font-semibold tabular-nums disabled:cursor-default ${focusRing}`}
+            >
               {asesmen.durasiMenit ? `${asesmen.durasiMenit} menit` : "Belum diatur"}
-              {isEditable && <span className="ml-1 text-[11px] font-normal text-[#00D2D9]">Atur Durasi</span>}
+              {isEditable && <span className="text-xs font-normal underline underline-offset-2">Atur Durasi</span>}
             </button>
           )}
         </div>
       </div>
 
-      <div className="mt-5 flex flex-wrap items-center gap-2">
+      <div className="mt-4 flex flex-wrap items-center gap-2">
         {isEditable && (
           <Button size="sm" onClick={openBuatSoal}>
             {currentSoal ? "Edit Soal" : "+ Buat Soal"}
@@ -222,44 +254,53 @@ export default function GuruAsesmenDetailPage() {
         )}
         <Link
           href={`/guru/asesmen/${asesmenId}/jawaban`}
-          className="inline-flex items-center justify-center rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] px-3 py-1.5 text-xs font-semibold text-[#475569] transition-colors hover:border-[#00D2D9] hover:text-[#00D2D9]"
+          className={`inline-flex h-10 items-center justify-center rounded-md border bg-background px-3 text-sm font-medium transition-colors duration-150 hover:bg-accent sm:h-9 ${focusRing}`}
         >
           Jawaban
         </Link>
-        <input
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setActiveIndex(0);
-          }}
-          placeholder="Cari soal..."
-          className="min-w-[180px] flex-1 rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] px-4 py-2 text-sm outline-none placeholder:text-[#94A3B8] focus:border-[#00D2D9] focus:ring-2 focus:ring-[#00D2D9]/10"
-        />
+        <div className="relative min-w-[180px] flex-1">
+          <Search
+            className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+            strokeWidth={1.75}
+            aria-hidden="true"
+          />
+          <input
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setActiveIndex(0);
+            }}
+            placeholder="Cari soal..."
+            aria-label="Cari soal"
+            className={`${inputCls} w-full pl-9`}
+          />
+        </div>
         <div className="flex items-center gap-1">
-          <button aria-label="Soal sebelumnya" onClick={() => setActiveIndex((i) => Math.max(0, i - 1))} disabled={activeIndex === 0} className="cursor-pointer rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] px-3 py-2 text-xs font-semibold text-[#475569] disabled:cursor-not-allowed disabled:opacity-40">
-            {"<<"}
+          <button aria-label="Soal sebelumnya" onClick={() => setActiveIndex((i) => Math.max(0, i - 1))} disabled={activeIndex === 0} className={iconBtn}>
+            <ChevronLeft className="size-4" strokeWidth={1.75} aria-hidden="true" />
           </button>
-          <span className="min-w-12 px-2 text-center text-xs font-bold text-[#475569]">
+          <span className="min-w-12 px-1 text-center text-sm tabular-nums text-muted-foreground">
             {halamanCount === 0 ? "0/0" : `${activeIndex + 1}/${halamanCount}`}
           </span>
-          <button aria-label="Soal berikutnya" onClick={() => setActiveIndex((i) => Math.min(halamanCount - 1, i + 1))} disabled={activeIndex >= halamanCount - 1} className="cursor-pointer rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] px-3 py-2 text-xs font-semibold text-[#475569] disabled:cursor-not-allowed disabled:opacity-40">
-            {">>"}
+          <button aria-label="Soal berikutnya" onClick={() => setActiveIndex((i) => Math.min(halamanCount - 1, i + 1))} disabled={activeIndex >= halamanCount - 1} className={iconBtn}>
+            <ChevronRight className="size-4" strokeWidth={1.75} aria-hidden="true" />
           </button>
-          <button onClick={() => setShowGrid((v) => !v)} className="cursor-pointer rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] p-2 text-[#475569]" title="Buka Library Soal" aria-label="Buka Library Soal">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4">
-              <rect x="3" y="3" width="7" height="7" rx="1" />
-              <rect x="14" y="3" width="7" height="7" rx="1" />
-              <rect x="3" y="14" width="7" height="7" rx="1" />
-              <rect x="14" y="14" width="7" height="7" rx="1" />
-            </svg>
+          <button
+            onClick={() => setShowGrid((v) => !v)}
+            aria-pressed={showGrid}
+            className={`${iconBtn} ${showGrid ? "bg-accent" : ""}`}
+            title="Buka Library Soal"
+            aria-label="Buka Library Soal"
+          >
+            <LayoutGrid className="size-4" strokeWidth={1.75} aria-hidden="true" />
           </button>
         </div>
       </div>
 
       {showGrid && (
-        <div className="mt-3 rounded-xl border border-black/5 bg-[#FFFFFF] p-3 shadow-sm">
-          <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-            <p className="text-xs font-semibold text-[#64748B]">Library Soal</p>
+        <div className="mt-3 rounded-lg border bg-card p-3 text-card-foreground">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <p className="text-sm font-medium">Library Soal</p>
             {isEditable && (
               <Button size="sm" onClick={handleTambahHalaman}>
                 + Tambah Halaman
@@ -267,15 +308,22 @@ export default function GuruAsesmenDetailPage() {
             )}
           </div>
           {halamanCount === 0 ? (
-            <p className="text-xs text-[#94A3B8]">Belum ada halaman soal.</p>
+            <p className="text-sm text-muted-foreground">Belum ada halaman soal.</p>
           ) : (
             <div className="flex flex-wrap items-center gap-2">
               {Array.from({ length: halamanCount }, (_, i) => soalTerfilter[i] ?? null).map((soal, i) => (
                 <div key={soal?.id ?? `halaman-${i}`} className="group relative">
                   <button
                     onClick={() => setActiveIndex(i)}
-                    className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-xs font-semibold"
-                    style={i === activeIndex ? { background: BRAND, color: "white" } : { background: soal ? "#F3F4F6" : "#FFF7ED", color: soal ? "#374151" : "#C2410C" }}
+                    aria-label={`Halaman ${i + 1}${soal ? "" : ", kosong"}`}
+                    aria-current={i === activeIndex ? "true" : undefined}
+                    className={`flex size-10 cursor-pointer items-center justify-center rounded-md border text-sm font-medium tabular-nums transition-colors duration-150 ${focusRing} ${
+                      i === activeIndex
+                        ? "border-brand bg-brand text-brand-foreground"
+                        : soal
+                        ? "bg-muted hover:bg-accent"
+                        : "border-dashed text-muted-foreground hover:bg-accent"
+                    }`}
                   >
                     {i + 1}
                   </button>
@@ -285,9 +333,9 @@ export default function GuruAsesmenDetailPage() {
                       onClick={() => handleHapusHalaman(i)}
                       aria-label={`Hapus halaman ${i + 1}`}
                       title={`Hapus halaman ${i + 1}`}
-                      className="absolute -right-1 -top-1 hidden h-4 w-4 cursor-pointer items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white group-hover:flex"
+                      className="absolute -right-1.5 -top-1.5 hidden size-5 cursor-pointer items-center justify-center rounded-sm bg-danger text-white group-focus-within:flex group-hover:flex"
                     >
-                      Ã—
+                      <X className="size-3" strokeWidth={2} aria-hidden="true" />
                     </button>
                   )}
                 </div>
@@ -297,9 +345,9 @@ export default function GuruAsesmenDetailPage() {
         </div>
       )}
 
-      <div className="mt-4 min-h-[300px] rounded-xl border border-black/5 bg-[#FFFFFF] p-6 shadow-[0_2px_8px_rgba(15,23,42,0.08)] sm:p-8">
+      <div className="mt-4 min-h-[300px] rounded-lg border bg-card p-5 text-card-foreground sm:p-6">
         {halamanCount === 0 ? (
-          <p className="text-sm text-[#9CA3AF]">Belum ada soal. Klik &quot;+ Buat Soal&quot; untuk mulai.</p>
+          <p className="text-sm text-muted-foreground">Belum ada soal. Klik &quot;+ Buat Soal&quot; untuk mulai.</p>
         ) : currentSoal ? (
           <div>
             <div className="flex items-start justify-between gap-2">
@@ -307,45 +355,63 @@ export default function GuruAsesmenDetailPage() {
                 {currentSoal.tipe === "PILIHAN_GANDA" ? "Pilihan Ganda" : currentSoal.tipe === "CHECKBOX" ? "Checkbox" : "Essay"}
               </Badge>
               {isEditable && (
-                <div className="flex gap-2">
-                  <button onClick={() => openEditSoal(currentSoal)} className="cursor-pointer text-xs font-medium text-[#00D2D9] hover:underline">
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => openEditSoal(currentSoal)}
+                    className={`inline-flex min-h-10 cursor-pointer items-center rounded-sm px-2 text-sm font-medium underline underline-offset-2 ${focusRing}`}
+                  >
                     Edit
                   </button>
-                  <button onClick={() => handleDeleteSoal(currentSoal.id)} className="cursor-pointer text-xs font-medium text-red-500 hover:underline">
+                  <button
+                    onClick={() => handleDeleteSoal(currentSoal.id)}
+                    className={`inline-flex min-h-10 cursor-pointer items-center rounded-sm px-2 text-sm font-medium text-danger hover:underline ${focusRing}`}
+                  >
                     Hapus
                   </button>
                 </div>
               )}
             </div>
 
-            <p className="mt-5 text-base font-semibold leading-relaxed text-[#111827]">
+            <p className="mt-4 text-base font-semibold leading-relaxed">
               {activeIndex + 1}. {currentSoal.pertanyaan}
             </p>
 
             {currentSoal.gambar && (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={currentSoal.gambar} alt="Gambar soal" className="mt-3 max-h-64 rounded-xl object-contain" />
+              <img src={currentSoal.gambar} alt="Gambar soal" className="mt-3 max-h-64 rounded-lg border object-contain" />
             )}
 
             {currentSoal.tipe !== "ESSAY" ? (
               <div className="mt-4 space-y-2">
                 {currentSoal.opsi.map((o) => (
-                  <label key={o.id} className={`flex cursor-pointer items-center gap-3 rounded-lg border px-4 py-3 text-sm transition-colors ${o.isBenar ? "border-[#00D2D9] bg-[#00D2D9]/5" : "border-[#E2E8F0] hover:border-[#94A3B8]"}`}>
-                    <input type={currentSoal.tipe === "PILIHAN_GANDA" ? "radio" : "checkbox"} checked={o.isBenar} disabled={!isEditable} onChange={() => handleToggleKunci(o.id)} />
-                    <span className="text-[#374151]">{o.teks}</span>
+                  <label
+                    key={o.id}
+                    className={`flex min-h-11 cursor-pointer items-center gap-3 rounded-md border px-4 py-2.5 text-sm transition-colors duration-150 ${
+                      o.isBenar ? "border-brand bg-brand-subtle" : "hover:bg-accent"
+                    }`}
+                  >
+                    <input
+                      type={currentSoal.tipe === "PILIHAN_GANDA" ? "radio" : "checkbox"}
+                      checked={o.isBenar}
+                      disabled={!isEditable}
+                      onChange={() => handleToggleKunci(o.id)}
+                      className="size-4 accent-brand"
+                    />
+                    <span className="flex-1">{o.teks}</span>
+                    {o.isBenar && <span className="text-xs font-medium">Kunci</span>}
                   </label>
                 ))}
               </div>
             ) : (
-              <p className="mt-3 text-xs text-[#9CA3AF]">Soal Essay â€” dinilai manual setelah siswa mengumpulkan.</p>
+              <p className="mt-3 text-sm text-muted-foreground">Soal Essay — dinilai manual setelah siswa mengumpulkan.</p>
             )}
           </div>
         ) : (
-          <div className="flex min-h-[220px] flex-col items-center justify-center rounded-xl border border-dashed border-[#CBD5E1] bg-[#F8FAFC] text-center">
-            <p className="text-sm font-semibold text-[#475569]">Halaman {activeIndex + 1} masih kosong</p>
-            <p className="mt-1 text-xs text-[#94A3B8]">Buat soal untuk mengisi halaman ini.</p>
+          <div className="flex min-h-[220px] flex-col items-center justify-center rounded-lg border border-dashed bg-muted px-4 text-center">
+            <p className="text-sm font-medium">Halaman {activeIndex + 1} masih kosong</p>
+            <p className="mt-1 text-sm text-muted-foreground">Buat soal untuk mengisi halaman ini.</p>
             {isEditable && (
-              <div className="mt-3 flex flex-wrap justify-center gap-2">
+              <div className="mt-4 flex flex-wrap justify-center gap-2">
                 <Button size="sm" onClick={openBuatSoal}>
                   + Buat Soal
                 </Button>
@@ -358,8 +424,8 @@ export default function GuruAsesmenDetailPage() {
         )}
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
-        <p className="text-xs text-[#9CA3AF]">Kunci jawaban langsung tersimpan saat kamu klik opsi di atas.</p>
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-muted-foreground">Kunci jawaban langsung tersimpan saat kamu klik opsi di atas.</p>
         {isEditable ? (
           <Button loading={finalizing} onClick={handleSelesai}>
             Selesaikan Asesmen

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { ChevronDown, Ellipsis } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import PengumumanCard, { PengumumanData } from "@/components/PengumumanCard";
@@ -20,8 +21,9 @@ import ModalKirimAsesmen from "@/components/ModalKirimAsesmen";
 import ModalKirimPengumuman from "@/components/ModalKirimPengumuman";
 import type { AsesmenData } from "@/components/Asesmencard";
 import { showAlert, showConfirm } from "@/lib/dialog";
-
-const BRAND = "#00D2D9";
+import { cn } from "@/lib/utils";
+import { Avatar } from "@/components/shared/avatar";
+import { EmptyState, LoadingBlock } from "@/components/shared/data-display";
 
 interface SiswaDiKelas {
   siswaId: string;
@@ -46,6 +48,9 @@ interface KelasDetail {
   guruMapel: GuruDiKelas[];
   feed: FeedItem[];
 }
+
+const menuItem =
+  "block h-10 w-full cursor-pointer px-3 text-left text-sm transition-colors duration-100 hover:bg-accent";
 
 export default function GuruKelasDetailPage() {
   const router = useRouter();
@@ -181,12 +186,12 @@ export default function GuruKelasDetailPage() {
     loadKelas();
   }
 
-  if (loading) return <p className="text-sm text-[#9CA3AF]">Memuat...</p>;
+  if (loading) return <LoadingBlock />;
 
   if (error || !kelas) {
     return (
       <div className="flex flex-col items-center gap-3 py-10">
-        <p className="text-sm text-[#9CA3AF]">{error || "Kelas tidak ditemukan."}</p>
+        <p className="text-sm text-muted-foreground">{error || "Kelas tidak ditemukan."}</p>
         <Button variant="outline" onClick={() => router.push("/guru")}>
           Kembali
         </Button>
@@ -214,47 +219,47 @@ export default function GuruKelasDetailPage() {
       <ClassDetailOverview title={kelas.judul} description={kelas.deskripsi} studentCount={kelas.siswa.length} teacherCount={kelas.guruMapel.length} inviteToken={kelas.inviteToken} copied={copied} onCopyInvite={handleCopyInvite} />
       <ClassDirectoryNavigation section={section} onChange={setSection} studentCount={kelas.siswa.length} teacherCount={kelas.guruMapel.length} />
 
+      {/* ============ SISWA ============ */}
       {section === "SISWA" && (
-        <div className="mt-4 space-y-3">
+        <div className="mt-6 space-y-3">
           {Object.keys(siswaGrouped).length === 0 ? (
-            <p className="text-sm text-[#9CA3AF]">Belum ada siswa di kelas ini.</p>
+            <EmptyState>Belum ada siswa di kelas ini.</EmptyState>
           ) : (
             Object.entries(siswaGrouped).map(([label, list]) => {
               const isOpen = expandedRombel === label;
               return (
-                <div key={label} className="overflow-hidden rounded-2xl border border-black/5 bg-[#FFFFFF] shadow-sm">
-                  <button onClick={() => setExpandedRombel(isOpen ? null : label)} className="flex w-full cursor-pointer items-center justify-between px-5 py-3.5 text-left">
+                <div key={label} className="overflow-hidden rounded-lg border bg-card text-card-foreground">
+                  <button
+                    type="button"
+                    aria-expanded={isOpen}
+                    onClick={() => setExpandedRombel(isOpen ? null : label)}
+                    className="flex min-h-12 w-full cursor-pointer items-center justify-between gap-3 px-4 py-3 text-left transition-colors duration-150 hover:bg-accent outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+                  >
                     <div className="flex items-center gap-2">
-                      <p className="text-sm font-bold text-[#111827]">{label}</p>
+                      <p className="text-sm font-semibold">{label}</p>
                       <Badge tone="brand">{list.length} Siswa</Badge>
                     </div>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" className={`h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""}`}>
-                      <path d="m6 9 6 6 6-6" />
-                    </svg>
+                    <ChevronDown
+                      aria-hidden="true"
+                      strokeWidth={1.75}
+                      className={cn("size-4 text-muted-foreground transition-transform duration-150", isOpen && "rotate-180")}
+                    />
                   </button>
                   {isOpen && (
-                    <div className="space-y-2 border-t border-black/5 p-4">
+                    <ul className="divide-y border-t">
                       {list.map((ks) => (
-                        <button
-                          key={ks.siswaId}
-                          type="button"
-                          onClick={() => router.push(`/profil/${ks.siswa.id}`)}
-                          className="flex w-full cursor-pointer items-center gap-3 rounded-xl border border-black/5 p-3 text-left transition-colors hover:border-[#C7D2FE] hover:bg-[#F8FAFF]"
-                        >
-                          <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#E5E7EB] text-xs font-bold text-[#6B7280]">
-                            {ks.siswa.fotoProfil ? (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img src={ks.siswa.fotoProfil} alt={ks.siswa.nama} className="h-full w-full object-cover" />
-                            ) : (
-                              ks.siswa.nama.charAt(0)
-                            )}
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="truncate text-sm font-semibold text-[#111827]">{ks.siswa.nama}</p>
-                          </div>
-                        </button>
+                        <li key={ks.siswaId}>
+                          <button
+                            type="button"
+                            onClick={() => router.push(`/profil/${ks.siswa.id}`)}
+                            className="flex min-h-12 w-full cursor-pointer items-center gap-3 px-4 py-2.5 text-left transition-colors duration-100 hover:bg-accent outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+                          >
+                            <Avatar name={ks.siswa.nama} src={ks.siswa.fotoProfil} className="size-9" />
+                            <span className="min-w-0 flex-1 truncate text-sm font-medium">{ks.siswa.nama}</span>
+                          </button>
+                        </li>
                       ))}
-                    </div>
+                    </ul>
                   )}
                 </div>
               );
@@ -263,35 +268,30 @@ export default function GuruKelasDetailPage() {
         </div>
       )}
 
+      {/* ============ GURU ============ */}
       {section === "GURU" && (
-        <div className="mt-4">
+        <div className="mt-6">
           {Object.keys(guruGrouped).length === 0 ? (
-            <p className="text-sm text-[#9CA3AF]">Belum ada guru lain di kelas ini.</p>
+            <EmptyState>Belum ada guru lain di kelas ini.</EmptyState>
           ) : (
             Object.entries(guruGrouped).map(([mapel, list]) => (
               <div key={mapel} className="mb-4">
-                <p className="mb-2 text-xs font-bold uppercase tracking-wide text-[#9CA3AF]">{mapel}</p>
-                <div className="space-y-2">
+                <p className="mb-2 text-xs font-medium text-muted-foreground">{mapel}</p>
+                <ul className="divide-y overflow-hidden rounded-lg border bg-card text-card-foreground">
                   {list.map((gm) => (
-                    <div key={gm.id} className="flex items-center gap-3 rounded-xl border border-black/5 bg-[#FFFFFF] p-3 shadow-sm">
-                      <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#E5E7EB] text-xs font-bold text-[#6B7280]">
-                        {gm.guru.fotoProfil ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={gm.guru.fotoProfil} alt={gm.guru.nama} className="h-full w-full object-cover" />
-                        ) : (
-                          gm.guru.nama.charAt(0)
-                        )}
-                      </div>
-                      <p className="text-sm font-semibold text-[#111827]">{gm.guru.nama}</p>
-                    </div>
+                    <li key={gm.id} className="flex items-center gap-3 px-4 py-2.5">
+                      <Avatar name={gm.guru.nama} src={gm.guru.fotoProfil} className="size-9" />
+                      <p className="text-sm font-medium">{gm.guru.nama}</p>
+                    </li>
                   ))}
-                </div>
+                </ul>
               </div>
             ))
           )}
         </div>
       )}
 
+      {/* ============ FEED ============ */}
       {section === null && (
         <>
           <div className="mt-6 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
@@ -310,104 +310,134 @@ export default function GuruKelasDetailPage() {
           </div>
 
           <div className="mt-4">
-        <FeedCategoryFilter value={feedCategory} onChange={setFeedCategory} />
-        <div className="space-y-3">
-        {kelas.feed.length === 0 ? (
-          <p className="text-sm text-[#9CA3AF]">Belum ada aktivitas di kelas ini.</p>
-        ) : visibleFeed.length === 0 ? (
-          <p className="text-sm text-[#9CA3AF]">Tidak ada aktivitas untuk filter ini.</p>
-        ) : (
-          visibleFeed.map((item, i) => {
-            if (item.tipe === "PENGUMUMAN") {
-              return (
-                <PengumumanCard
-                  key={`p-${i}`}
-                  data={item.data}
-                  currentUserId={me?.id ?? ""}
-                  onEdit={handleEditPengumuman}
-                  onDelete={handleDeletePengumuman}
-                  onSend={setSendingPengumuman}
-                />
-              );
-            }
-            if (item.tipe === "TUGAS") {
-              return (
-                <TugasCard
-                  key={`t-${i}`}
-                  data={item.data}
-                  currentUserId={me?.id ?? ""}
-                  role="GURU"
-                  onEdit={openEditTugas}
-                  onDelete={handleDeleteTugas}
-                  onSend={setSendingTugas}
-                />
-              );
-            }
-            if (item.tipe === "MATERI") {
-              return (
-                <MateriCard
-                  key={`m-${item.data.id}`}
-                  data={item.data as MateriData}
-                  isEditable={item.data.guru?.id === me?.id}
-                  onEdit={setEditingMateri}
-                  onDelete={handleDeleteMateri}
-                />
-              );
-            }
-            const a = item.data;
-            return (
-              <div
-                key={`a-${i}`}
-                onClick={() => router.push(`/guru/asesmen/${a.id}`)}
-                className="block w-full cursor-pointer rounded-2xl border border-black/5 bg-[#FFFFFF] p-4 text-left shadow-sm transition-shadow hover:shadow-md"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-2">
-                    <Badge tone="brand">{a.tipe === "KUIS" ? "Kuis" : "Ujian Online"}</Badge>
-                    {a.mapel && <Badge tone="gray">{a.mapel.nama}</Badge>}
-                  </div>
-                  {me?.id === a.guru?.id && (
-                    <div className="relative" data-options-menu>
-                      <button
-                        type="button"
-                        aria-label="Opsi asesmen"
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          setOpenAsesmenOptionsId((value) => value === a.id ? null : a.id);
-                        }}
-                        className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-lg font-bold text-[#64748B] hover:bg-[#F1F5F9]"
-                      >
-                        â‹¯
-                      </button>
-                      {openAsesmenOptionsId === a.id && (
-                        <div onClick={(event) => event.stopPropagation()} className="absolute right-0 top-9 z-20 w-32 overflow-hidden rounded-xl border border-[#E2E8F0] bg-[#FFFFFF] py-1 text-left shadow-lg">
-                          {a.status === "PROSES" && (
-                            <button type="button" onClick={() => { setOpenAsesmenOptionsId(null); setEditingAsesmen(a as AsesmenData); }} className="block w-full cursor-pointer px-3 py-2 text-xs font-medium text-[#475569] hover:bg-[#F8FAFC]">
-                              Edit
-                            </button>
-                          )}
-                          {a.status === "SELESAI" && (
-                            <button type="button" onClick={() => { setOpenAsesmenOptionsId(null); setSendingAsesmen(a); }} className="block w-full cursor-pointer px-3 py-2 text-xs font-medium text-[#475569] hover:bg-[#F8FAFC]">
-                              Kirim ke
-                            </button>
-                          )}
-                          <button type="button" onClick={() => { setOpenAsesmenOptionsId(null); void handleDeleteAsesmen(a.id); }} className="block w-full cursor-pointer px-3 py-2 text-xs font-medium text-red-500 hover:bg-red-50">
-                            Hapus
-                          </button>
+            <FeedCategoryFilter value={feedCategory} onChange={setFeedCategory} />
+            <div className="space-y-3">
+              {kelas.feed.length === 0 ? (
+                <EmptyState>Belum ada aktivitas di kelas ini.</EmptyState>
+              ) : visibleFeed.length === 0 ? (
+                <EmptyState>Tidak ada aktivitas untuk filter ini.</EmptyState>
+              ) : (
+                visibleFeed.map((item, i) => {
+                  if (item.tipe === "PENGUMUMAN") {
+                    return (
+                      <PengumumanCard
+                        key={`p-${i}`}
+                        data={item.data}
+                        currentUserId={me?.id ?? ""}
+                        onEdit={handleEditPengumuman}
+                        onDelete={handleDeletePengumuman}
+                        onSend={setSendingPengumuman}
+                      />
+                    );
+                  }
+                  if (item.tipe === "TUGAS") {
+                    return (
+                      <TugasCard
+                        key={`t-${i}`}
+                        data={item.data}
+                        currentUserId={me?.id ?? ""}
+                        role="GURU"
+                        onEdit={openEditTugas}
+                        onDelete={handleDeleteTugas}
+                        onSend={setSendingTugas}
+                      />
+                    );
+                  }
+                  if (item.tipe === "MATERI") {
+                    return (
+                      <MateriCard
+                        key={`m-${item.data.id}`}
+                        data={item.data as MateriData}
+                        isEditable={item.data.guru?.id === me?.id}
+                        onEdit={setEditingMateri}
+                        onDelete={handleDeleteMateri}
+                      />
+                    );
+                  }
+                  const a = item.data;
+                  return (
+                    <div
+                      key={`a-${i}`}
+                      onClick={() => router.push(`/guru/asesmen/${a.id}`)}
+                      className="block w-full cursor-pointer rounded-lg border bg-card p-4 text-left text-card-foreground transition-colors duration-150 hover:bg-accent"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Badge tone="brand">{a.tipe === "KUIS" ? "Kuis" : "Ujian Online"}</Badge>
+                          {a.mapel && <Badge tone="gray">{a.mapel.nama}</Badge>}
                         </div>
-                      )}
+                        {me?.id === a.guru?.id && (
+                          <div className="relative" data-options-menu>
+                            <button
+                              type="button"
+                              aria-label="Opsi asesmen"
+                              aria-haspopup="menu"
+                              aria-expanded={openAsesmenOptionsId === a.id}
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                setOpenAsesmenOptionsId((value) => (value === a.id ? null : a.id));
+                              }}
+                              className="-m-1 inline-flex size-10 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors duration-150 hover:bg-background hover:text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            >
+                              <Ellipsis className="size-4" strokeWidth={1.75} />
+                            </button>
+                            {openAsesmenOptionsId === a.id && (
+                              <div
+                                role="menu"
+                                onClick={(event) => event.stopPropagation()}
+                                className="absolute right-0 top-10 z-20 w-32 overflow-hidden rounded-md border bg-popover py-1 text-left text-popover-foreground shadow-sm dark:shadow-none"
+                              >
+                                {a.status === "PROSES" && (
+                                  <button
+                                    type="button"
+                                    role="menuitem"
+                                    onClick={() => {
+                                      setOpenAsesmenOptionsId(null);
+                                      setEditingAsesmen(a as AsesmenData);
+                                    }}
+                                    className={menuItem}
+                                  >
+                                    Edit
+                                  </button>
+                                )}
+                                {a.status === "SELESAI" && (
+                                  <button
+                                    type="button"
+                                    role="menuitem"
+                                    onClick={() => {
+                                      setOpenAsesmenOptionsId(null);
+                                      setSendingAsesmen(a);
+                                    }}
+                                    className={menuItem}
+                                  >
+                                    Kirim ke
+                                  </button>
+                                )}
+                                <button
+                                  type="button"
+                                  role="menuitem"
+                                  onClick={() => {
+                                    setOpenAsesmenOptionsId(null);
+                                    void handleDeleteAsesmen(a.id);
+                                  }}
+                                  className={cn(menuItem, "text-danger")}
+                                >
+                                  Hapus
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      <p className="mt-2 text-sm font-semibold">{a.judul}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        <span className="tabular-nums">{a._count?.soal ?? 0}</span> soal · oleh {a.guru?.nama}
+                      </p>
                     </div>
-                  )}
-                </div>
-                <p className="mt-2 text-sm font-bold text-[#111827]">{a.judul}</p>
-                <p className="mt-1 text-xs text-[#9CA3AF]">
-                  {a._count?.soal ?? 0} soal Â· oleh {a.guru?.nama}
-                </p>
-              </div>
-            );
-          })
-        )}
-        </div>
+                  );
+                })
+              )}
+            </div>
           </div>
         </>
       )}
@@ -425,22 +455,40 @@ export default function GuruKelasDetailPage() {
       />
 
       <Modal open={showContentChooser} onClose={() => setShowContentChooser(false)} title="Buat Konten">
-        <p className="mb-4 text-sm text-[#64748B]">Pilih jenis konten untuk kelas ini.</p>
+        <p className="mb-4 text-sm text-muted-foreground">Pilih jenis konten untuk kelas ini.</p>
         <div className="grid gap-2 sm:grid-cols-2">
-          <button type="button" onClick={() => { setShowContentChooser(false); setShowModalPengumuman(true); }} className="border border-[#CBD5E1] px-4 py-3 text-left hover:border-[#00D2D9] hover:bg-[#F8FAFC]">
-            <span className="block text-sm font-semibold text-[#111827]">Pengumuman</span>
-            <span className="mt-1 block text-xs text-[#64748B]">Informasi dan lampiran kelas</span>
+          <button
+            type="button"
+            onClick={() => {
+              setShowContentChooser(false);
+              setShowModalPengumuman(true);
+            }}
+            className="cursor-pointer rounded-md border px-4 py-3 text-left transition-colors duration-150 hover:bg-accent outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <span className="block text-sm font-semibold">Pengumuman</span>
+            <span className="mt-1 block text-xs text-muted-foreground">Informasi dan lampiran kelas</span>
           </button>
-          <button type="button" onClick={() => { setShowContentChooser(false); setEditingMateri(null); setShowModalMateri(true); }} className="border border-[#CBD5E1] px-4 py-3 text-left hover:border-[#00D2D9] hover:bg-[#F8FAFC]">
-            <span className="block text-sm font-semibold text-[#111827]">Materi</span>
-            <span className="mt-1 block text-xs text-[#64748B]">Tautan atau file pembelajaran</span>
+          <button
+            type="button"
+            onClick={() => {
+              setShowContentChooser(false);
+              setEditingMateri(null);
+              setShowModalMateri(true);
+            }}
+            className="cursor-pointer rounded-md border px-4 py-3 text-left transition-colors duration-150 hover:bg-accent outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <span className="block text-sm font-semibold">Materi</span>
+            <span className="mt-1 block text-xs text-muted-foreground">Tautan atau file pembelajaran</span>
           </button>
         </div>
       </Modal>
 
       <ModalMateri
         open={showModalMateri || !!editingMateri}
-        onClose={() => { setShowModalMateri(false); setEditingMateri(null); }}
+        onClose={() => {
+          setShowModalMateri(false);
+          setEditingMateri(null);
+        }}
         onSuccess={loadKelas}
         mode={editingMateri ? "edit" : "create"}
         initialData={editingMateri}

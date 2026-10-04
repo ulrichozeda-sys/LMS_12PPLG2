@@ -60,7 +60,7 @@ export default function ModalEditProfil({ open, onClose, onSuccess, userId, init
         <Input label="Nama" value={nama} onChange={(event) => setNama(event.target.value)} required />
         <Input label="URL Foto Profil (opsional)" value={fotoProfil} onChange={(event) => setFotoProfil(event.target.value)} />
         <Textarea label="Deskripsi (opsional)" value={deskripsi} onChange={(event) => setDeskripsi(event.target.value)} />
-        {error && <p className="text-xs font-medium text-red-500">{error}</p>}
+        {error && <p className="text-xs font-medium text-danger">{error}</p>}
         <Button type="submit" loading={loading} className="w-full">Simpan Perubahan</Button>
       </form>
     </Modal>

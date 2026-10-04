@@ -3,6 +3,17 @@
 import { useEffect, useMemo, useState } from "react";
 import Badge from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
+import { cn } from "@/lib/utils";
+import {
+  BarRow,
+  EmptyState,
+  PageTitle,
+  Panel,
+  StatCell,
+  StatGrid,
+  StatusDot,
+} from "@/components/shared/data-display";
+import { SegmentedControl } from "@/components/shared/form-controls";
 
 type RangeKey = "semua" | "minggu" | "bulan" | "3bulan" | "tahun";
 
@@ -39,23 +50,13 @@ type PerformanceData = {
   summary: PerformanceSummary;
 };
 
-const RANGE_OPTIONS: Array<{ key: RangeKey; label: string }> = [
-  { key: "semua", label: "Semua" },
-  { key: "minggu", label: "Minggu ini" },
-  { key: "bulan", label: "Bulan ini" },
-  { key: "3bulan", label: "3 Bulan Terakhir" },
-  { key: "tahun", label: "Tahun ini" },
+const RANGE_OPTIONS: Array<{ value: RangeKey; label: string }> = [
+  { value: "semua", label: "Semua" },
+  { value: "minggu", label: "Minggu ini" },
+  { value: "bulan", label: "Bulan ini" },
+  { value: "3bulan", label: "3 Bulan Terakhir" },
+  { value: "tahun", label: "Tahun ini" },
 ];
-
-function StatCard({ label, value, helper }: { label: string; value: string; helper: string }) {
-  return (
-    <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
-      <p className="text-xs font-semibold uppercase tracking-wide text-[#94A3B8]">{label}</p>
-      <p className="mt-2 text-3xl font-bold text-[#111827]">{value}</p>
-      <p className="mt-1 text-xs text-[#64748B]">{helper}</p>
-    </div>
-  );
-}
 
 function formatNumber(value: number): string {
   return new Intl.NumberFormat("id-ID").format(value);
@@ -69,21 +70,21 @@ function formatAverage(value: number): string {
   return `${Number(value).toFixed(1)}`;
 }
 
-function ChartBar({ label, value, max, color }: { label: string; value: number; max: number; color: string }) {
+function ChartBar({ label, value, max, toneClass }: { label: string; value: number; max: number; toneClass: string }) {
   const height = max > 0 ? Math.max((value / max) * 100, 8) : 8;
 
   return (
     <div className="flex flex-1 flex-col items-center gap-3">
-      <div className="flex h-36 w-full items-end justify-center rounded-xl border border-[#EEF2FF] bg-[#F8FAFF] p-3">
+      <div className="flex h-36 w-full items-end justify-center rounded-md border bg-muted p-3">
         <div
-          className="w-14 rounded-t-xl transition-all duration-300"
-          style={{ height: `${height}%`, background: color }}
+          className={cn("w-14 rounded-t-sm transition-all duration-150", toneClass)}
+          style={{ height: `${height}%` }}
           title={`${label}: ${value}`}
         />
       </div>
       <div className="text-center">
-        <p className="text-xs font-semibold text-[#64748B]">{label}</p>
-        <p className="text-sm font-bold text-[#111827]">{value}</p>
+        <p className="text-xs font-medium text-muted-foreground">{label}</p>
+        <p className="text-sm font-semibold tabular-nums">{value}</p>
       </div>
     </div>
   );
@@ -92,26 +93,29 @@ function ChartBar({ label, value, max, color }: { label: string; value: number; 
 function HorizontalBars({ items, suffix = "" }: { items: Array<{ label: string; value: number }>; suffix?: string }) {
   const maxValue = Math.max(...items.map((item) => item.value), 1);
 
+  if (items.length === 0) {
+    return <p className="text-sm text-muted-foreground">Belum ada data untuk ditampilkan.</p>;
+  }
+
   return (
     <div className="space-y-4">
-      {items.length === 0 ? (
-        <p className="text-sm text-[#94A3B8]">Belum ada data untuk ditampilkan.</p>
-      ) : (
-        items.map((item, index) => (
-          <div key={`${item.label}-${index}`} className="space-y-2">
-            <div className="flex items-center justify-between gap-3 text-sm">
-              <span className="truncate font-medium text-[#334155]">{item.label}</span>
-              <span className="font-semibold text-[#111827]">{item.value}{suffix}</span>
-            </div>
-            <div className="h-2.5 w-full overflow-hidden rounded-full bg-[#E2E8F0]">
-              <div
-                className="h-full rounded-full bg-[#00D2D9]"
-                style={{ width: `${(item.value / maxValue) * 100}%` }}
-              />
-            </div>
+      {items.map((item, index) => (
+        <div key={`${item.label}-${index}`}>
+          <div className="mb-1 flex items-center justify-between gap-3 text-xs">
+            <span className="truncate font-medium">{item.label}</span>
+            <span className="tabular-nums text-muted-foreground">
+              {item.value}
+              {suffix}
+            </span>
           </div>
-        ))
-      )}
+          <div className="h-2 w-full rounded-sm bg-foreground/10">
+            <div
+              className="h-2 rounded-sm bg-chart-1"
+              style={{ width: `${(item.value / maxValue) * 100}%` }}
+            />
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
@@ -194,14 +198,13 @@ export default function GuruPerformaAkademikPage() {
 
   if (loading) {
     return (
-      <div className="space-y-6">
-        <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
-          <div className="h-6 w-40 animate-pulse rounded bg-slate-200" />
-          <div className="mt-4 h-10 w-72 animate-pulse rounded bg-slate-200" />
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div role="status" className="space-y-6">
+        <span className="sr-only">Memuat...</span>
+        <div className="h-7 w-56 animate-pulse rounded-md bg-foreground/10" />
+        <div className="h-10 w-full max-w-md animate-pulse rounded-md bg-foreground/10" />
+        <div className="grid gap-px overflow-hidden rounded-lg border bg-border sm:grid-cols-2 xl:grid-cols-4">
           {Array.from({ length: 4 }).map((_, index) => (
-            <div key={index} className="h-32 animate-pulse rounded-2xl bg-[#FFFFFF] p-5 shadow-sm" />
+            <div key={index} className="h-24 animate-pulse bg-card" />
           ))}
         </div>
       </div>
@@ -210,9 +213,9 @@ export default function GuruPerformaAkademikPage() {
 
   if (error) {
     return (
-      <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-red-700 shadow-sm">
-        <p className="text-lg font-bold">Gagal memuat data performa akademik</p>
-        <p className="mt-2 text-sm">{error}</p>
+      <div role="alert" className="rounded-lg border border-danger/30 bg-danger/10 p-5">
+        <p className="text-base font-semibold text-danger">Gagal memuat data performa akademik</p>
+        <p className="mt-2 text-sm text-muted-foreground">{error}</p>
         <Button className="mt-4" size="sm" onClick={() => setSelectedRange((current) => current)}>
           Coba lagi
         </Button>
@@ -222,148 +225,128 @@ export default function GuruPerformaAkademikPage() {
 
   if (!data) {
     return (
-      <div className="rounded-2xl border border-dashed border-[#CBD5E1] bg-[#FFFFFF] p-6 text-center shadow-sm">
-        <p className="text-lg font-semibold text-[#111827]">Belum ada data performa</p>
-        <p className="mt-2 text-sm text-[#64748B]">Data akan muncul setelah Anda membuat dan mengirim asesmen atau tugas.</p>
-      </div>
+      <EmptyState>
+        <p className="text-base font-semibold text-foreground">Belum ada data performa</p>
+        <p className="mt-2">Data akan muncul setelah Anda membuat dan mengirim asesmen atau tugas.</p>
+      </EmptyState>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl p-6 text-white shadow-sm" style={{ background: "#00D2D9" }}>
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-white/75">Performa Akademik</p>
-            <h1 className="mt-2 text-2xl font-bold">Ringkasan evaluasi kelas dan tugas</h1>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {RANGE_OPTIONS.map((option) => (
-              <Button
-                key={option.key}
-                size="sm"
-                variant={selectedRange === option.key ? "primary" : "outline"}
-                className="!rounded-full"
-                onClick={() => setSelectedRange(option.key)}
-                style={selectedRange === option.key ? { background: "#5B75E6" } : undefined}
-              >
-                {option.label}
-              </Button>
-            ))}
-          </div>
-        </div>
+      <PageTitle
+        title="Performa Akademik"
+        description="Ringkasan evaluasi kelas dan tugas."
+      />
+
+      <div className="max-w-full overflow-x-auto">
+        <SegmentedControl
+          ariaLabel="Rentang waktu"
+          value={selectedRange}
+          onChange={setSelectedRange}
+          options={RANGE_OPTIONS}
+          className="whitespace-nowrap"
+        />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Total Kuis" value={formatNumber(data.summary.totalKuis)} helper="Kuis yang dibuat" />
-        <StatCard label="Total Ujian" value={formatNumber(data.summary.totalUjian)} helper="Ujian online" />
-        <StatCard label="Rata-rata Nilai Kuis" value={formatAverage(data.summary.rataRataNilaiKuis)} helper="Nilai kuis" />
-        <StatCard label="Rata-rata Nilai Ujian" value={formatAverage(data.summary.rataRataNilaiUjian)} helper="Nilai ujian" />
-      </div>
+      <StatGrid>
+        <StatCell label="Total Kuis" value={formatNumber(data.summary.totalKuis)} caption="Kuis yang dibuat" />
+        <StatCell label="Total Ujian" value={formatNumber(data.summary.totalUjian)} caption="Ujian online" />
+        <StatCell label="Rata-rata Nilai Kuis" value={formatAverage(data.summary.rataRataNilaiKuis)} caption="Nilai kuis" />
+        <StatCell label="Rata-rata Nilai Ujian" value={formatAverage(data.summary.rataRataNilaiUjian)} caption="Nilai ujian" />
+      </StatGrid>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Rata-rata Seluruh Asesmen" value={formatAverage(data.summary.rataRataNilaiSeluruhAsesmen)} helper="Semua nilai asesmen" />
-        <StatCard label="Total Tugas Dibuat" value={formatNumber(data.summary.totalTugasDibuat)} helper="Tugas yang dibuat" />
-        <StatCard label="Tugas Dikumpulkan" value={formatNumber(data.summary.totalTugasDikumpulkan)} helper="Submission siswa" />
-        <StatCard label="Persentase Pengumpulan" value={formatPercent(data.summary.persentasePengumpulanTugas)} helper="Dari tugas yang dibuat" />
-      </div>
+      <StatGrid>
+        <StatCell label="Rata-rata Seluruh Asesmen" value={formatAverage(data.summary.rataRataNilaiSeluruhAsesmen)} caption="Semua nilai asesmen" />
+        <StatCell label="Total Tugas Dibuat" value={formatNumber(data.summary.totalTugasDibuat)} caption="Tugas yang dibuat" />
+        <StatCell label="Tugas Dikumpulkan" value={formatNumber(data.summary.totalTugasDikumpulkan)} caption="Submission siswa" />
+        <StatCell label="Persentase Pengumpulan" value={formatPercent(data.summary.persentasePengumpulanTugas)} caption="Dari tugas yang dibuat" />
+      </StatGrid>
 
       {!hasData ? (
-        <div className="rounded-2xl border border-dashed border-[#CBD5E1] bg-[#FFFFFF] p-6 text-center shadow-sm">
-          <p className="text-lg font-semibold text-[#111827]">Belum ada data pada rentang waktu ini.</p>
-          <p className="mt-2 text-sm text-[#64748B]">Buat kuis, ujian, atau tugas untuk melihat performa akdemik di sini.</p>
-        </div>
+        <EmptyState>
+          <p className="text-base font-semibold text-foreground">Belum ada data pada rentang waktu ini.</p>
+          <p className="mt-2">Buat kuis, ujian, atau tugas untuk melihat performa akademik di sini.</p>
+        </EmptyState>
       ) : (
         <>
-          <div className="grid gap-5 xl:grid-cols-2">
-            <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
-              <p className="text-sm font-bold text-[#111827]">Perbandingan Kuis & Ujian</p>
-              <div className="mt-5 flex items-end gap-6">
-                <ChartBar label="Kuis" value={data.summary.totalKuis} max={comparisonMax} color="#00D2D9" />
-                <ChartBar label="Ujian" value={data.summary.totalUjian} max={comparisonMax} color="#A78BFA" />
+          <div className="grid gap-4 xl:grid-cols-2">
+            <Panel title="Perbandingan Kuis & Ujian">
+              <div className="flex items-end gap-6">
+                <ChartBar label="Kuis" value={data.summary.totalKuis} max={comparisonMax} toneClass="bg-chart-1" />
+                <ChartBar label="Ujian" value={data.summary.totalUjian} max={comparisonMax} toneClass="bg-chart-3" />
               </div>
-            </div>
+            </Panel>
 
-            <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
-              <p className="text-sm font-bold text-[#111827]">Progress Tugas Dibuat vs Dikumpulkan</p>
-              <div className="mt-5 space-y-4">
-                <div>
-                  <div className="mb-2 flex items-center justify-between text-sm text-[#334155]">
-                    <span>Tugas dibuat</span>
-                    <strong>{data.summary.totalTugasDibuat}</strong>
-                  </div>
-                  <div className="h-3 overflow-hidden rounded-full bg-[#E2E8F0]">
-                    <div className="h-full rounded-full bg-[#00D2D9]" style={{ width: "100%" }} />
-                  </div>
-                </div>
-                <div>
-                  <div className="mb-2 flex items-center justify-between text-sm text-[#334155]">
-                    <span>Tugas dikumpulkan</span>
-                    <strong>{data.summary.totalTugasDikumpulkan}</strong>
-                  </div>
-                  <div className="h-3 overflow-hidden rounded-full bg-[#E2E8F0]">
-                    <div
-                      className="h-full rounded-full bg-[#4ADE80]"
-                      style={{ width: `${data.summary.totalTugasDibuat > 0 ? (data.summary.totalTugasDikumpulkan / data.summary.totalTugasDibuat) * 100 : 0}%` }}
-                    />
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 pt-2">
-                  <Badge tone="green">Pengumpulan: {formatPercent(data.summary.persentasePengumpulanTugas)}</Badge>
-                  <Badge tone="amber">Essay belum dinilai: {data.summary.essayBelumDinilai}</Badge>
+            <Panel title="Progress Tugas Dibuat vs Dikumpulkan">
+              <div className="space-y-4">
+                <BarRow
+                  label="Tugas dibuat"
+                  value={data.summary.totalTugasDibuat}
+                  max={data.summary.totalTugasDibuat}
+                  tone={1}
+                />
+                <BarRow
+                  label="Tugas dikumpulkan"
+                  value={data.summary.totalTugasDikumpulkan}
+                  max={data.summary.totalTugasDibuat}
+                  tone={3}
+                />
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pt-2">
+                  <StatusDot>Pengumpulan: {formatPercent(data.summary.persentasePengumpulanTugas)}</StatusDot>
+                  <StatusDot tone="muted">Essay belum dinilai: {data.summary.essayBelumDinilai}</StatusDot>
                 </div>
               </div>
-            </div>
+            </Panel>
           </div>
 
-          <div className="grid gap-5 xl:grid-cols-2">
-            <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
-              <p className="text-sm font-bold text-[#111827]">Rata-rata Nilai per Kelas</p>
-              <div className="mt-5">
-                <HorizontalBars items={classChart} suffix="" />
-              </div>
-            </div>
+          <div className="grid gap-4 xl:grid-cols-2">
+            <Panel title="Rata-rata Nilai per Kelas">
+              <HorizontalBars items={classChart} suffix="" />
+            </Panel>
 
-            <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
-              <p className="text-sm font-bold text-[#111827]">Rata-rata Nilai per Mata Pelajaran</p>
-              <div className="mt-5">
-                <HorizontalBars items={mapelChart} suffix="" />
-              </div>
-            </div>
+            <Panel title="Rata-rata Nilai per Mata Pelajaran">
+              <HorizontalBars items={mapelChart} suffix="" />
+            </Panel>
           </div>
 
-          <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-sm font-bold text-[#111827]">Siswa dengan tugas atau essay belum dinilai</p>
-              <Badge tone="amber">{data.summary.siswaBelumDinilai.length} siswa</Badge>
-            </div>
-
+          <Panel
+            title="Siswa dengan tugas atau essay belum dinilai"
+            actions={
+              <StatusDot tone="muted">
+                <span className="tabular-nums">{data.summary.siswaBelumDinilai.length}</span> siswa
+              </StatusDot>
+            }
+          >
             {data.summary.siswaBelumDinilai.length === 0 ? (
-              <div className="mt-4 rounded-xl border border-dashed border-[#CBD5E1] bg-[#F8FAFC] p-4 text-sm text-[#64748B]">
+              <div className="rounded-md border border-dashed bg-muted p-4 text-sm text-muted-foreground">
                 Tidak ada siswa dengan tugas atau essay yang menunggu penilaian.
               </div>
             ) : (
-              <div className="mt-4 space-y-3">
+              <div className="space-y-3">
                 {data.summary.siswaBelumDinilai.map((student) => (
-                  <div key={student.id} className="rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-4">
+                  <div key={student.id} className="rounded-md border bg-muted p-4">
                     <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                       <div>
-                        <p className="font-semibold text-[#111827]">{student.nama}</p>
-                        <p className="text-xs text-[#64748B]">{student.kelas}</p>
+                        <p className="text-sm font-medium">{student.nama}</p>
+                        <p className="text-xs text-muted-foreground">{student.kelas}</p>
                       </div>
                       <div className="flex flex-wrap gap-2">
                         {student.items.map((item, index) => (
-                          <Badge key={`${student.id}-${index}`} tone={item.type === "ESSAY" ? "amber" : "brand"}>
+                          <Badge key={`${student.id}-${index}`} tone={item.type === "ESSAY" ? "gray" : "brand"}>
                             {item.type === "ESSAY" ? "Essay" : "Tugas"}
                           </Badge>
                         ))}
                       </div>
                     </div>
-                    <ul className="mt-3 space-y-2 text-sm text-[#334155]">
+                    <ul className="mt-3 space-y-2 text-sm">
                       {student.items.map((item, index) => (
-                        <li key={`${student.id}-${index}`} className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-[#FFFFFF] px-3 py-2">
+                        <li
+                          key={`${student.id}-${index}`}
+                          className="flex flex-wrap items-center justify-between gap-3 rounded-md border bg-card px-3 py-2"
+                        >
                           <span>{item.label}</span>
-                          <span className="text-xs text-[#64748B]">
+                          <span className="text-xs tabular-nums text-muted-foreground">
                             {item.type === "TUGAS" && item.submittedAt ? new Date(item.submittedAt).toLocaleDateString("id-ID") : "Essay menunggu review"}
                           </span>
                         </li>
@@ -373,7 +356,7 @@ export default function GuruPerformaAkademikPage() {
                 ))}
               </div>
             )}
-          </div>
+          </Panel>
         </>
       )}
     </div>

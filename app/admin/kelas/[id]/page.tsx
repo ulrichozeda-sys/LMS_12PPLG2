@@ -2,8 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import Link from "next/link";
-import Image from "next/image";
+import {
+  ChevronDown,
+  ClipboardCheck,
+  ClipboardList,
+  FileText,
+  School,
+  User,
+  Users,
+  X,
+} from "lucide-react";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import Modal from "@/components/ui/Modal";
@@ -15,44 +23,17 @@ import MateriCard, { MateriData } from "@/components/MateriCard";
 import FeedCategoryFilter, { FeedCategory } from "@/components/FeedCategoryFilter";
 import { ClassDetailOverview, ClassDirectoryNavigation } from "@/components/ClassDetailOverview";
 import { showAlert, showConfirm } from "@/lib/dialog";
+import { cn } from "@/lib/utils";
+import { DashboardShell, type NavItem } from "@/components/shared/dashboard-shell";
+import { Avatar } from "@/components/shared/avatar";
+import { EmptyState, LoadingBlock } from "@/components/shared/data-display";
 
-const BRAND = "#00D2D9";
 type AdminTab = "KELAS" | "AKUN" | "LAPORAN";
-type GuruNav = "KELAS" | "ASESMEN" | "TUGAS" | "PROFILE";
 
-function GuruNavIcon({ nav }: { nav: GuruNav }) {
-  const paths: Record<GuruNav, React.ReactNode> = {
-    KELAS: <path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6" />,
-    ASESMEN: <path d="M12 2l3 6 6.5.9-4.7 4.6L18 20l-6-3.4L6 20l1.2-6.5L2.5 8.9 9 8l3-6Z" />,
-    TUGAS: <path d="M9 3h6l1 3H8l1-3ZM6 6h12v15H6zM9 11h6M9 15h6" />,
-    PROFILE: <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" />,
-  };
-
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-[18px] w-[18px] flex-shrink-0">
-      {paths[nav]}
-    </svg>
-  );
-}
-
-function TabIcon({ tab }: { tab: AdminTab }) {
-  const paths: Record<AdminTab, React.ReactNode> = {
-    KELAS: <path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6" />,
-    AKUN: <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM19 8v6M22 11h-6" />,
-    LAPORAN: <path d="M6 2h9l5 5v15H6V2Zm9 0v5h5M9 13h6M9 17h4" />,
-  };
-
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-[18px] w-[18px] flex-shrink-0">
-      {paths[tab]}
-    </svg>
-  );
-}
-
-const ADMIN_TABS: { key: AdminTab; label: string }[] = [
-  { key: "KELAS", label: "Buat Kelas" },
-  { key: "AKUN", label: "Daftar Akun" },
-  { key: "LAPORAN", label: "Laporan" },
+const ADMIN_TABS: { key: AdminTab; label: string; icon: NavItem["icon"] }[] = [
+  { key: "KELAS", label: "Buat Kelas", icon: School },
+  { key: "AKUN", label: "Daftar Akun", icon: Users },
+  { key: "LAPORAN", label: "Laporan", icon: FileText },
 ];
 
 interface SiswaDiKelas {
@@ -86,6 +67,14 @@ interface KelasDetail {
   feed: FeedItem[];
 }
 
+const dangerTextButton =
+  "inline-flex min-h-10 cursor-pointer items-center rounded-md px-2 text-xs font-medium text-danger " +
+  "transition-colors duration-150 hover:bg-accent outline-none focus-visible:ring-2 focus-visible:ring-ring";
+
+const closeButton =
+  "inline-flex size-10 cursor-pointer items-center justify-center rounded-md border text-muted-foreground " +
+  "transition-colors duration-150 hover:bg-accent hover:text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring";
+
 export default function AdminKelasDetailPage() {
   const router = useRouter();
   const params = useParams();
@@ -94,7 +83,6 @@ export default function AdminKelasDetailPage() {
   const [kelas, setKelas] = useState<KelasDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [me, setMe] = useState<{ id: string; nama: string; role: string; fotoProfil: string | null } | null>(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [section, setSection] = useState<"SISWA" | "GURU" | null>(null);
   const [expandedRombel, setExpandedRombel] = useState<string | null>(null);
@@ -169,16 +157,18 @@ export default function AdminKelasDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#FFFFFF]">
-        <p className="text-sm text-[#9CA3AF]">Memuat...</p>
+      <div className="min-h-dvh bg-background p-6 text-foreground">
+        <div className="mx-auto max-w-6xl">
+          <LoadingBlock />
+        </div>
       </div>
     );
   }
 
   if (!kelas) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-[#FFFFFF]">
-        <p className="text-sm text-[#9CA3AF]">Kelas tidak ditemukan.</p>
+      <div className="flex min-h-dvh flex-col items-center justify-center gap-3 bg-background px-4 text-foreground">
+        <p className="text-sm text-muted-foreground">Kelas tidak ditemukan.</p>
         <Button variant="outline" onClick={() => router.push("/admin")}>
           Kembali
         </Button>
@@ -201,176 +191,107 @@ export default function AdminKelasDetailPage() {
   }, {});
   const visibleFeed = kelas.feed.filter((item) => feedCategory === "SEMUA" || item.tipe === feedCategory);
 
+  const navItems: NavItem[] = canManageClass
+    ? ADMIN_TABS.map((tab) => ({
+        key: tab.key,
+        label: tab.label,
+        icon: tab.icon,
+        active: tab.key === "KELAS",
+        onSelect: () => navigateToAdminTab(tab.key),
+      }))
+    : [
+        { key: "KELAS", label: "Kelas", icon: School, href: "/guru", active: true },
+        { key: "ASESMEN", label: "Asesmen", icon: ClipboardCheck, href: "/guru/asesmen" },
+        { key: "TUGAS", label: "Tugas", icon: ClipboardList, href: "/guru/tugas" },
+        { key: "PROFILE", label: "Profile", icon: User, href: me ? `/profil/${me.id}` : "#" },
+      ];
+
   return (
-    <div className="flex min-h-screen flex-col bg-[#FFFFFF]" style={{ fontFamily: "Inter, sans-serif" }}>
-      <header className="sticky top-0 z-40 border-b border-black/5 bg-[#FFFFFF]">
-        <div className="flex items-center justify-between px-4 py-3 sm:px-6">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setSidebarOpen((value) => !value)}
-              aria-label="Toggle sidebar"
-              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg hover:bg-black/5"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5">
-                <path d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-            <span className="text-lg font-bold tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-              MyClass
-            </span>
-          </div>
-          <div className="flex items-center gap-3">
-            {me && (
-              <div className="hidden text-right sm:block">
-                <p className="text-sm font-semibold text-[#111827]">{me.nama}</p>
-                <p className="text-xs text-[#9CA3AF]">{me.role}</p>
-              </div>
-            )}
-            <div className="hidden h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-[#E5E7EB] text-xs font-bold text-[#6B7280] sm:flex">
-              {me?.fotoProfil ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={me.fotoProfil} alt={me.nama} className="h-full w-full object-cover" />
-              ) : (
-                me?.nama?.charAt(0) ?? "A"
-              )}
-            </div>
-            <Button size="sm" variant="outline" onClick={() => router.push(canManageClass ? "/admin" : "/guru")}>
-              Back
-            </Button>
-          </div>
-        </div>
-      </header>
-
-      {sidebarOpen && (
-        <div onClick={() => setSidebarOpen(false)} className="fixed inset-0 z-40 bg-black/30 backdrop-blur-[1px]" />
-      )}
-
-      <aside
-        aria-label={canManageClass ? "Navigasi admin" : "Navigasi guru"}
-        className={`fixed inset-y-0 left-0 z-50 w-72 overflow-y-auto bg-[#FFFFFF] p-4 shadow-[8px_0_24px_rgba(15,23,42,0.12)] transition-transform duration-300 ease-out ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <div className="flex min-h-full flex-col border-r border-black/5 bg-[#FFFFFF] p-4 shadow-sm">
-          <p className="mb-3 px-2 pt-2 text-sm font-bold text-[#111827]">
-            {canManageClass ? "Dashboard Admin" : "Dashboard Guru"}
-            <br />
-            <span style={{ color: BRAND }}>{canManageClass ? "- Detail Kelas" : "- Kelas"}</span>
-          </p>
-          <nav className="flex flex-col gap-1">
-            {canManageClass ? ADMIN_TABS.map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => navigateToAdminTab(tab.key)}
-                title={tab.label}
-                className={`flex cursor-pointer items-center gap-3 rounded-lg px-4 py-2.5 text-left text-sm font-semibold ${
-                  tab.key === "KELAS" ? "text-[#00D2D9]" : "text-[#374151] hover:bg-black/5"
-                }`}
-                style={tab.key === "KELAS" ? { background: `${BRAND}1A` } : undefined}
-              >
-                <TabIcon tab={tab.key} />
-                <span>{tab.label}</span>
-              </button>
-            )) : ([
-              ["KELAS", "Kelas", "/guru"],
-              ["ASESMEN", "Asesmen", "/guru/asesmen"],
-              ["TUGAS", "Tugas", "/guru/tugas"],
-              ["PROFILE", "Profile", me ? `/profil/${me.id}` : "#"],
-            ] as [GuruNav, string, string][]).map(([nav, label, href]) => (
-              <Link
-                key={nav}
-                href={href}
-                onClick={() => setSidebarOpen(false)}
-                className="flex cursor-pointer items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors"
-                style={nav === "KELAS" ? { background: `${BRAND}1A`, color: BRAND } : { color: "#374151" }}
-              >
-                <GuruNavIcon nav={nav} />
-                {label}
-              </Link>
-            ))}
-          </nav>
-          <Button
-            size="md"
-            onClick={handleLogout}
-            className="mt-auto w-full rounded-xl"
-            style={{ background: "#F8CDBD", color: "#7C4A3A" }}
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4">
-              <path d="M10 17l5-5-5-5M15 12H3M21 4v16" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            Keluar
+    <>
+      <DashboardShell
+        roleLabel={canManageClass ? "Dashboard Admin" : "Dashboard Guru"}
+        sectionLabel={canManageClass ? "Detail Kelas" : "Kelas"}
+        navItems={navItems}
+        me={me}
+        onLogout={handleLogout}
+        headerActions={
+          <Button size="sm" variant="outline" onClick={() => router.push(canManageClass ? "/admin" : "/guru")}>
+            Kembali
           </Button>
-        </div>
-      </aside>
-
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6">
+        }
+      >
         <ClassDetailOverview title={kelas.judul} description={kelas.deskripsi} studentCount={kelas.siswa.length} teacherCount={kelas.guruMapel.length} inviteToken={kelas.inviteToken} copied={copied} onCopyInvite={handleCopyInvite} onEdit={canManageClass ? () => setShowEditKelas(true) : undefined} />
         <ClassDirectoryNavigation section={section} onChange={setSection} studentCount={kelas.siswa.length} teacherCount={kelas.guruMapel.length} />
 
+        {/* ============ DERETAN SISWA ============ */}
         {section === "SISWA" && (
-          <div className="mt-4">
-            <div className="mb-3 flex items-center justify-between">
-              <p className="text-sm font-bold text-[#111827]">Deretan Siswa</p>
+          <div className="mt-6">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <h2 className="text-base font-semibold tracking-tight">Deretan Siswa</h2>
               <div className="flex items-center gap-2">
-                {canManageClass && <Button size="sm" onClick={() => setShowTambahSiswa(true)}>
-                  + Tambah Siswa
-                </Button>}
+                {canManageClass && (
+                  <Button size="sm" onClick={() => setShowTambahSiswa(true)}>
+                    + Tambah Siswa
+                  </Button>
+                )}
                 <button
                   type="button"
                   aria-label="Tutup deretan siswa"
                   onClick={() => setSection(null)}
-                  className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-black/10 text-lg text-[#6B7280] hover:bg-black/5"
+                  className={closeButton}
                 >
-                  Ã—
+                  <X className="size-4" strokeWidth={1.75} />
                 </button>
               </div>
             </div>
 
             {Object.keys(siswaGrouped).length === 0 ? (
-              <p className="text-sm text-[#9CA3AF]">Belum ada siswa di kelas ini.</p>
+              <EmptyState>Belum ada siswa di kelas ini.</EmptyState>
             ) : (
               <div className="space-y-3">
                 {Object.entries(siswaGrouped).map(([label, list]) => {
                   const isOpen = expandedRombel === label;
                   return (
-                    <div key={label} className="overflow-hidden rounded-2xl border border-black/5 bg-[#FFFFFF] shadow-sm">
+                    <div key={label} className="overflow-hidden rounded-lg border bg-card text-card-foreground">
                       <button
+                        type="button"
+                        aria-expanded={isOpen}
                         onClick={() => setExpandedRombel(isOpen ? null : label)}
-                        className="flex w-full cursor-pointer items-center justify-between px-5 py-3.5 text-left"
+                        className="flex min-h-12 w-full cursor-pointer items-center justify-between gap-3 px-4 py-3 text-left transition-colors duration-150 hover:bg-accent outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
                       >
                         <div className="flex items-center gap-2">
-                          <p className="text-sm font-bold text-[#111827]">{label}</p>
+                          <p className="text-sm font-semibold">{label}</p>
                           <Badge tone="brand">{list.length} Siswa</Badge>
                         </div>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" className={`h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""}`}>
-                          <path d="m6 9 6 6 6-6" />
-                        </svg>
+                        <ChevronDown
+                          aria-hidden="true"
+                          strokeWidth={1.75}
+                          className={cn("size-4 text-muted-foreground transition-transform duration-150", isOpen && "rotate-180")}
+                        />
                       </button>
                       {isOpen && (
-                        <div className="space-y-2 border-t border-black/5 p-4">
+                        <ul className="divide-y border-t">
                           {list.map((ks) => (
-                            <div key={ks.siswaId} className="flex items-center gap-3 rounded-xl border border-black/5 p-3">
-                              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#E5E7EB] text-xs font-bold text-[#6B7280]">
-                                {ks.siswa.fotoProfil ? (
-                                  // eslint-disable-next-line @next/next/no-img-element
-                                  <img src={ks.siswa.fotoProfil} alt={ks.siswa.nama} className="h-full w-full object-cover" />
-                                ) : (
-                                  ks.siswa.nama.charAt(0)
-                                )}
-                              </div>
+                            <li key={ks.siswaId} className="flex items-center gap-3 px-4 py-2.5">
+                              <Avatar name={ks.siswa.nama} src={ks.siswa.fotoProfil} className="size-9" />
                               <div className="min-w-0 flex-1">
-                                <p className="truncate text-sm font-semibold text-[#111827]">{ks.siswa.nama}</p>
-                                <p className="text-xs text-[#9CA3AF]">NIS: {ks.siswa.nis}</p>
+                                <p className="truncate text-sm font-medium">{ks.siswa.nama}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  NIS: <span className="font-mono">{ks.siswa.nis}</span>
+                                </p>
                               </div>
-                              {canManageClass && <button
+                              {canManageClass && (
+                                <button
+                                  type="button"
                                   onClick={() => handleHapusSiswa(ks.siswa.id, [kelasId])}
-                                  className="cursor-pointer text-xs font-medium text-red-500 hover:underline"
+                                  className={dangerTextButton}
                                 >
                                   Hapus
-                                </button>}
-                            </div>
+                                </button>
+                              )}
+                            </li>
                           ))}
-                        </div>
+                        </ul>
                       )}
                     </div>
                   );
@@ -380,70 +301,72 @@ export default function AdminKelasDetailPage() {
           </div>
         )}
 
+        {/* ============ DERETAN GURU ============ */}
         {section === "GURU" && (
-          <div className="mt-4">
-            <div className="mb-3 flex items-center justify-between">
-              <p className="text-sm font-bold text-[#111827]">Deretan Guru</p>
+          <div className="mt-6">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <h2 className="text-base font-semibold tracking-tight">Deretan Guru</h2>
               <div className="flex items-center gap-2">
-                {canManageClass && <Button size="sm" onClick={() => setShowTambahGuru(true)}>
-                  + Tambah Guru
-                </Button>}
+                {canManageClass && (
+                  <Button size="sm" onClick={() => setShowTambahGuru(true)}>
+                    + Tambah Guru
+                  </Button>
+                )}
                 <button
                   type="button"
                   aria-label="Tutup deretan guru"
                   onClick={() => setSection(null)}
-                  className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-black/10 text-lg text-[#6B7280] hover:bg-black/5"
+                  className={closeButton}
                 >
-                  Ã—
+                  <X className="size-4" strokeWidth={1.75} />
                 </button>
               </div>
             </div>
 
             {Object.keys(guruGrouped).length === 0 ? (
-              <p className="text-sm text-[#9CA3AF]">Belum ada guru mengajar di kelas ini.</p>
+              <EmptyState>Belum ada guru mengajar di kelas ini.</EmptyState>
             ) : (
               Object.entries(guruGrouped).map(([mapel, list]) => (
                 <div key={mapel} className="mb-4">
-                  <p className="mb-2 text-xs font-bold uppercase tracking-wide text-[#9CA3AF]">{mapel}</p>
-                  <div className="space-y-2">
+                  <p className="mb-2 text-xs font-medium text-muted-foreground">{mapel}</p>
+                  <ul className="divide-y overflow-hidden rounded-lg border bg-card text-card-foreground">
                     {list.map((gm) => (
-                      <div key={gm.id} className="flex items-center gap-3 rounded-xl border border-black/5 bg-[#FFFFFF] p-3 shadow-sm">
-                        <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#E5E7EB] text-xs font-bold text-[#6B7280]">
-                          {gm.guru.fotoProfil ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={gm.guru.fotoProfil} alt={gm.guru.nama} className="h-full w-full object-cover" />
-                          ) : (
-                            gm.guru.nama.charAt(0)
-                          )}
-                        </div>
+                      <li key={gm.id} className="flex items-center gap-3 px-4 py-2.5">
+                        <Avatar name={gm.guru.nama} src={gm.guru.fotoProfil} className="size-9" />
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-semibold text-[#111827]">{gm.guru.nama}</p>
-                          <p className="text-xs text-[#9CA3AF]">NIK: {gm.guru.nik}</p>
+                          <p className="truncate text-sm font-medium">{gm.guru.nama}</p>
+                          <p className="text-xs text-muted-foreground">
+                            NIK: <span className="font-mono">{gm.guru.nik}</span>
+                          </p>
                         </div>
-                        {canManageClass && <button
+                        {canManageClass && (
+                          <button
+                            type="button"
                             onClick={() => handleHapusGuru(gm.guru.id, gm.mapel.id, [kelasId])}
-                            className="cursor-pointer text-xs font-medium text-red-500 hover:underline"
+                            className={dangerTextButton}
                           >
                             Hapus
-                          </button>}
-                      </div>
+                          </button>
+                        )}
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 </div>
               ))
             )}
           </div>
         )}
 
+        {/* ============ FEED ============ */}
         {section === null && (
-          <div className="mt-6">
-            <p className="mb-3 text-sm font-bold text-[#111827]">Aktivitas Hari Ini</p>
+          <div className="mt-8">
+            <h2 className="mb-3 text-base font-semibold tracking-tight">Aktivitas Hari Ini</h2>
             <FeedCategoryFilter value={feedCategory} onChange={setFeedCategory} />
             <div className="space-y-3">
               {kelas.feed.length === 0 ? (
-                <p className="text-sm text-[#9CA3AF]">Belum ada aktivitas di kelas ini.</p>
+                <EmptyState>Belum ada aktivitas di kelas ini.</EmptyState>
               ) : visibleFeed.length === 0 ? (
-                <p className="text-sm text-[#9CA3AF]">Tidak ada aktivitas untuk filter ini.</p>
+                <EmptyState>Tidak ada aktivitas untuk filter ini.</EmptyState>
               ) : (
                 visibleFeed.map((item, i) => {
                   if (item.tipe === "PENGUMUMAN") {
@@ -455,14 +378,14 @@ export default function AdminKelasDetailPage() {
                   if (item.tipe === "MATERI") return <MateriCard key={`m-${item.data.id}`} data={item.data as MateriData} />;
                   const a = item.data;
                   return (
-                    <div key={`a-${i}`} className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-4 shadow-sm">
-                      <div className="flex items-center gap-2">
+                    <div key={`a-${i}`} className="rounded-lg border bg-card p-4 text-card-foreground">
+                      <div className="flex flex-wrap items-center gap-2">
                         <Badge tone="brand">{a.tipe === "KUIS" ? "Kuis" : "Ujian Online"}</Badge>
                         {a.mapel && <Badge tone="gray">{a.mapel.nama}</Badge>}
                       </div>
-                      <p className="mt-2 text-sm font-bold text-[#111827]">{a.judul}</p>
-                      <p className="mt-1 text-xs text-[#9CA3AF]">
-                        {a._count?.soal ?? 0} soal Â· oleh {a.guru?.nama}
+                      <p className="mt-2 text-sm font-semibold">{a.judul}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        <span className="tabular-nums">{a._count?.soal ?? 0}</span> soal · oleh {a.guru?.nama}
                       </p>
                     </div>
                   );
@@ -471,27 +394,31 @@ export default function AdminKelasDetailPage() {
             </div>
           </div>
         )}
-      </main>
+      </DashboardShell>
 
       {canManageClass && <ModalKelas open={showEditKelas} onClose={() => setShowEditKelas(false)} onSuccess={loadKelas} mode="edit" initialData={kelas} />}
 
-      {canManageClass && <ModalTambahSiswa
-        open={showTambahSiswa}
-        onClose={() => setShowTambahSiswa(false)}
-        onSuccess={loadKelas}
-        kelasId={kelasId}
-        kelasName={kelas.judul}
-        siswaSudahAda={kelas.siswa.map((ks) => ks.siswaId)}
-      />}
+      {canManageClass && (
+        <ModalTambahSiswa
+          open={showTambahSiswa}
+          onClose={() => setShowTambahSiswa(false)}
+          onSuccess={loadKelas}
+          kelasId={kelasId}
+          kelasName={kelas.judul}
+          siswaSudahAda={kelas.siswa.map((ks) => ks.siswaId)}
+        />
+      )}
 
-      {canManageClass && <ModalTambahGuru
-        open={showTambahGuru}
-        onClose={() => setShowTambahGuru(false)}
-        onSuccess={loadKelas}
-        kelasId={kelasId}
-        guruSudahAda={kelas.guruMapel.map((gm) => gm.guru.id)}
-      />}
-    </div>
+      {canManageClass && (
+        <ModalTambahGuru
+          open={showTambahGuru}
+          onClose={() => setShowTambahGuru(false)}
+          onSuccess={loadKelas}
+          kelasId={kelasId}
+          guruSudahAda={kelas.guruMapel.map((gm) => gm.guru.id)}
+        />
+      )}
+    </>
   );
 }
 
@@ -615,22 +542,21 @@ function ModalTambahSiswa({
         <Button className="w-full" variant="outline" loading={submitting} disabled={!rombelId || kandidat.length === 0 || loading || submitting} onClick={() => void handleAddAllRombel()}>
           Tambah semua siswa rombel{kandidat.length > 0 ? ` (${kandidat.length})` : ""}
         </Button>
-        {bulkError && <p role="alert" className="text-sm text-red-700">{bulkError}</p>}
+        {bulkError && <p role="alert" className="text-sm font-medium text-danger">{bulkError}</p>}
 
-        {loading && <p className="text-xs text-[#9CA3AF]">Memuat...</p>}
+        {loading && <p className="text-xs text-muted-foreground">Memuat...</p>}
 
         {!loading && rombelId && kandidat.length === 0 && (
-          <p className="text-xs text-[#9CA3AF]">Semua siswa di rombel ini sudah ada di kelas.</p>
+          <p className="text-xs text-muted-foreground">Semua siswa di rombel ini sudah ada di kelas.</p>
         )}
 
         {kandidat.length > 0 && (
           <div className="max-h-64 space-y-1 overflow-y-auto">
             {kandidat.map((s) => (
-              <label key={s.id} className="flex cursor-pointer items-center gap-2 rounded-lg p-2 hover:bg-black/5">
-                <input type="checkbox" checked={selectedIds.includes(s.id)} onChange={() => toggle(s.id)} />
-                <span className="text-sm text-[#374151]">
-                  {s.nama} â€” {s.nis}
-                </span>
+              <label key={s.id} className="flex min-h-10 cursor-pointer items-center gap-2 rounded-md px-2 transition-colors duration-100 hover:bg-accent">
+                <input type="checkbox" className="size-4 accent-brand" checked={selectedIds.includes(s.id)} onChange={() => toggle(s.id)} />
+                <span className="text-sm">{s.nama}</span>
+                <span className="font-mono text-xs text-muted-foreground">{s.nis}</span>
               </label>
             ))}
           </div>

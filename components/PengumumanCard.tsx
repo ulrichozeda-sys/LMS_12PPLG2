@@ -50,11 +50,11 @@ export default function PengumumanCard({ data, currentUserId, onEdit, onDelete, 
   }, [showOptions]);
 
   return (
-    <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-4 shadow-sm">
+    <div className="rounded-lg border border-border bg-card p-4 shadow-none">
       {/* header author */}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-[#E5E7EB] text-xs font-bold text-[#6B7280]">
+          <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-muted text-xs font-bold text-muted-foreground">
             {data.author.fotoProfil ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={data.author.fotoProfil} alt={data.author.nama} className="h-full w-full object-cover" />
@@ -63,9 +63,9 @@ export default function PengumumanCard({ data, currentUserId, onEdit, onDelete, 
             )}
           </div>
           <div>
-            <p className="text-sm font-bold text-[#111827]">{data.author.nama}</p>
+            <p className="text-sm font-bold text-foreground">{data.author.nama}</p>
             <div className="flex items-center gap-1.5">
-              <span className="text-[11px] text-[#9CA3AF]">
+              <span className="text-[11px] text-muted-foreground">
                 {new Date(data.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
               </span>
             </div>
@@ -78,15 +78,15 @@ export default function PengumumanCard({ data, currentUserId, onEdit, onDelete, 
               type="button"
               aria-label="Opsi pengumuman"
               onClick={() => setShowOptions((value) => !value)}
-              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-lg font-bold text-[#64748B] hover:bg-[#F1F5F9]"
+              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-lg font-bold text-muted-foreground hover:bg-muted"
             >
               â‹¯
             </button>
             {showOptions && (
-              <div className="absolute right-0 top-9 z-20 w-32 overflow-hidden rounded-xl border border-[#E2E8F0] bg-[#FFFFFF] py-1 shadow-lg">
-                <button type="button" onClick={() => { setShowOptions(false); onSend?.(data); }} className="block w-full cursor-pointer px-3 py-2 text-left text-xs font-medium text-[#475569] hover:bg-[#F8FAFC]">Kirim ke</button>
-                <button type="button" onClick={() => { setShowOptions(false); onEdit?.(data); }} className="block w-full cursor-pointer px-3 py-2 text-left text-xs font-medium text-[#475569] hover:bg-[#F8FAFC]">Edit</button>
-                <button type="button" onClick={() => { setShowOptions(false); onDelete?.(data.id); }} className="block w-full cursor-pointer px-3 py-2 text-left text-xs font-medium text-red-500 hover:bg-red-50">Hapus</button>
+              <div className="absolute right-0 top-9 z-20 w-32 overflow-hidden rounded-lg border border-border bg-card py-1 shadow-sm dark:shadow-none">
+                <button type="button" onClick={() => { setShowOptions(false); onSend?.(data); }} className="block w-full cursor-pointer px-3 py-2 text-left text-xs font-medium text-muted-foreground hover:bg-accent">Kirim ke</button>
+                <button type="button" onClick={() => { setShowOptions(false); onEdit?.(data); }} className="block w-full cursor-pointer px-3 py-2 text-left text-xs font-medium text-muted-foreground hover:bg-accent">Edit</button>
+                <button type="button" onClick={() => { setShowOptions(false); onDelete?.(data.id); }} className="block w-full cursor-pointer px-3 py-2 text-left text-xs font-medium text-danger hover:bg-danger/10">Hapus</button>
               </div>
             )}
           </div>
@@ -94,7 +94,7 @@ export default function PengumumanCard({ data, currentUserId, onEdit, onDelete, 
       </div>
 
       {/* isi */}
-      {data.isi && <p className="mt-3 whitespace-pre-wrap text-sm text-[#374151]">{data.isi}</p>}
+      {data.isi && <p className="mt-3 whitespace-pre-wrap text-sm text-foreground">{data.isi}</p>}
 
       {/* lampiran */}
       {data.lampiran.length > 0 && (
@@ -106,9 +106,9 @@ export default function PengumumanCard({ data, currentUserId, onEdit, onDelete, 
               target="_blank"
               rel="noopener noreferrer"
               download={l.tipe === "FILE" ? l.judul || undefined : undefined}
-              className="flex items-center gap-2 rounded-lg border border-black/5 bg-[#FFFFFF] p-2.5 text-xs font-medium text-[#374151] hover:bg-black/5"
+              className="flex items-center gap-2 rounded-lg border border-border bg-card p-2.5 text-xs font-medium text-foreground hover:bg-accent"
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="#00D2D9" strokeWidth="1.8" className="h-4 w-4 flex-shrink-0">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" className="size-4 shrink-0 text-foreground">
                 {l.tipe === "LINK" ? (
                   <path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1" />
                 ) : (

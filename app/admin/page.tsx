@@ -2,7 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
+import {
+  ChartColumn,
+  EllipsisVertical,
+  FileText,
+  LayoutDashboard,
+  School,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
 import KelasCard, { KelasData } from "@/components/KelasCard";
 import ModalKelas from "@/components/ModalKelas";
 import { AkunData } from "@/components/AkunCard";
@@ -12,8 +20,26 @@ import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import Modal from "@/components/ui/Modal";
 import { showConfirm } from "@/lib/dialog";
-
-const BRAND = "#00D2D9";
+import { cn } from "@/lib/utils";
+import { DashboardShell, type NavItem } from "@/components/shared/dashboard-shell";
+import { Avatar } from "@/components/shared/avatar";
+import {
+  BarRow,
+  EmptyState,
+  LoadingBlock,
+  PageTitle,
+  Panel,
+  StatCell,
+  StatGrid,
+  StatusDot,
+  TableWrap,
+} from "@/components/shared/data-display";
+import {
+  Field,
+  SearchInput,
+  SegmentedControl,
+  SelectInput,
+} from "@/components/shared/form-controls";
 
 type Tab = "DASHBOARD" | "KELAS" | "AKUN" | "LAPORAN" | "PERFORMA";
 
@@ -37,32 +63,19 @@ function normalizeDashboardData(data: (Omit<AdminDashboardData, "aktivitas"> & {
   };
 }
 
-function TabIcon({ tab }: { tab: Tab }) {
-  const paths: Record<Tab, React.ReactNode> = {
-    DASHBOARD: <path d="M4 13h6V4H4v9Zm0 7h6v-4H4v4Zm10 0h6v-9h-6v9Zm0-16v4h6V4h-6Z" />,
-    KELAS: <path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6" />,
-    AKUN: <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM19 8v6M22 11h-6" />,
-    LAPORAN: <path d="M6 2h9l5 5v15H6V2Zm9 0v5h5M9 13h6M9 17h4" />,
-    PERFORMA: <path d="M4 19V5M4 19h17M8 16v-4M13 16V8M18 16V4" />,
-  };
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-[18px] w-[18px] flex-shrink-0">
-      {paths[tab]}
-    </svg>
-  );
-}
-
-const TABS: { key: Tab; label: string }[] = [
-  { key: "DASHBOARD", label: "Dashboard" },
-  { key: "KELAS", label: "Buat Kelas" },
-  { key: "AKUN", label: "Daftar Akun" },
-  { key: "LAPORAN", label: "Laporan" },
-  { key: "PERFORMA", label: "Performa Akademik" },
+const TABS: { key: Tab; label: string; icon: LucideIcon }[] = [
+  { key: "DASHBOARD", label: "Dashboard", icon: LayoutDashboard },
+  { key: "KELAS", label: "Buat Kelas", icon: School },
+  { key: "AKUN", label: "Daftar Akun", icon: Users },
+  { key: "LAPORAN", label: "Laporan", icon: FileText },
+  { key: "PERFORMA", label: "Performa Akademik", icon: ChartColumn },
 ];
+
+const th = "px-3 py-2.5 font-medium";
+const td = "px-3 py-2.5";
 
 export default function AdminDashboard() {
   const router = useRouter();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>("DASHBOARD");
   const [accountRole, setAccountRole] = useState<"SISWA" | "GURU">("SISWA");
   const [me, setMe] = useState<{ nama: string; role: string; fotoProfil: string | null } | null>(null);
@@ -154,10 +167,6 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false);
     }
-  }
-
-  function toggleSidebar() {
-    setSidebarOpen((v) => !v);
   }
 
   async function handleLogout() {
@@ -291,7 +300,6 @@ export default function AdminDashboard() {
 
   function openAdminTab(tab: Tab) {
     setActiveTab(tab);
-    setSidebarOpen(false);
   }
 
   function openAccount(role: "SISWA" | "GURU") {
@@ -299,322 +307,557 @@ export default function AdminDashboard() {
     openAdminTab("AKUN");
   }
 
+  function handleStatClick(tab: Tab | "SISWA" | "GURU") {
+    if (tab === "SISWA") openAccount("SISWA");
+    else if (tab === "GURU") openAccount("GURU");
+    else openAdminTab(tab);
+  }
+
+  const navItems: NavItem[] = TABS.map((tab) => ({
+    key: tab.key,
+    label: tab.label,
+    icon: tab.icon,
+    active: activeTab === tab.key,
+    onSelect: () => setActiveTab(tab.key),
+  }));
+
+  const statCards: { label: string; value: number; caption: string; tab: Tab | "SISWA" | "GURU" }[] = dashboardData
+    ? [
+        { label: "Kelas", value: dashboardData.statistik.kelas, caption: "Kelola kelas", tab: "KELAS" },
+        { label: "Siswa", value: dashboardData.statistik.siswa, caption: "Daftar siswa", tab: "SISWA" },
+        { label: "Guru", value: dashboardData.statistik.guru, caption: "Daftar guru", tab: "GURU" },
+        { label: "Asesmen", value: dashboardData.statistik.asesmen, caption: "Kuis dan ujian", tab: "KELAS" },
+        { label: "Tugas", value: dashboardData.statistik.tugas, caption: "Tugas dibuat", tab: "KELAS" },
+        { label: "Mata Pelajaran", value: dashboardData.statistik.mapel, caption: "Mapel tersedia", tab: "GURU" },
+        { label: "Laporan Pending", value: dashboardData.statistik.laporanPending, caption: "Perlu ditinjau", tab: "LAPORAN" },
+        { label: "Rata-rata Nilai", value: dashboardData.statistik.rataRataNilai, caption: "Dari asesmen dinilai", tab: "PERFORMA" },
+      ]
+    : [];
+
   return (
-    <div className="flex min-h-screen flex-col bg-[#FFFFFF]" style={{ fontFamily: "Inter, sans-serif" }}>
-      <header className="sticky top-0 z-40 border-b border-black/5 bg-[#FFFFFF]">
-        <div className="flex items-center justify-between px-4 py-3 sm:px-6">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={toggleSidebar}
-              aria-label="Toggle sidebar"
-              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg hover:bg-black/5"
+    <>
+      <DashboardShell
+        roleLabel="Dashboard Admin"
+        sectionLabel={TABS.find((t) => t.key === activeTab)?.label}
+        navItems={navItems}
+        me={me}
+        onLogout={handleLogout}
+        maxWidth="max-w-7xl"
+      >
+        {loading && <LoadingBlock />}
+
+        {/* ============ DASHBOARD ============ */}
+        {!loading && activeTab === "DASHBOARD" && dashboardData && (
+          <div className="space-y-6">
+            <PageTitle
+              title={`Selamat Datang, ${me?.nama ?? "Admin"}`}
+              description="Kelola akun, kelas, dan aktivitas pembelajaran MyClass dari satu tempat."
+            />
+
+            <StatGrid>
+              {statCards.map((card) => (
+                <StatCell
+                  key={card.label}
+                  label={card.label}
+                  value={card.value}
+                  caption={card.caption}
+                  onClick={() => handleStatClick(card.tab)}
+                />
+              ))}
+            </StatGrid>
+
+            <Panel
+              title="Akun Terbaru"
+              description="Lima akun siswa dan guru terakhir dibuat."
+              actions={
+                <Button size="sm" variant="outline" onClick={() => openAccount("SISWA")}>
+                  Kelola Akun
+                </Button>
+              }
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5">
-                <path d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-            <div className="flex items-center gap-2">
-              <span className="text-lg font-bold tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                MyClass
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            {me && (
-              <div className="hidden text-right sm:block">
-                <p className="text-sm font-semibold text-[#111827]">{me.nama}</p>
-                <p className="text-xs text-[#9CA3AF]">{me.role}</p>
-              </div>
-            )}
-            <div className="hidden h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-[#E5E7EB] text-xs font-bold text-[#6B7280] sm:flex">
-              {me?.fotoProfil ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={me.fotoProfil} alt={me.nama} className="h-full w-full object-cover" />
+              {dashboardData.akunTerbaru.length === 0 ? (
+                <p className="text-sm text-muted-foreground">Belum ada akun.</p>
               ) : (
-                me?.nama?.charAt(0) ?? "A"
+                <ul className="-my-2 divide-y">
+                  {dashboardData.akunTerbaru.map((akun) => (
+                    <li key={akun.id}>
+                      <button
+                        type="button"
+                        onClick={() => router.push(`/profil/${akun.id}`)}
+                        className="flex w-full cursor-pointer items-center justify-between gap-3 py-3 text-left transition-colors duration-100 hover:bg-accent"
+                      >
+                        <span className="min-w-0">
+                          <span className="block truncate text-sm font-medium">{akun.nama}</span>
+                          <span className="block truncate text-xs text-muted-foreground">{akun.email}</span>
+                        </span>
+                        <span className="flex shrink-0 flex-col items-end gap-1">
+                          <Badge tone={akun.role === "GURU" ? "brand" : "gray"}>
+                            {akun.role === "GURU" ? "Guru" : "Siswa"}
+                          </Badge>
+                          <span className="text-xs tabular-nums text-muted-foreground">
+                            {new Date(akun.createdAt).toLocaleDateString("id-ID")}
+                          </span>
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
               )}
-            </div>
+            </Panel>
           </div>
-        </div>
-      </header>
-
-      <div className="mx-auto flex w-full max-w-7xl flex-1 px-4 py-6 sm:px-6">
-        {sidebarOpen && (
-          <div
-            onClick={() => setSidebarOpen(false)}
-            className="fixed inset-0 z-40 bg-black/30 backdrop-blur-[1px]"
-          />
         )}
 
-        <aside
-          aria-label="Navigasi admin"
-          className={`fixed inset-y-0 left-0 z-50 w-72 overflow-y-auto bg-[#FFFFFF] p-4 shadow-[8px_0_24px_rgba(15,23,42,0.12)] transition-transform duration-300 ease-out ${
-            sidebarOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
-        >
-          <div className="flex min-h-full flex-col border-r border-black/5 bg-[#FFFFFF] p-4 shadow-sm">
-            <p className="mb-3 px-2 pt-2 text-sm font-bold text-[#111827]">
-              Dashboard Admin
-              <br />
-              <span style={{ color: BRAND }}>- {TABS.find((t) => t.key === activeTab)?.label}</span>
-            </p>
-            <nav className="flex flex-col gap-1">
-              {TABS.map((tab) => (
-                <button
-                  key={tab.key}
-                  onClick={() => {
-                    setActiveTab(tab.key);
-                    setSidebarOpen(false);
-                  }}
-                  title={tab.label}
-                  className="flex cursor-pointer items-center gap-3 rounded-lg px-4 py-2.5 text-left text-sm font-semibold transition-colors"
-                  style={
-                    activeTab === tab.key
-                      ? { background: `${BRAND}1A`, color: BRAND }
-                      : { background: "transparent", color: "#374151" }
-                  }
-                >
-                  <TabIcon tab={tab.key} />
-                  <span>{tab.label}</span>
-                </button>
-              ))}
-            </nav>
-            <Button
-              size="md"
-              onClick={handleLogout}
-              className="mt-auto w-full rounded-xl"
-              style={{ background: "#F8CDBD", color: "#7C4A3A" }}
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4">
-                <path d="M10 17l5-5-5-5M15 12H3M21 4v16" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              Keluar
-            </Button>
+        {/* ============ PERFORMA ============ */}
+        {!loading && activeTab === "PERFORMA" && dashboardData && (
+          <div className="space-y-6">
+            <PageTitle
+              title="Performa Akademik & Data"
+              description="Pantau nilai, aktivitas pembelajaran, dan pengguna aktif berdasarkan data nyata sistem."
+            />
+
+            <StatGrid>
+              <StatCell label="Rata-rata Nilai" value={dashboardData.statistik.rataRataNilai} caption="Nilai asesmen dinilai" />
+              <StatCell label="Asesmen Dinilai" value={dashboardData.statistik.submissionDinilai} caption="Submission dengan nilai" />
+              <StatCell label="Tugas Dibuat" value={dashboardData.statistik.tugasDibuat} caption="Total tugas guru" />
+              <StatCell label="Tugas Dikumpulkan" value={dashboardData.statistik.tugasDikumpulkan} caption="Submission siswa" />
+            </StatGrid>
+
+            <div className="grid gap-4 lg:grid-cols-2">
+              <Panel title="Kuis dan Ujian">
+                <div className="space-y-4">
+                  {(() => {
+                    const max = Math.max(dashboardData.statistik.kuis, dashboardData.statistik.ujian, 1);
+                    return (
+                      <>
+                        <BarRow label="Kuis" value={dashboardData.statistik.kuis} max={max} tone={1} />
+                        <BarRow label="Ujian Online" value={dashboardData.statistik.ujian} max={max} tone={3} />
+                      </>
+                    );
+                  })()}
+                </div>
+              </Panel>
+              <Panel title="Tugas Dibuat vs Dikumpulkan">
+                <div className="space-y-4">
+                  {(() => {
+                    const max = Math.max(dashboardData.statistik.tugasDibuat, dashboardData.statistik.tugasDikumpulkan, 1);
+                    return (
+                      <>
+                        <BarRow label="Tugas dibuat" value={dashboardData.statistik.tugasDibuat} max={max} tone={1} />
+                        <BarRow label="Dikumpulkan siswa" value={dashboardData.statistik.tugasDikumpulkan} max={max} tone={3} />
+                      </>
+                    );
+                  })()}
+                </div>
+              </Panel>
+            </div>
+
+            <StatGrid>
+              <StatCell label="User aktif 14 hari" value={dashboardData.aktivitas.userAktif} caption="User dengan aktivitas nyata" />
+              <StatCell label="Siswa aktif" value={dashboardData.aktivitas.siswaAktif} caption="Mengerjakan atau mengumpulkan" />
+              <StatCell label="Guru aktif" value={dashboardData.aktivitas.guruAktif} caption="Membuat asesmen atau tugas" />
+              <StatCell label="Total user" value={dashboardData.statistik.siswa + dashboardData.statistik.guru} caption="Siswa dan guru terdaftar" />
+            </StatGrid>
+
+            <div className="grid gap-4 lg:grid-cols-2">
+              <Panel title="Grafik Linear User Aktif" description="Jumlah user yang melakukan aktivitas nyata setiap hari.">
+                <ActiveUsersLineChart items={dashboardData.aktivitas.aktivitasHarian} />
+              </Panel>
+              <Panel title="Grafik Batang Distribusi Data" description="Perbandingan data utama yang tersimpan di sistem.">
+                <div className="space-y-3">
+                  {(() => {
+                    const s = dashboardData.statistik;
+                    const max = Math.max(s.siswa, s.guru, s.kelas, s.asesmen, s.tugas, 1);
+                    return (
+                      <>
+                        <BarRow label="Siswa" value={s.siswa} max={max} tone={1} />
+                        <BarRow label="Guru" value={s.guru} max={max} tone={2} />
+                        <BarRow label="Kelas" value={s.kelas} max={max} tone={3} />
+                        <BarRow label="Asesmen" value={s.asesmen} max={max} tone={4} />
+                        <BarRow label="Tugas" value={s.tugas} max={max} tone={5} />
+                      </>
+                    );
+                  })()}
+                </div>
+              </Panel>
+            </div>
+
+            <div className="grid gap-4 lg:grid-cols-2">
+              <Panel title="Rincian Data Sistem">
+                <ul className="-my-3 divide-y">
+                  {[
+                    ["Mata pelajaran", dashboardData.statistik.mapel, "Mapel tersedia"],
+                    ["Kuis", dashboardData.statistik.kuis, "Asesmen tipe kuis"],
+                    ["Ujian online", dashboardData.statistik.ujian, "Asesmen tipe ujian"],
+                    ["Submission dinilai", dashboardData.statistik.submissionDinilai, "Memiliki nilai akhir"],
+                    ["Tugas dikumpulkan", dashboardData.statistik.tugasDikumpulkan, "Status submission sudah"],
+                  ].map(([label, value, detail]) => (
+                    <li key={label as string} className="flex items-center justify-between gap-4 py-3">
+                      <div>
+                        <p className="text-sm font-medium">{label}</p>
+                        <p className="text-xs text-muted-foreground">{detail}</p>
+                      </div>
+                      <strong className="text-base font-semibold tabular-nums">{value}</strong>
+                    </li>
+                  ))}
+                </ul>
+              </Panel>
+              <Panel title="Definisi User Aktif">
+                <p className="text-sm leading-6 text-muted-foreground">
+                  User aktif bukan dihitung dari login karena sistem belum menyimpan log login. Angka ini menghitung siswa yang mengerjakan asesmen atau mengumpulkan tugas, serta guru yang membuat asesmen atau tugas dalam 14 hari terakhir.
+                </p>
+                <div className="mt-4 rounded-md bg-muted p-3 text-sm text-muted-foreground">
+                  <p>
+                    <strong className="font-medium text-foreground">Periode:</strong> 14 hari terakhir
+                  </p>
+                  <p className="mt-2">
+                    <strong className="font-medium text-foreground">Sumber:</strong> asesmen, tugas, submission asesmen, dan submission tugas
+                  </p>
+                </div>
+              </Panel>
+            </div>
           </div>
-        </aside>
+        )}
 
-        <main className="min-w-0 flex-1">
-          {loading && <p className="text-sm text-[#9CA3AF]">Memuat...</p>}
+        {/* ============ KELAS ============ */}
+        {!loading && activeTab === "KELAS" && (
+          <div className="space-y-4">
+            <PageTitle
+              title="Kelas"
+              description="Buat dan kelola kelas di MyClass."
+              actions={<Button onClick={openBuatKelas}>Buat Kelas</Button>}
+            />
 
-          {!loading && activeTab === "DASHBOARD" && dashboardData && (
-            <div className="space-y-6">
-              <div className="rounded-2xl p-6 text-white shadow-sm" style={{ background: BRAND }}>
-                <p className="text-xs font-semibold uppercase tracking-wide text-white/75">Dashboard Admin</p>
-                <h1 className="mt-2 text-2xl font-bold">Selamat Datang, {me?.nama ?? "Admin"}</h1>
-                <p className="mt-2 max-w-2xl text-sm text-white/85">Kelola akun, kelas, dan aktivitas pembelajaran MyClass dari satu tempat.</p>
-              </div>
-
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {[
-                  ["Kelas", dashboardData.statistik.kelas, "Kelola kelas", "KELAS"],
-                  ["Siswa", dashboardData.statistik.siswa, "Daftar siswa", "SISWA"],
-                  ["Guru", dashboardData.statistik.guru, "Daftar guru", "GURU"],
-                  ["Asesmen", dashboardData.statistik.asesmen, "Kuis dan ujian", "KELAS"],
-                  ["Tugas", dashboardData.statistik.tugas, "Tugas dibuat", "KELAS"],
-                  ["Mata Pelajaran", dashboardData.statistik.mapel, "Mapel tersedia", "GURU"],
-                  ["Laporan Pending", dashboardData.statistik.laporanPending, "Perlu ditinjau", "LAPORAN"],
-                  ["Rata-rata Nilai", dashboardData.statistik.rataRataNilai, "Dari asesmen dinilai", "PERFORMA"],
-                ].map(([label, value, caption, tab]) => (
-                  <button key={label as string} type="button" onClick={() => tab === "SISWA" ? openAccount("SISWA") : tab === "GURU" ? openAccount("GURU") : openAdminTab(tab as Tab)} className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-[#94A3B8]">{label}</p>
-                    <p className="mt-2 text-3xl font-bold text-[#111827]">{value}</p>
-                    <p className="mt-1 text-xs text-[#64748B]">{caption}</p>
-                  </button>
+            {kelasList.length === 0 ? (
+              <EmptyState>Belum ada kelas dibuat.</EmptyState>
+            ) : (
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {kelasList.map((k) => (
+                  <KelasCard
+                    key={k.id}
+                    data={k}
+                    isEditable
+                    basePath="/admin/kelas"
+                    onEdit={openEditKelas}
+                    onDelete={() => setDeletingKelas(k)}
+                  />
                 ))}
               </div>
+            )}
+          </div>
+        )}
 
-              <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
-                <div className="flex items-center justify-between gap-3"><div><h2 className="text-sm font-bold text-[#111827]">Akun Terbaru</h2><p className="mt-1 text-xs text-[#64748B]">Lima akun siswa dan guru terakhir dibuat.</p></div><Button size="sm" variant="outline" onClick={() => openAccount("SISWA")}>Kelola Akun</Button></div>
-                <div className="mt-4 divide-y divide-[#F1F5F9]">{dashboardData.akunTerbaru.length === 0 ? <p className="text-sm text-[#94A3B8]">Belum ada akun.</p> : dashboardData.akunTerbaru.map((akun) => <button key={akun.id} type="button" onClick={() => router.push(`/profil/${akun.id}`)} className="flex w-full items-center justify-between gap-3 py-3 text-left hover:bg-[#F8FAFC]"><span><span className="block text-sm font-semibold text-[#111827]">{akun.nama}</span><span className="block text-xs text-[#64748B]">{akun.email}</span></span><span className="text-right"><Badge tone={akun.role === "GURU" ? "brand" : "gray"}>{akun.role === "GURU" ? "Guru" : "Siswa"}</Badge><span className="mt-1 block text-[11px] text-[#94A3B8]">{new Date(akun.createdAt).toLocaleDateString("id-ID")}</span></span></button>)}</div>
-              </div>
-            </div>
-          )}
+        {/* ============ AKUN ============ */}
+        {!loading && activeTab === "AKUN" && (
+          <div className="space-y-4">
+            <SegmentedControl
+              ariaLabel="Jenis akun"
+              value={accountRole}
+              onChange={setAccountRole}
+              options={[
+                { value: "SISWA", label: "Siswa" },
+                { value: "GURU", label: "Guru" },
+              ]}
+            />
 
-          {!loading && activeTab === "PERFORMA" && dashboardData && (
-            <div className="space-y-6">
-              <div><p className="text-xs font-semibold uppercase tracking-wide text-[#94A3B8]">Analitik LMS</p><h1 className="mt-1 text-2xl font-bold text-[#111827]">Performa Akademik & Data</h1><p className="mt-1 text-sm text-[#64748B]">Pantau nilai, aktivitas pembelajaran, dan pengguna aktif berdasarkan data nyata sistem.</p></div>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {[["Rata-rata Nilai", dashboardData.statistik.rataRataNilai, "Nilai asesmen dinilai"], ["Asesmen Dinilai", dashboardData.statistik.submissionDinilai, "Submission dengan nilai"], ["Tugas Dibuat", dashboardData.statistik.tugasDibuat, "Total tugas guru"], ["Tugas Dikumpulkan", dashboardData.statistik.tugasDikumpulkan, "Submission siswa"]].map(([label, value, caption]) => <div key={label as string} className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm"><p className="text-xs font-semibold uppercase tracking-wide text-[#94A3B8]">{label}</p><p className="mt-2 text-3xl font-bold text-[#111827]">{value}</p><p className="mt-1 text-xs text-[#64748B]">{caption}</p></div>)}
-              </div>
-              <div className="grid gap-5 lg:grid-cols-2">
-                <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm"><h2 className="text-sm font-bold text-[#111827]">Kuis dan Ujian</h2><div className="mt-5 space-y-4">{[["Kuis", dashboardData.statistik.kuis, "#00D2D9"], ["Ujian Online", dashboardData.statistik.ujian, "#8B5CF6"]].map(([label, value, color]) => { const max = Math.max(dashboardData.statistik.kuis, dashboardData.statistik.ujian, 1); return <div key={label as string}><div className="mb-1 flex justify-between text-xs font-semibold text-[#475569]"><span>{label}</span><span>{value}</span></div><div className="h-3 rounded-full bg-[#EEF2FF]"><div className="h-3 rounded-full" style={{ width: `${((value as number) / max) * 100}%`, background: color as string }} /></div></div>; })}</div></div>
-                <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm"><h2 className="text-sm font-bold text-[#111827]">Tugas Dibuat vs Dikumpulkan</h2><div className="mt-5 space-y-4">{[["Tugas dibuat", dashboardData.statistik.tugasDibuat, "#00D2D9"], ["Dikumpulkan siswa", dashboardData.statistik.tugasDikumpulkan, "#16A34A"]].map(([label, value, color]) => { const max = Math.max(dashboardData.statistik.tugasDibuat, dashboardData.statistik.tugasDikumpulkan, 1); return <div key={label as string}><div className="mb-1 flex justify-between text-xs font-semibold text-[#475569]"><span>{label}</span><span>{value}</span></div><div className="h-3 rounded-full bg-[#F1F5F9]"><div className="h-3 rounded-full" style={{ width: `${Math.min(((value as number) / max) * 100, 100)}%`, background: color as string }} /></div></div>; })}</div></div>
-              </div>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {[["User aktif 14 hari", dashboardData.aktivitas.userAktif, "User dengan aktivitas nyata"], ["Siswa aktif", dashboardData.aktivitas.siswaAktif, "Mengerjakan atau mengumpulkan"], ["Guru aktif", dashboardData.aktivitas.guruAktif, "Membuat asesmen atau tugas"], ["Total user", dashboardData.statistik.siswa + dashboardData.statistik.guru, "Siswa dan guru terdaftar"]].map(([label, value, caption]) => <div key={label as string} className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm"><p className="text-xs font-semibold uppercase tracking-wide text-[#94A3B8]">{label}</p><p className="mt-2 text-3xl font-bold text-[#111827]">{value}</p><p className="mt-1 text-xs text-[#64748B]">{caption}</p></div>)}
-              </div>
-
-              <div className="grid gap-5 lg:grid-cols-2">
-                <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm"><h2 className="text-sm font-bold text-[#111827]">Grafik Linear User Aktif</h2><p className="mt-1 text-xs text-[#64748B]">Jumlah user yang melakukan aktivitas nyata setiap hari.</p><ActiveUsersLineChart items={dashboardData.aktivitas.aktivitasHarian} /></div>
-                <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm"><h2 className="text-sm font-bold text-[#111827]">Grafik Batang Distribusi Data</h2><p className="mt-1 text-xs text-[#64748B]">Perbandingan data utama yang tersimpan di sistem.</p><div className="mt-5 space-y-3">{[["Siswa", dashboardData.statistik.siswa, "#00D2D9"], ["Guru", dashboardData.statistik.guru, "#8B5CF6"], ["Kelas", dashboardData.statistik.kelas, "#14B8A6"], ["Asesmen", dashboardData.statistik.asesmen, "#F59E0B"], ["Tugas", dashboardData.statistik.tugas, "#F97316"]].map(([label, value, color]) => { const max = Math.max(dashboardData.statistik.siswa, dashboardData.statistik.guru, dashboardData.statistik.kelas, dashboardData.statistik.asesmen, dashboardData.statistik.tugas, 1); return <div key={label as string}><div className="mb-1 flex justify-between text-xs font-semibold text-[#475569]"><span>{label}</span><span>{value}</span></div><div className="h-3 rounded-full bg-[#F1F5F9]"><div className="h-3 rounded-full" style={{ width: `${((value as number) / max) * 100}%`, background: color as string }} /></div></div>; })}</div></div>
-              </div>
-
-              <div className="grid gap-5 lg:grid-cols-2"><div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm"><h2 className="text-sm font-bold text-[#111827]">Rincian Data Sistem</h2><div className="mt-4 divide-y divide-[#F1F5F9]">{[["Mata pelajaran", dashboardData.statistik.mapel, "Mapel tersedia"], ["Kuis", dashboardData.statistik.kuis, "Asesmen tipe kuis"], ["Ujian online", dashboardData.statistik.ujian, "Asesmen tipe ujian"], ["Submission dinilai", dashboardData.statistik.submissionDinilai, "Memiliki nilai akhir"], ["Tugas dikumpulkan", dashboardData.statistik.tugasDikumpulkan, "Status submission sudah"]].map(([label, value, detail]) => <div key={label as string} className="flex items-center justify-between gap-4 py-3"><div><p className="text-sm font-semibold text-[#334155]">{label}</p><p className="text-xs text-[#94A3B8]">{detail}</p></div><strong className="text-lg text-[#111827]">{value}</strong></div>)}</div></div><div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm"><h2 className="text-sm font-bold text-[#111827]">Definisi User Aktif</h2><p className="mt-3 text-sm leading-6 text-[#475569]">User aktif bukan dihitung dari login karena sistem belum menyimpan log login. Angka ini menghitung siswa yang mengerjakan asesmen atau mengumpulkan tugas, serta guru yang membuat asesmen atau tugas dalam 14 hari terakhir.</p><div className="mt-4 rounded-xl bg-[#F8FAFC] p-4 text-sm text-[#475569]"><p><strong className="text-[#111827]">Periode:</strong> 14 hari terakhir</p><p className="mt-2"><strong className="text-[#111827]">Sumber:</strong> asesmen, tugas, submission asesmen, dan submission tugas</p></div></div></div>
-            </div>
-          )}
-
-          {!loading && activeTab === "KELAS" && (
-            <div>
-              <div className="mb-4 flex justify-end">
-                <Button onClick={openBuatKelas}>Buat Kelas</Button>
-              </div>
-
-              {kelasList.length === 0 ? (
-                <p className="text-sm text-[#9CA3AF]">Belum ada kelas dibuat.</p>
-              ) : (
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {kelasList.map((k) => (
-                    <KelasCard
-                      key={k.id}
-                      data={k}
-                      isEditable
-                      basePath="/admin/kelas"
-                      onEdit={openEditKelas}
-                      onDelete={() => setDeletingKelas(k)}
+            {accountRole === "SISWA" && (
+              <Panel
+                title="Daftar Siswa"
+                description="Kelola akun dan kelas siswa."
+                actions={
+                  <Button size="sm" onClick={() => openBuatAkun("SISWA")}>
+                    + Buat Akun
+                  </Button>
+                }
+              >
+                <div className="mb-4 grid gap-3 rounded-md border bg-muted p-3 sm:grid-cols-2 xl:grid-cols-[180px_180px_220px_minmax(220px,1fr)_auto] xl:items-end">
+                  <Field label="Jurusan">
+                    <SelectInput
+                      value={jurusanFilter}
+                      onChange={(event) => {
+                        setJurusanFilter(event.target.value);
+                        setRombelFilter("");
+                        setBulkResult(null);
+                      }}
+                    >
+                      <option value="">Semua Jurusan</option>
+                      {jurusanOptions.map((jurusan) => (
+                        <option key={jurusan} value={jurusan}>{jurusan}</option>
+                      ))}
+                    </SelectInput>
+                  </Field>
+                  <Field label="Kelas">
+                    <SelectInput
+                      value={kelasFilter}
+                      onChange={(event) => {
+                        setKelasFilter(event.target.value);
+                        setRombelFilter("");
+                        setBulkResult(null);
+                      }}
+                    >
+                      <option value="">Semua Kelas</option>
+                      {kelasOptions.map((kelas) => (
+                        <option key={kelas} value={kelas}>{kelas}</option>
+                      ))}
+                    </SelectInput>
+                  </Field>
+                  <Field label="Rombel">
+                    <SelectInput
+                      value={rombelFilter}
+                      onChange={(event) => {
+                        setRombelFilter(event.target.value);
+                        setBulkResult(null);
+                      }}
+                    >
+                      <option value="">Semua Rombel</option>
+                      {filteredRombelOptions.map((referensi) => (
+                        <option key={referensi.id} value={referensi.id}>{referensi.label}</option>
+                      ))}
+                    </SelectInput>
+                  </Field>
+                  <Field label="Pencarian">
+                    <SearchInput
+                      value={siswaSearch}
+                      onChange={(event) => {
+                        setSiswaSearch(event.target.value);
+                        setBulkResult(null);
+                      }}
+                      placeholder="Nama, email, atau NIS..."
                     />
-                  ))}
+                  </Field>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setJurusanFilter("");
+                      setKelasFilter("");
+                      setRombelFilter("");
+                      setSiswaSearch("");
+                      setBulkResult(null);
+                    }}
+                  >
+                    Reset
+                  </Button>
                 </div>
-              )}
-            </div>
-          )}
 
-          {!loading && activeTab === "AKUN" && (
-            <div role="tablist" aria-label="Jenis akun" className="mb-4 flex border-b border-[#E2E8F0]">
-              {(["SISWA", "GURU"] as const).map((role) => (
-                <button key={role} type="button" role="tab" aria-selected={accountRole === role} onClick={() => setAccountRole(role)} className={`border-b-2 px-4 py-2.5 text-sm font-semibold ${accountRole === role ? "border-[#00D2D9] text-[#008C91]" : "border-transparent text-[#64748B] hover:text-[#111827]"}`}>
-                  {role === "SISWA" ? "Siswa" : "Guru"}
-                </button>
-              ))}
-            </div>
-          )}
+                {hasStudentFilter && filteredSiswaList.length > 0 && (
+                  <section className="mb-4 rounded-md border p-4">
+                    <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                      <h3 className="text-sm font-semibold">Kirim hasil filter ke kelas</h3>
+                      <p className="text-xs tabular-nums text-muted-foreground">{filteredSiswaList.length} siswa cocok</p>
+                    </div>
+                    <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+                      <SelectInput
+                        aria-label="Kelas tujuan"
+                        value={bulkTargetClassId}
+                        onChange={(event) => setBulkTargetClassId(event.target.value)}
+                        className="min-w-0 flex-1"
+                      >
+                        <option value="">Pilih kelas tujuan</option>
+                        {kelasList.map((kelas) => (
+                          <option key={kelas.id} value={kelas.id}>{kelas.judul}</option>
+                        ))}
+                      </SelectInput>
+                      <Button
+                        size="sm"
+                        loading={bulkSending}
+                        disabled={!bulkTargetClassId || bulkSending}
+                        onClick={() => void handleSendFilteredStudents()}
+                      >
+                        Kirim ke Kelas
+                      </Button>
+                    </div>
+                    {bulkResult && (
+                      <p
+                        role={bulkResult.type === "error" ? "alert" : "status"}
+                        className={cn(
+                          "mt-3 text-sm",
+                          bulkResult.type === "error" ? "font-medium text-danger" : "text-foreground",
+                        )}
+                      >
+                        {bulkResult.text}
+                      </p>
+                    )}
+                  </section>
+                )}
 
-          {!loading && activeTab === "AKUN" && accountRole === "SISWA" && (
-            <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
-              <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-                <div>
-                  <h2 className="text-base font-bold text-[#111827]">Daftar Siswa</h2>
-                  <p className="mt-1 text-xs text-[#64748B]">Kelola akun dan kelas siswa.</p>
+                {filteredSiswaList.length === 0 ? (
+                  <EmptyState>Belum ada siswa terdaftar.</EmptyState>
+                ) : (
+                  <TableWrap>
+                    <table className="w-full min-w-[820px] text-left text-sm">
+                      <thead className="bg-muted text-xs text-muted-foreground">
+                        <tr>
+                          <th className={th}>No</th>
+                          <th className={th}>Nama</th>
+                          <th className={th}>Email</th>
+                          <th className={th}>NIS</th>
+                          <th className={th}>Status Siswa</th>
+                          <th className={th}>Kelas/Rombel</th>
+                          <th className={th}>Jurusan</th>
+                          <th className={cn(th, "text-right")}>Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y">
+                        {filteredSiswaList.map((s, index) => (
+                          <tr
+                            key={s.id}
+                            onClick={() => router.push(`/profil/${s.id}`)}
+                            className="cursor-pointer transition-colors duration-100 hover:bg-accent"
+                          >
+                            <td className={cn(td, "tabular-nums text-muted-foreground")}>{index + 1}</td>
+                            <td className={td}>
+                              <div className="flex items-center gap-2.5">
+                                <Avatar name={s.nama} src={s.fotoProfil} />
+                                <span className="font-medium">{s.nama}</span>
+                              </div>
+                            </td>
+                            <td className={cn(td, "text-xs text-muted-foreground")}>{s.email}</td>
+                            <td className={cn(td, "font-mono text-xs text-muted-foreground")}>{s.nis ?? "-"}</td>
+                            <td className={td}><StatusDot>Aktif</StatusDot></td>
+                            <td
+                              className={cn(td, "text-xs tabular-nums text-muted-foreground")}
+                              title={s.kelasSiswa?.map((item) => item.kelas.judul).join(", ") || "Belum ada kelas"}
+                            >
+                              {s.kelasSiswa?.length ?? 0} Kelas
+                            </td>
+                            <td className={cn(td, "text-xs text-muted-foreground")}>{s.kelasReferensi?.label ?? "-"}</td>
+                            <AkunRowActions
+                              open={openAkunMenuId === s.id}
+                              onToggle={() => toggleAkunMenu(s.id)}
+                              onEdit={() => {
+                                setOpenAkunMenuId(null);
+                                openEditAkun(s);
+                              }}
+                              onDelete={() => {
+                                setOpenAkunMenuId(null);
+                                void handleDeleteAkun(s.id, "SISWA");
+                              }}
+                            />
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </TableWrap>
+                )}
+              </Panel>
+            )}
+
+            {accountRole === "GURU" && (
+              <Panel
+                title="Daftar Guru"
+                description="Kelola akun guru dan mapel yang diampu."
+                actions={
+                  <Button size="sm" onClick={() => openBuatAkun("GURU")}>
+                    + Tambah Guru
+                  </Button>
+                }
+              >
+                <div className="mb-4 grid gap-3 rounded-md border bg-muted p-3 md:grid-cols-[240px_minmax(220px,1fr)_auto] md:items-end">
+                  <Field label="Mapel">
+                    <SelectInput value={mapelFilter} onChange={(event) => setMapelFilter(event.target.value)}>
+                      <option value="">Semua Mapel</option>
+                      {mapelOptions.map((mapel) => (
+                        <option key={mapel} value={mapel}>{mapel}</option>
+                      ))}
+                    </SelectInput>
+                  </Field>
+                  <Field label="Pencarian">
+                    <SearchInput
+                      value={guruSearch}
+                      onChange={(event) => setGuruSearch(event.target.value)}
+                      placeholder="Nama, email, atau NIK..."
+                    />
+                  </Field>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setMapelFilter("");
+                      setGuruSearch("");
+                    }}
+                  >
+                    Reset
+                  </Button>
                 </div>
-                <Button size="sm" onClick={() => openBuatAkun("SISWA")}>+ Buat Akun</Button>
-              </div>
-              <div className="mb-5 grid gap-3 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-3 sm:grid-cols-2 xl:grid-cols-[180px_180px_220px_minmax(220px,1fr)_auto] xl:items-end">
-                <label className="block text-xs font-semibold text-[#64748B]">
-                  Jurusan
-                  <select value={jurusanFilter} onChange={(event) => { setJurusanFilter(event.target.value); setRombelFilter(""); setBulkResult(null); }} className="mt-1 w-full rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] px-3 py-2 text-sm font-normal text-[#334155] outline-none focus:border-[#00D2D9]">
-                    <option value="">Semua Jurusan</option>
-                    {jurusanOptions.map((jurusan) => <option key={jurusan} value={jurusan}>{jurusan}</option>)}
-                  </select>
-                </label>
-                <label className="block text-xs font-semibold text-[#64748B]">
-                  Kelas
-                  <select value={kelasFilter} onChange={(event) => { setKelasFilter(event.target.value); setRombelFilter(""); setBulkResult(null); }} className="mt-1 w-full rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] px-3 py-2 text-sm font-normal text-[#334155] outline-none focus:border-[#00D2D9]">
-                    <option value="">Semua Kelas</option>
-                    {kelasOptions.map((kelas) => <option key={kelas} value={kelas}>{kelas}</option>)}
-                  </select>
-                </label>
-                <label className="block text-xs font-semibold text-[#64748B]">
-                  Rombel
-                  <select value={rombelFilter} onChange={(event) => { setRombelFilter(event.target.value); setBulkResult(null); }} className="mt-1 w-full rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] px-3 py-2 text-sm font-normal text-[#334155] outline-none focus:border-[#00D2D9]">
-                    <option value="">Semua Rombel</option>
-                    {filteredRombelOptions.map((referensi) => <option key={referensi.id} value={referensi.id}>{referensi.label}</option>)}
-                  </select>
-                </label>
-                <label className="block text-xs font-semibold text-[#64748B]">
-                  Search
-                  <input value={siswaSearch} onChange={(event) => { setSiswaSearch(event.target.value); setBulkResult(null); }} placeholder="Nama, email, atau NIS..." className="mt-1 w-full rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] px-3 py-2 text-sm font-normal text-[#334155] outline-none focus:border-[#00D2D9]" />
-                </label>
-                <button type="button" onClick={() => { setJurusanFilter(""); setKelasFilter(""); setRombelFilter(""); setSiswaSearch(""); setBulkResult(null); }} className="cursor-pointer rounded-lg px-3 py-2 text-xs font-semibold text-[#64748B] hover:bg-[#FFFFFF] hover:text-[#111827]">Reset</button>
-              </div>
-              {hasStudentFilter && filteredSiswaList.length > 0 && (
-                <section className="mb-5 border border-[#DCE3E8] p-4">
-                  <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                    <h3 className="text-sm font-bold text-[#111827]">Kirim hasil filter ke kelas</h3>
-                    <p className="text-xs text-[#64748B]">{filteredSiswaList.length} siswa cocok</p>
-                  </div>
-                  <div className="mt-3 flex flex-col gap-2 sm:flex-row">
-                    <select aria-label="Kelas tujuan" value={bulkTargetClassId} onChange={(event) => setBulkTargetClassId(event.target.value)} className="min-h-10 min-w-0 flex-1 border border-[#CBD5E1] bg-white px-3 text-sm">
-                      <option value="">Pilih kelas tujuan</option>
-                      {kelasList.map((kelas) => <option key={kelas.id} value={kelas.id}>{kelas.judul}</option>)}
-                    </select>
-                    <Button size="sm" loading={bulkSending} disabled={!bulkTargetClassId || bulkSending} onClick={() => void handleSendFilteredStudents()}>Kirim ke Kelas</Button>
-                  </div>
-                  {bulkResult && <p role={bulkResult.type === "error" ? "alert" : "status"} className={`mt-3 text-sm ${bulkResult.type === "error" ? "text-red-700" : "text-[#006F73]"}`}>{bulkResult.text}</p>}
-                </section>
-              )}
-              {filteredSiswaList.length === 0 ? (
-                <p className="text-sm text-[#9CA3AF]">Belum ada siswa terdaftar.</p>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full min-w-[850px] text-left text-sm">
-                    <thead className="border-b border-[#E2E8F0] text-xs text-[#94A3B8]"><tr>
-                      <th className="pb-3 font-semibold">No</th><th className="pb-3 font-semibold">Profil</th><th className="pb-3 font-semibold">Nama</th><th className="pb-3 font-semibold">Email</th><th className="pb-3 font-semibold">NIS</th><th className="pb-3 font-semibold">Status Siswa</th><th className="pb-3 font-semibold">Kelas/Rombel</th><th className="pb-3 font-semibold">Jurusan</th><th className="pb-3 text-right font-semibold">Aksi</th>
-                    </tr></thead>
-                    <tbody className="divide-y divide-[#F1F5F9]">{filteredSiswaList.map((s, index) => (
-                      <tr key={s.id} onClick={() => router.push(`/profil/${s.id}`)} className="cursor-pointer hover:bg-[#F8FAFC]">
-                        <td className="py-3 text-xs text-[#64748B]">{index + 1}</td>
-                        <td className="py-3"><div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-[#E5E7EB] text-xs font-bold text-[#64748B]">{s.fotoProfil ? <img src={s.fotoProfil} alt={s.nama} className="h-full w-full object-cover" /> : s.nama.charAt(0)}</div></td>
-                        <td className="py-3 font-semibold text-[#111827]">{s.nama}</td><td className="py-3 text-xs text-[#64748B]">{s.email}</td><td className="py-3 text-xs text-[#64748B]">{s.nis ?? "-"}</td>
-                        <td className="py-3"><Badge tone="green">Aktif</Badge></td>
-                        <td
-                          className="py-3 text-xs text-[#64748B]"
-                          title={s.kelasSiswa?.map((item) => item.kelas.judul).join(", ") || "Belum ada kelas"}
-                        >
-                          {s.kelasSiswa?.length ?? 0} Kelas
-                        </td>
-                        <td className="py-3 text-xs text-[#64748B]">{s.kelasReferensi?.label ?? "-"}</td>
-                        <td className="relative whitespace-nowrap py-3 text-right"><button type="button" onClick={(event) => { event.stopPropagation(); toggleAkunMenu(s.id); }} className="rounded-lg p-2 text-lg font-bold text-[#64748B] hover:bg-[#F1F5F9]">â‹®</button>{openAkunMenuId === s.id && <div className="absolute right-2 top-11 z-20 w-28 overflow-hidden rounded-xl border border-[#E2E8F0] bg-[#FFFFFF] py-1 text-left shadow-lg"><button type="button" onClick={(event) => { event.stopPropagation(); setOpenAkunMenuId(null); openEditAkun(s); }} className="block w-full px-3 py-2 text-xs hover:bg-[#F8FAFC]">Edit</button><button type="button" onClick={(event) => { event.stopPropagation(); setOpenAkunMenuId(null); void handleDeleteAkun(s.id, "SISWA"); }} className="block w-full px-3 py-2 text-xs text-red-500 hover:bg-red-50">Hapus</button></div>}</td>
-                      </tr>
-                    ))}</tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          )}
 
-          {!loading && activeTab === "AKUN" && accountRole === "GURU" && (
-            <div className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
-              <div className="mb-4 flex items-center justify-between gap-3"><div><h2 className="text-base font-bold text-[#111827]">Daftar Guru</h2><p className="mt-1 text-xs text-[#64748B]">Kelola akun guru dan mapel yang diampu.</p></div><Button size="sm" onClick={() => openBuatAkun("GURU")}>+ Tambah Guru</Button></div>
-              <div className="mb-5 grid gap-3 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-3 md:grid-cols-[240px_minmax(220px,1fr)_auto] md:items-end">
-                <label className="block text-xs font-semibold text-[#64748B]">
-                  Mapel
-                  <select value={mapelFilter} onChange={(event) => setMapelFilter(event.target.value)} className="mt-1 w-full rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] px-3 py-2 text-sm font-normal text-[#334155] outline-none focus:border-[#00D2D9]">
-                    <option value="">Semua Mapel</option>
-                    {mapelOptions.map((mapel) => <option key={mapel} value={mapel}>{mapel}</option>)}
-                  </select>
-                </label>
-                <label className="block text-xs font-semibold text-[#64748B]">
-                  Search
-                  <input value={guruSearch} onChange={(event) => setGuruSearch(event.target.value)} placeholder="Nama, email, atau NIK..." className="mt-1 w-full rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] px-3 py-2 text-sm font-normal text-[#334155] outline-none focus:border-[#00D2D9]" />
-                </label>
-                <button type="button" onClick={() => { setMapelFilter(""); setGuruSearch(""); }} className="cursor-pointer rounded-lg px-3 py-2 text-xs font-semibold text-[#64748B] hover:bg-[#FFFFFF] hover:text-[#111827]">Reset</button>
+                {filteredGuruList.length === 0 ? (
+                  <EmptyState>Belum ada guru terdaftar.</EmptyState>
+                ) : (
+                  <TableWrap>
+                    <table className="w-full min-w-[760px] text-left text-sm">
+                      <thead className="bg-muted text-xs text-muted-foreground">
+                        <tr>
+                          <th className={th}>No</th>
+                          <th className={th}>Nama</th>
+                          <th className={th}>Email</th>
+                          <th className={th}>NIK</th>
+                          <th className={th}>Status Guru</th>
+                          <th className={th}>Mapel</th>
+                          <th className={cn(th, "text-right")}>Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y">
+                        {filteredGuruList.map((g, index) => (
+                          <tr
+                            key={g.id}
+                            onClick={() => router.push(`/profil/${g.id}`)}
+                            className="cursor-pointer transition-colors duration-100 hover:bg-accent"
+                          >
+                            <td className={cn(td, "tabular-nums text-muted-foreground")}>{index + 1}</td>
+                            <td className={td}>
+                              <div className="flex items-center gap-2.5">
+                                <Avatar name={g.nama} src={g.fotoProfil} />
+                                <span className="font-medium">{g.nama}</span>
+                              </div>
+                            </td>
+                            <td className={cn(td, "text-xs text-muted-foreground")}>{g.email}</td>
+                            <td className={cn(td, "font-mono text-xs text-muted-foreground")}>{g.nik ?? "-"}</td>
+                            <td className={td}><StatusDot>Aktif</StatusDot></td>
+                            <td className={cn(td, "text-xs text-muted-foreground")}>
+                              {Array.from(new Set(g.kelasGuruMapel?.map((item) => item.mapel.nama) ?? [])).join(", ") || "Belum ada mapel"}
+                            </td>
+                            <AkunRowActions
+                              open={openAkunMenuId === g.id}
+                              onToggle={() => toggleAkunMenu(g.id)}
+                              onEdit={() => {
+                                setOpenAkunMenuId(null);
+                                openEditAkun(g);
+                              }}
+                              onDelete={() => {
+                                setOpenAkunMenuId(null);
+                                void handleDeleteAkun(g.id, "GURU");
+                              }}
+                            />
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </TableWrap>
+                )}
+              </Panel>
+            )}
+          </div>
+        )}
+
+        {/* ============ LAPORAN ============ */}
+        {!loading && activeTab === "LAPORAN" && (
+          <div className="space-y-4">
+            <PageTitle
+              title="Laporan"
+              description="Laporan lupa password dari siswa dan petugas."
+            />
+            {laporanList.length === 0 ? (
+              <EmptyState>Tidak ada laporan lupa password saat ini.</EmptyState>
+            ) : (
+              <div className="space-y-3">
+                {laporanList.map((l) => (
+                  <LaporanCard key={l.id} data={l} onUpdated={() => loadTabData("LAPORAN")} />
+                ))}
               </div>
-              {filteredGuruList.length === 0 ? (
-                <p className="text-sm text-[#9CA3AF]">Belum ada guru terdaftar.</p>
-              ) : (
-                <div className="overflow-x-auto"><table className="w-full min-w-[760px] text-left text-sm"><thead className="border-b border-[#E2E8F0] text-xs text-[#94A3B8]"><tr><th className="pb-3 font-semibold">No</th><th className="pb-3 font-semibold">Profil</th><th className="pb-3 font-semibold">Nama</th><th className="pb-3 font-semibold">Email</th><th className="pb-3 font-semibold">NIK</th><th className="pb-3 font-semibold">Status Guru</th><th className="pb-3 font-semibold">Mapel</th><th className="pb-3 text-right font-semibold">Aksi</th></tr></thead><tbody className="divide-y divide-[#F1F5F9]">{filteredGuruList.map((g, index) => (<tr key={g.id} onClick={() => router.push(`/profil/${g.id}`)} className="cursor-pointer hover:bg-[#F8FAFC]"><td className="py-3 text-xs text-[#64748B]">{index + 1}</td><td className="py-3"><div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-[#E5E7EB] text-xs font-bold text-[#64748B]">{g.fotoProfil ? <img src={g.fotoProfil} alt={g.nama} className="h-full w-full object-cover" /> : g.nama.charAt(0)}</div></td><td className="py-3 font-semibold text-[#111827]">{g.nama}</td><td className="py-3 text-xs text-[#64748B]">{g.email}</td><td className="py-3 text-xs text-[#64748B]">{g.nik ?? "-"}</td><td className="py-3"><Badge tone="green">Aktif</Badge></td><td className="py-3 text-xs text-[#64748B]">{Array.from(new Set(g.kelasGuruMapel?.map((item) => item.mapel.nama) ?? [])).join(", ") || "Belum ada mapel"}</td><td className="relative whitespace-nowrap py-3 text-right"><button type="button" onClick={(event) => { event.stopPropagation(); toggleAkunMenu(g.id); }} className="rounded-lg p-2 text-lg font-bold text-[#64748B] hover:bg-[#F1F5F9]">â‹®</button>{openAkunMenuId === g.id && <div className="absolute right-2 top-11 z-20 w-28 overflow-hidden rounded-xl border border-[#E2E8F0] bg-[#FFFFFF] py-1 text-left shadow-lg"><button type="button" onClick={(event) => { event.stopPropagation(); setOpenAkunMenuId(null); openEditAkun(g); }} className="block w-full px-3 py-2 text-xs hover:bg-[#F8FAFC]">Edit</button><button type="button" onClick={(event) => { event.stopPropagation(); setOpenAkunMenuId(null); void handleDeleteAkun(g.id, "GURU"); }} className="block w-full px-3 py-2 text-xs text-red-500 hover:bg-red-50">Hapus</button></div>}</td></tr>))}</tbody></table></div>
-              )}
-            </div>
-          )}
-
-          {!loading && activeTab === "LAPORAN" && (
-            <div className="space-y-3">
-              {laporanList.length === 0 ? (
-                <p className="text-sm text-[#9CA3AF]">Tidak ada laporan lupa password saat ini.</p>
-              ) : (
-                laporanList.map((l) => <LaporanCard key={l.id} data={l} onUpdated={() => loadTabData("LAPORAN")} />)
-              )}
-            </div>
-          )}
-        </main>
-      </div>
-
-      <footer className="py-10 text-center text-white" style={{ background: BRAND }}>
-        <p className="text-lg font-bold">MyClass</p>
-        <p className="mt-8 border-t border-white/20 pt-6 text-xs text-white/80">
-          Â© 2026 MyClass. All Rights Reserved.
-        </p>
-      </footer>
+            )}
+          </div>
+        )}
+      </DashboardShell>
 
       <ModalKelas
         open={showModalKelas}
@@ -631,9 +874,9 @@ export default function AdminDashboard() {
         maxWidth="max-w-md"
       >
         <div className="space-y-5">
-          <div className="rounded-xl border border-red-100 bg-red-50 p-4">
-            <p className="text-sm font-bold text-red-700">Hapus kelas {deletingKelas?.judul}?</p>
-            <p className="mt-2 text-sm leading-6 text-red-600">
+          <div className="rounded-md border border-danger/30 bg-danger/10 p-4">
+            <p className="text-sm font-semibold text-danger">Hapus kelas {deletingKelas?.judul}?</p>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
               Data hubungan siswa dan guru dengan kelas ini akan ikut terlepas. Tindakan ini tidak dapat dibatalkan.
             </p>
           </div>
@@ -656,7 +899,66 @@ export default function AdminDashboard() {
         defaultRole={akunDefaultRole}
         initialData={editingAkun}
       />
-    </div>
+    </>
+  );
+}
+
+function AkunRowActions({
+  open,
+  onToggle,
+  onEdit,
+  onDelete,
+}: {
+  open: boolean;
+  onToggle: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  return (
+    <td className="relative whitespace-nowrap px-3 py-1 text-right">
+      <button
+        type="button"
+        aria-label="Menu aksi"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={(event) => {
+          event.stopPropagation();
+          onToggle();
+        }}
+        className="inline-flex size-10 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors duration-150 hover:bg-accent hover:text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      >
+        <EllipsisVertical className="size-4" strokeWidth={1.75} />
+      </button>
+      {open && (
+        <div
+          role="menu"
+          className="absolute right-2 top-11 z-20 w-32 overflow-hidden rounded-md border bg-popover py-1 text-left text-popover-foreground shadow-sm dark:shadow-none"
+        >
+          <button
+            type="button"
+            role="menuitem"
+            onClick={(event) => {
+              event.stopPropagation();
+              onEdit();
+            }}
+            className="block h-10 w-full cursor-pointer px-3 text-left text-sm transition-colors duration-100 hover:bg-accent"
+          >
+            Edit
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={(event) => {
+              event.stopPropagation();
+              onDelete();
+            }}
+            className="block h-10 w-full cursor-pointer px-3 text-left text-sm text-danger transition-colors duration-100 hover:bg-accent"
+          >
+            Hapus
+          </button>
+        </div>
+      )}
+    </td>
   );
 }
 
@@ -664,7 +966,7 @@ type ActivityDay = AdminDashboardData["aktivitas"]["aktivitasHarian"][number];
 
 function ActiveUsersLineChart({ items }: { items: ActivityDay[] }) {
   if (items.length === 0) {
-    return <p className="mt-5 text-sm text-[#94A3B8]">Data user aktif belum tersedia.</p>;
+    return <p className="text-sm text-muted-foreground">Data user aktif belum tersedia.</p>;
   }
 
   const width = 640;
@@ -682,21 +984,21 @@ function ActiveUsersLineChart({ items }: { items: ActivityDay[] }) {
   const gridValues = [0, 250, 500, 750, 1000].filter((value) => value <= maximum);
 
   return (
-    <div className="mt-4 overflow-x-auto">
+    <div className="overflow-x-auto">
       <svg viewBox={`0 0 ${width} ${height}`} className="min-w-[560px]" role="img" aria-label="Jumlah user aktif per hari">
         {gridValues.map((value) => (
           <g key={value}>
-            <line x1={left} x2={width - right} y1={yFor(value)} y2={yFor(value)} stroke="#E2E8F0" strokeDasharray="4 4" />
-            <text x={left - 8} y={yFor(value) + 4} textAnchor="end" fontSize="11" fill="#94A3B8">{value}</text>
+            <line x1={left} x2={width - right} y1={yFor(value)} y2={yFor(value)} className="stroke-border" strokeDasharray="4 4" />
+            <text x={left - 8} y={yFor(value) + 4} textAnchor="end" fontSize="11" className="fill-muted-foreground">{value}</text>
           </g>
         ))}
-        <polyline points={points} fill="none" stroke="#00D2D9" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+        <polyline points={points} fill="none" className="stroke-brand" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         {items.map((item, index) => (
           <g key={item.tanggal}>
-            <circle cx={xFor(index)} cy={yFor(item.userAktif)} r="4" fill="#FFFFFF" stroke="#00D2D9" strokeWidth="3">
+            <circle cx={xFor(index)} cy={yFor(item.userAktif)} r="4" className="fill-background stroke-brand" strokeWidth="2">
               <title>{`${item.tanggal}: ${item.userAktif} user aktif`}</title>
             </circle>
-            <text x={xFor(index)} y={height - 14} textAnchor="middle" fontSize="10" fill="#94A3B8">{item.tanggal.slice(5)}</text>
+            <text x={xFor(index)} y={height - 14} textAnchor="middle" fontSize="10" className="fill-muted-foreground">{item.tanggal.slice(5)}</text>
           </g>
         ))}
       </svg>

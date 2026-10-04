@@ -2,8 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import Link from "next/link";
-import Image from "next/image";
+import {
+  ChartColumn,
+  ChevronDown,
+  ClipboardCheck,
+  GraduationCap,
+  LayoutDashboard,
+  School,
+  Users,
+} from "lucide-react";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import PengumumanCard from "@/components/PengumumanCard";
@@ -11,20 +18,10 @@ import TugasCard from "@/components/TugasCard";
 import MateriCard, { MateriData } from "@/components/MateriCard";
 import FeedCategoryFilter, { FeedCategory } from "@/components/FeedCategoryFilter";
 import { ClassDetailOverview, ClassDirectoryNavigation } from "@/components/ClassDetailOverview";
-
-const BRAND = "#00D2D9";
-type KurikulumTab = "DASHBOARD" | "KELAS" | "AKUN" | "ASESMEN" | "PERFORMA";
-
-function TabIcon({ tab }: { tab: KurikulumTab }) {
-  const paths: Record<KurikulumTab, React.ReactNode> = {
-    DASHBOARD: <path d="M4 13h6V4H4v9Zm0 7h6v-4H4v4Zm10 0h6v-9h-6v9Zm0-16v4h6V4h-6Z" />,
-    KELAS: <path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6" />,
-    AKUN: <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM19 8v6M22 11h-6" />,
-    ASESMEN: <path d="M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm3 4h4m-4 4h4m-4 4h4" />,
-    PERFORMA: <path d="M4 19V5M4 19h17M8 16v-4M13 16V8M18 16V4" />,
-  };
-  return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-[18px] w-[18px] flex-shrink-0">{paths[tab]}</svg>;
-}
+import { cn } from "@/lib/utils";
+import { DashboardShell, type NavItem } from "@/components/shared/dashboard-shell";
+import { Avatar } from "@/components/shared/avatar";
+import { EmptyState, LoadingBlock } from "@/components/shared/data-display";
 
 interface SiswaDiKelas {
   siswaId: string;
@@ -38,6 +35,7 @@ interface GuruDiKelas {
 interface FeedItem {
   tipe: "PENGUMUMAN" | "ASESMEN" | "TUGAS" | "MATERI";
   timestamp: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any;
 }
 interface KelasDetail {
@@ -49,13 +47,17 @@ interface KelasDetail {
   feed: FeedItem[];
 }
 
-const TABS: { key: KurikulumTab; label: string; href: string }[] = [
-  { key: "DASHBOARD", label: "Dashboard", href: "/kurikulum" },
-  { key: "KELAS", label: "Kelas", href: "/kurikulum?tab=KELAS" },
-  { key: "AKUN", label: "Daftar Akun", href: "/kurikulum?tab=AKUN" },
-  { key: "ASESMEN", label: "Asesmen", href: "/kurikulum?tab=ASESMEN" },
-  { key: "PERFORMA", label: "Performa Akademik", href: "/kurikulum?tab=PERFORMA" },
+const NAV: { key: string; label: string; href: string; icon: NavItem["icon"] }[] = [
+  { key: "DASHBOARD", label: "Dashboard", href: "/kurikulum", icon: LayoutDashboard },
+  { key: "KELAS", label: "Kelas", href: "/kurikulum?tab=KELAS", icon: School },
+  { key: "SISWA", label: "Daftar Siswa", href: "/kurikulum?tab=SISWA", icon: GraduationCap },
+  { key: "GURU", label: "Daftar Guru", href: "/kurikulum?tab=GURU", icon: Users },
+  { key: "ASESMEN", label: "Asesmen", href: "/kurikulum?tab=ASESMEN", icon: ClipboardCheck },
+  { key: "PERFORMA", label: "Performa Akademik", href: "/kurikulum?tab=PERFORMA", icon: ChartColumn },
 ];
+
+const personRow =
+  "flex min-h-12 w-full cursor-pointer items-center gap-3 rounded-md border p-3 text-left transition-colors duration-150 hover:bg-accent outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 export default function KurikulumKelasDetailPage() {
   const router = useRouter();
@@ -65,7 +67,6 @@ export default function KurikulumKelasDetailPage() {
   const [kelas, setKelas] = useState<KelasDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [me, setMe] = useState<{ id: string; nama: string; role: string; fotoProfil: string | null } | null>(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [section, setSection] = useState<"SISWA" | "GURU" | null>(null);
   const [expandedRombel, setExpandedRombel] = useState<string | null>(null);
   const [error, setError] = useState("");
@@ -106,12 +107,18 @@ export default function KurikulumKelasDetailPage() {
   }
 
   if (loading) {
-    return <div className="flex min-h-screen items-center justify-center bg-[#FFFFFF]"><p className="text-sm text-[#9CA3AF]">Memuat...</p></div>;
+    return (
+      <div className="min-h-dvh bg-background p-6 text-foreground">
+        <div className="mx-auto max-w-6xl">
+          <LoadingBlock />
+        </div>
+      </div>
+    );
   }
   if (error || !kelas) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-[#FFFFFF]">
-        <p className="text-sm text-[#9CA3AF]">{error || "Kelas tidak ditemukan."}</p>
+      <div className="flex min-h-dvh flex-col items-center justify-center gap-3 bg-background px-4 text-foreground">
+        <p className="text-sm text-muted-foreground">{error || "Kelas tidak ditemukan."}</p>
         <Button variant="outline" onClick={() => router.push("/kurikulum")}>Kembali</Button>
       </div>
     );
@@ -131,99 +138,111 @@ export default function KurikulumKelasDetailPage() {
   }, {});
   const visibleFeed = kelas.feed.filter((item) => feedCategory === "SEMUA" || item.tipe === feedCategory);
 
+  const navItems: NavItem[] = NAV.map((item) => ({
+    key: item.key,
+    label: item.label,
+    icon: item.icon,
+    href: item.href,
+    active: item.key === "KELAS",
+  }));
+
   return (
-    <div className="flex min-h-screen flex-col bg-[#FFFFFF]" style={{ fontFamily: "Inter, sans-serif" }}>
-      <header className="sticky top-0 z-40 border-b border-black/5 bg-[#FFFFFF]">
-        <div className="flex items-center justify-between px-4 py-3 sm:px-6">
-          <div className="flex items-center gap-3">
-            <button onClick={() => setSidebarOpen((v) => !v)} className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg hover:bg-black/5">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
-            </button>
-            <span className="text-lg font-bold tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>MyClass</span>
-          </div>
-          <div className="flex items-center gap-3">
-            {me && <div className="hidden text-right sm:block"><p className="text-sm font-semibold text-[#111827]">{me.nama}</p><p className="text-xs text-[#9CA3AF]">{me.role}</p></div>}
-            <div className="hidden h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-[#E5E7EB] text-xs font-bold text-[#6B7280] sm:flex">
-              {me?.fotoProfil ? <img src={me.fotoProfil} alt={me.nama} className="h-full w-full object-cover" /> : me?.nama?.charAt(0) ?? "K"}
-            </div>
-            <Button size="sm" variant="outline" onClick={() => router.push("/kurikulum")}>Back</Button>
-          </div>
-        </div>
-      </header>
+    <DashboardShell
+      roleLabel="Dashboard Kurikulum"
+      sectionLabel="Detail Kelas"
+      navItems={navItems}
+      me={me}
+      onLogout={handleLogout}
+      maxWidth="max-w-6xl"
+      headerActions={
+        <Button size="sm" variant="outline" onClick={() => router.push("/kurikulum")}>
+          Back
+        </Button>
+      }
+    >
+      <ClassDetailOverview title={kelas.judul} description={kelas.deskripsi} studentCount={kelas.siswa.length} teacherCount={kelas.guruMapel.length} />
+      <ClassDirectoryNavigation section={section} onChange={setSection} studentCount={kelas.siswa.length} teacherCount={kelas.guruMapel.length} />
 
-      {sidebarOpen && <div onClick={() => setSidebarOpen(false)} className="fixed inset-0 z-40 bg-black/30 backdrop-blur-[1px]" />}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-72 overflow-y-auto bg-[#FFFFFF] p-4 shadow-[8px_0_24px_rgba(15,23,42,0.12)] transition-transform duration-300 ease-out ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
-        <div className="min-h-full border-r border-black/5 bg-[#FFFFFF] p-4 shadow-sm">
-          <p className="mb-3 px-2 pt-2 text-sm font-bold text-[#111827]">Dashboard Kurikulum<br /><span style={{ color: BRAND }}>- Kelas</span></p>
-          <nav className="flex flex-col gap-1">
-            {TABS.map((tab) => (
-              <Link key={tab.key} href={tab.href} onClick={() => setSidebarOpen(false)} className="flex cursor-pointer items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors" style={tab.key === "KELAS" ? { background: `${BRAND}1A`, color: BRAND } : { color: "#374151" }}>
-                <TabIcon tab={tab.key} />
-                <span>{tab.label}</span>
-              </Link>
-            ))}
-          </nav>
-        </div>
-      </aside>
-
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6">
-        <ClassDetailOverview title={kelas.judul} description={kelas.deskripsi} studentCount={kelas.siswa.length} teacherCount={kelas.guruMapel.length} />
-        <ClassDirectoryNavigation section={section} onChange={setSection} studentCount={kelas.siswa.length} teacherCount={kelas.guruMapel.length} />
-
-        {section === "SISWA" && (
-          <div className="mt-4 space-y-3">
-            {Object.keys(siswaGrouped).length === 0 ? <p className="text-sm text-[#9CA3AF]">Belum ada siswa di kelas ini.</p> : Object.entries(siswaGrouped).map(([label, list]) => {
+      {section === "SISWA" && (
+        <div className="mt-4 space-y-3">
+          {Object.keys(siswaGrouped).length === 0 ? (
+            <EmptyState>Belum ada siswa di kelas ini.</EmptyState>
+          ) : (
+            Object.entries(siswaGrouped).map(([label, list]) => {
               const isOpen = expandedRombel === label;
               return (
-                <div key={label} className="overflow-hidden rounded-2xl border border-black/5 bg-[#FFFFFF] shadow-sm">
-                  <button onClick={() => setExpandedRombel(isOpen ? null : label)} className="flex w-full cursor-pointer items-center justify-between px-5 py-3.5 text-left">
-                    <div className="flex items-center gap-2"><p className="text-sm font-bold text-[#111827]">{label}</p><Badge tone="brand">{list.length} Siswa</Badge></div>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" className={`h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""}`}><path d="m6 9 6 6 6-6" /></svg>
+                <div key={label} className="overflow-hidden rounded-lg border bg-card text-card-foreground">
+                  <button
+                    type="button"
+                    aria-expanded={isOpen}
+                    onClick={() => setExpandedRombel(isOpen ? null : label)}
+                    className="flex min-h-12 w-full cursor-pointer items-center justify-between gap-3 px-4 py-3 text-left transition-colors duration-150 hover:bg-accent outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+                  >
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-semibold">{label}</p>
+                      <Badge tone="brand">{list.length} Siswa</Badge>
+                    </div>
+                    <ChevronDown
+                      aria-hidden="true"
+                      strokeWidth={1.75}
+                      className={cn("size-4 text-muted-foreground transition-transform duration-150", isOpen && "rotate-180")}
+                    />
                   </button>
                   {isOpen && (
-                    <div className="space-y-2 border-t border-black/5 p-4">
+                    <div className="space-y-2 border-t p-3">
                       {list.map((ks) => (
-                        <button key={ks.siswaId} onClick={() => router.push(`/profil/${ks.siswa.id}`)} className="flex w-full cursor-pointer items-center gap-3 rounded-xl border border-black/5 p-3 text-left hover:bg-black/5">
-                          <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#E5E7EB] text-xs font-bold text-[#6B7280]">
-                            {ks.siswa.fotoProfil ? <img src={ks.siswa.fotoProfil} alt={ks.siswa.nama} className="h-full w-full object-cover" /> : ks.siswa.nama.charAt(0)}
+                        <button key={ks.siswaId} onClick={() => router.push(`/profil/${ks.siswa.id}`)} className={personRow}>
+                          <Avatar name={ks.siswa.nama} src={ks.siswa.fotoProfil} className="size-9" />
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-sm font-medium">{ks.siswa.nama}</p>
+                            <p className="text-xs text-muted-foreground">
+                              NIS: <span className="font-mono">{ks.siswa.nis}</span>
+                            </p>
                           </div>
-                          <div className="min-w-0 flex-1"><p className="truncate text-sm font-semibold text-[#111827]">{ks.siswa.nama}</p><p className="text-xs text-[#9CA3AF]">NIS: {ks.siswa.nis}</p></div>
                         </button>
                       ))}
                     </div>
                   )}
                 </div>
               );
-            })}
-          </div>
-        )}
+            })
+          )}
+        </div>
+      )}
 
-        {section === "GURU" && (
-          <div className="mt-4">
-            {Object.keys(guruGrouped).length === 0 ? <p className="text-sm text-[#9CA3AF]">Belum ada guru mengajar di kelas ini.</p> : Object.entries(guruGrouped).map(([mapel, list]) => (
-              <div key={mapel} className="mb-4">
-                <p className="mb-2 text-xs font-bold uppercase tracking-wide text-[#9CA3AF]">{mapel}</p>
+      {section === "GURU" && (
+        <div className="mt-4">
+          {Object.keys(guruGrouped).length === 0 ? (
+            <EmptyState>Belum ada guru mengajar di kelas ini.</EmptyState>
+          ) : (
+            Object.entries(guruGrouped).map(([mapel, list]) => (
+              <div key={mapel} className="mb-5">
+                <h3 className="mb-2 text-sm font-medium text-muted-foreground">{mapel}</h3>
                 <div className="space-y-2">
                   {list.map((gm) => (
-                    <button key={gm.id} onClick={() => router.push(`/profil/${gm.guru.id}`)} className="flex w-full cursor-pointer items-center gap-3 rounded-xl border border-black/5 bg-[#FFFFFF] p-3 text-left shadow-sm hover:bg-black/5">
-                      <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#E5E7EB] text-xs font-bold text-[#6B7280]">
-                        {gm.guru.fotoProfil ? <img src={gm.guru.fotoProfil} alt={gm.guru.nama} className="h-full w-full object-cover" /> : gm.guru.nama.charAt(0)}
-                      </div>
-                      <p className="text-sm font-semibold text-[#111827]">{gm.guru.nama}</p>
+                    <button key={gm.id} onClick={() => router.push(`/profil/${gm.guru.id}`)} className={cn(personRow, "bg-card")}>
+                      <Avatar name={gm.guru.nama} src={gm.guru.fotoProfil} className="size-9" />
+                      <p className="text-sm font-medium">{gm.guru.nama}</p>
                     </button>
                   ))}
                 </div>
               </div>
-            ))}
-          </div>
-        )}
+            ))
+          )}
+        </div>
+      )}
 
-        {section === null && (
-          <div className="mt-6">
-            <p className="mb-3 text-sm font-bold text-[#111827]">Aktivitas Kelas</p>
-            <FeedCategoryFilter value={feedCategory} onChange={setFeedCategory} />
-            <div className="space-y-3">
-              {kelas.feed.length === 0 ? <p className="text-sm text-[#9CA3AF]">Belum ada aktivitas di kelas ini.</p> : visibleFeed.length === 0 ? <p className="text-sm text-[#9CA3AF]">Tidak ada aktivitas untuk filter ini.</p> : visibleFeed.map((item, i) => {
+      {section === null && (
+        <div className="mt-6">
+          <h2 className="mb-3 text-base font-semibold tracking-tight">Aktivitas Kelas</h2>
+          <FeedCategoryFilter value={feedCategory} onChange={setFeedCategory} />
+          <div className="space-y-3">
+            {kelas.feed.length === 0 ? (
+              <EmptyState>Belum ada aktivitas di kelas ini.</EmptyState>
+            ) : visibleFeed.length === 0 ? (
+              <EmptyState>Tidak ada aktivitas untuk filter ini.</EmptyState>
+            ) : (
+              visibleFeed.map((item, i) => {
                 if (item.tipe === "PENGUMUMAN") return <PengumumanCard key={`p-${i}`} data={item.data} currentUserId={me?.id ?? ""} />;
                 if (item.tipe === "TUGAS") return <TugasCard key={`t-${i}`} data={item.data} currentUserId={me?.id ?? ""} role="KURIKULUM" />;
                 if (item.tipe === "MATERI") return <MateriCard key={`m-${item.data.id}`} data={item.data as MateriData} />;
@@ -233,30 +252,23 @@ export default function KurikulumKelasDetailPage() {
                   <button
                     key={`a-${i}`}
                     onClick={() => router.push(`/kurikulum/asesmen/${a.id}`)}
-                    className="block w-full cursor-pointer rounded-2xl border border-black/5 bg-[#FFFFFF] p-4 text-left shadow-sm transition-shadow hover:shadow-md"
+                    className="block w-full cursor-pointer rounded-lg border bg-card p-4 text-left text-card-foreground transition-colors duration-150 hover:bg-accent outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <Badge tone="brand">{a.tipe === "KUIS" ? "Kuis" : "Ujian Online"}</Badge>
                       {a.mapel && <Badge tone="gray">{a.mapel.nama}</Badge>}
                     </div>
-                    <p className="mt-2 text-sm font-bold text-[#111827]">{a.judul}</p>
-                    <p className="mt-1 text-xs text-[#9CA3AF]">{a._count?.soal ?? 0} soal Â· oleh {a.guru?.nama} â€” lihat ujian & jawaban siswa</p>
+                    <p className="mt-2 text-sm font-semibold">{a.judul}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      <span className="tabular-nums">{a._count?.soal ?? 0}</span> soal · oleh {a.guru?.nama} — lihat ujian & jawaban siswa
+                    </p>
                   </button>
                 );
-              })}
-            </div>
-          </div>
-        )}
-      </main>
-
-      <footer className="py-10 text-center text-white" style={{ background: BRAND }}>
-        <div className="mx-auto max-w-7xl px-6">
-          <div>
-            <p className="text-lg font-bold">MyClass</p>
+              })
+            )}
           </div>
         </div>
-        <p className="mt-8 border-t border-white/20 pt-6 text-center text-xs text-white/80">Â© 2026 MyClass. All Rights Reserved.</p>
-      </footer>
-    </div>
+      )}
+    </DashboardShell>
   );
 }

@@ -149,21 +149,21 @@ export default function ModalMateri({ open, onClose, onSuccess, mode, initialDat
           <Input label="Tautan Materi" placeholder="https://..." value={url} onChange={(e) => setUrl(e.target.value)} required />
         ) : (
           <div>
-            <label className="mb-1.5 block text-xs font-semibold text-[#374151]">Lampiran</label>
-            <label className="inline-flex cursor-pointer items-center rounded-lg border border-[#D1D5DB] px-3 py-2 text-sm font-medium text-[#374151] hover:bg-black/5">
+            <label className="mb-1.5 block text-xs font-semibold text-foreground">Lampiran</label>
+            <label className="inline-flex cursor-pointer items-center rounded-lg border border-input px-3 py-2 text-sm font-medium text-foreground hover:bg-accent">
               {uploading ? "Mengunggah..." : fileName ? "Ganti File" : "Pilih File"}
               <input type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,image/jpeg,image/png,image/webp" className="hidden" disabled={uploading} onChange={(event) => { const file = event.target.files?.[0]; if (file) void handleUpload(file); event.target.value = ""; }} />
             </label>
-            {fileName && <p className="mt-2 break-all text-xs text-[#64748B]">{fileName}</p>}
+            {fileName && <p className="mt-2 break-all text-xs text-muted-foreground">{fileName}</p>}
           </div>
         )}
 
         <Textarea label="Deskripsi (opsional)" value={deskripsi} onChange={(e) => setDeskripsi(e.target.value)} />
 
         {!defaultKelasId && <div>
-          <label className="mb-1.5 block text-xs font-semibold text-[#374151]">Kelas Tujuan</label>
+          <label className="mb-1.5 block text-xs font-semibold text-foreground">Kelas Tujuan</label>
           <select
-            className="w-full rounded-lg border border-[#D1D5DB] px-3.5 py-2.5 text-sm outline-none focus:border-[#00D2D9]"
+            className="w-full min-h-10 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground outline-none placeholder:text-muted-foreground transition-colors duration-150 focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             value=""
             onChange={(e) => e.target.value && toggleKelas(e.target.value)}
           >
@@ -184,7 +184,7 @@ export default function ModalMateri({ open, onClose, onSuccess, mode, initialDat
                 return (
                   <Badge key={id} tone="brand" className="flex items-center gap-1">
                     {k?.label}
-                    <button type="button" onClick={() => toggleKelas(id)} className="cursor-pointer hover:text-red-500">
+                    <button type="button" onClick={() => toggleKelas(id)} className="cursor-pointer hover:text-danger">
                       Ã—
                     </button>
                   </Badge>
@@ -194,7 +194,7 @@ export default function ModalMateri({ open, onClose, onSuccess, mode, initialDat
           )}
         </div>}
 
-        {error && <p className="text-xs font-medium text-red-500">{error}</p>}
+        {error && <p className="text-xs font-medium text-danger">{error}</p>}
 
         <Button type="submit" loading={loading} className="w-full">
           {mode === "create" ? "Upload Materi" : "Simpan Perubahan"}

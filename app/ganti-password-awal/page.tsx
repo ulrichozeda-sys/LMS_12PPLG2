@@ -2,9 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
-
-const BRAND = "#00D2D9";
+import { Logo } from "@/components/shared/logo";
+import { ThemeToggle } from "@/components/shared/theme-toggle";
+import { SiteFooter } from "@/components/shared/site-footer";
+import {
+  Field,
+  FormError,
+  PrimaryButton,
+  TextInput,
+} from "@/components/shared/form-controls";
 
 export default function GantiPasswordAwalPage() {
   const router = useRouter();
@@ -50,61 +56,63 @@ export default function GantiPasswordAwalPage() {
   }
 
   return (
-    <div
-      className="flex min-h-screen items-center justify-center bg-cover bg-center px-6"
-      style={{
-        backgroundImage:
-          "linear-gradient(180deg, rgba(17,24,39,0.55), rgba(17,24,39,0.7)), url('/hero-sekolah.jpg')",
-        backgroundColor: "#1F2937",
-      }}
-    >
-      <div className="w-full max-w-sm rounded-2xl bg-[#FFFFFF] p-8 shadow-2xl">
-        <div className="flex flex-col items-center text-center">
-          <div className="relative h-10 w-10 flex-shrink-0">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#00D2D9] text-sm font-black text-white">S</div>
+    <div className="flex min-h-dvh flex-col bg-background text-foreground">
+      <header className="border-b">
+        <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
+          <Logo />
+          <ThemeToggle />
+        </div>
+      </header>
+
+      <main className="flex flex-1 items-center justify-center px-4 py-10 sm:px-6">
+        <div className="w-full max-w-sm">
+          <h1 className="text-xl font-semibold tracking-tight">Buat password baru</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Satu langkah lagi sebelum masuk ke MyClass.
+          </p>
+
+          <div className="mt-5 rounded-lg border bg-card p-6 text-card-foreground">
+            <div className="rounded-md border bg-muted p-3">
+              <p className="text-xs font-semibold">Password sementara</p>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                Password anda masih menggunakan password sementara. Untuk keamanan akun, silakan buat
+                password baru sebelum melanjutkan.
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="mt-5 space-y-3">
+              <Field label="Password baru" hint="Minimal 6 karakter, kombinasi huruf dan angka.">
+                <TextInput
+                  type="password"
+                  required
+                  autoComplete="new-password"
+                  placeholder="Password Baru"
+                  value={passwordBaru}
+                  onChange={(e) => setPasswordBaru(e.target.value)}
+                />
+              </Field>
+              <Field label="Konfirmasi password baru">
+                <TextInput
+                  type="password"
+                  required
+                  autoComplete="new-password"
+                  placeholder="Konfirmasi Password Baru"
+                  value={konfirmasi}
+                  onChange={(e) => setKonfirmasi(e.target.value)}
+                />
+              </Field>
+
+              {error && <FormError>{error}</FormError>}
+
+              <PrimaryButton type="submit" disabled={loading}>
+                {loading ? "Menyimpan..." : "Simpan Password Baru"}
+              </PrimaryButton>
+            </form>
           </div>
-          <p className="mt-2 text-base font-bold" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-            MyClass
-          </p>
         </div>
+      </main>
 
-        <div className="mt-6 rounded-lg bg-amber-50 p-3">
-          <p className="text-xs leading-relaxed text-amber-800">
-            Password anda masih menggunakan password sementara. Untuk keamanan akun, silakan buat password baru
-            sebelum melanjutkan.
-          </p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="mt-5 space-y-3">
-          <input
-            type="password"
-            required
-            placeholder="Password Baru"
-            value={passwordBaru}
-            onChange={(e) => setPasswordBaru(e.target.value)}
-            className="w-full rounded-lg border border-[#D1D5DB] px-4 py-2.5 text-sm outline-none focus:border-[#00D2D9]"
-          />
-          <input
-            type="password"
-            required
-            placeholder="Konfirmasi Password Baru"
-            value={konfirmasi}
-            onChange={(e) => setKonfirmasi(e.target.value)}
-            className="w-full rounded-lg border border-[#D1D5DB] px-4 py-2.5 text-sm outline-none focus:border-[#00D2D9]"
-          />
-
-          {error && <p className="text-xs font-medium text-red-500">{error}</p>}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-lg py-2.5 text-sm font-semibold text-white transition-transform hover:scale-[1.02] disabled:opacity-60"
-            style={{ background: BRAND }}
-          >
-            {loading ? "Menyimpan..." : "Simpan Password Baru"}
-          </button>
-        </form>
-      </div>
+      <SiteFooter />
     </div>
   );
 }

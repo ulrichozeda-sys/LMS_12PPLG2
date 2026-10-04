@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const controlBase =
@@ -31,6 +32,71 @@ export function Field({
 
 export function TextInput({ className, ...props }: React.ComponentProps<"input">) {
   return <input className={cn(controlBase, "h-10", className)} {...props} />;
+}
+
+export function SelectInput({ className, ...props }: React.ComponentProps<"select">) {
+  return (
+    <select
+      className={cn(controlBase, "h-10", className)}
+      {...props}
+    />
+  );
+}
+
+export function SearchInput({ className, ...props }: React.ComponentProps<"input">) {
+  return (
+    <span className="relative block">
+      <Search
+        className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+        aria-hidden="true"
+      />
+      <input
+        type="search"
+        className={cn(controlBase, "h-10 pl-9", className)}
+        {...props}
+      />
+    </span>
+  );
+}
+
+export function SegmentedControl<Value extends string>({
+  ariaLabel,
+  value,
+  onChange,
+  options,
+  className,
+}: {
+  ariaLabel: string;
+  value: Value;
+  onChange: (value: Value) => void;
+  options: { value: Value; label: string }[];
+  className?: string;
+}) {
+  return (
+    <div
+      role="group"
+      aria-label={ariaLabel}
+      className={cn("inline-flex rounded-md border bg-muted p-1", className)}
+    >
+      {options.map((option) => (
+        <button
+          key={option.value}
+          type="button"
+          aria-pressed={value === option.value}
+          onClick={() => onChange(option.value)}
+          className={cn(
+            "h-9 rounded-sm px-3 text-sm font-medium transition-colors duration-150",
+            "outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            value === option.value
+              ? "bg-brand text-brand-foreground"
+              : "text-muted-foreground hover:text-foreground",
+          )}
+        >
+          {option.label}
+        </button>
+      ))}
+    </div>
+  );
 }
 
 export function TextArea({ className, ...props }: React.ComponentProps<"textarea">) {

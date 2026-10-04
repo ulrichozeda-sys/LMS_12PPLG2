@@ -1,6 +1,6 @@
 import Link from "next/link";
 import {
-  BarChart3,
+  ChartColumn,
   BookOpen,
   ClipboardCheck,
   ListChecks,
@@ -45,7 +45,7 @@ const FEATURES = [
     text: "Asesmen dikerjakan online dan hasilnya langsung bisa dinilai oleh guru.",
   },
   {
-    Icon: BarChart3,
+    Icon: ChartColumn,
     title: "Nilai dan performa",
     text: "Siswa memantau performa akademiknya, guru melihat rekap nilai kelas.",
   },

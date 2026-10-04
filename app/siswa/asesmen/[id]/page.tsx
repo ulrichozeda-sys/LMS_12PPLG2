@@ -3,6 +3,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { ChevronLeft, ChevronRight, LayoutGrid, Search } from "lucide-react";
 import Button from "@/components/ui/Button";
 import { showConfirm } from "@/lib/dialog";
 import Badge from "@/components/ui/Badge";
@@ -45,6 +46,15 @@ interface JawabanLokal {
   jawabanEssay: string;
   raguRagu: boolean;
 }
+
+const focusRing =
+  "outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+
+const iconBtn =
+  `inline-flex size-10 cursor-pointer items-center justify-center rounded-md border bg-background text-foreground transition-colors duration-150 hover:bg-accent disabled:cursor-not-allowed disabled:opacity-40 sm:size-9 ${focusRing}`;
+
+const fieldCls =
+  "rounded-md border border-input bg-background px-3 text-sm outline-none transition-colors duration-150 placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
 
 export default function SiswaAsesmenKerjakanPage() {
   const router = useRouter();
@@ -253,11 +263,19 @@ export default function SiswaAsesmenKerjakanPage() {
     return [j, m, d].map((n) => String(n).padStart(2, "0")).join(":");
   }
 
-  if (loading) return <p className="text-sm text-[#9CA3AF]">Memuat...</p>;
+  if (loading) {
+    return (
+      <div className="space-y-3" role="status" aria-label="Memuat asesmen">
+        <div className="h-20 animate-pulse rounded-lg border bg-muted" />
+        <div className="h-10 animate-pulse rounded-lg border bg-muted" />
+        <div className="h-64 animate-pulse rounded-lg border bg-muted" />
+      </div>
+    );
+  }
   if (error || !asesmen) {
     return (
-      <div className="flex flex-col items-center gap-3 py-10">
-        <p className="text-sm text-[#9CA3AF]">{error || "Asesmen tidak ditemukan."}</p>
+      <div className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-lg border border-dashed px-4 py-10 text-center">
+        <p className="text-sm text-muted-foreground">{error || "Asesmen tidak ditemukan."}</p>
         <Button variant="outline" onClick={() => router.push("/siswa/asesmen")}>
           Kembali
         </Button>
@@ -267,36 +285,48 @@ export default function SiswaAsesmenKerjakanPage() {
 
   if (sudahSelesai) {
     return (
-      <div className="flex flex-col items-center gap-3 rounded-2xl border border-black/5 bg-[#FFFFFF] p-10 text-center shadow-sm">
+      <div className="mx-auto flex max-w-lg flex-col items-center gap-3 rounded-lg border bg-card p-10 text-center text-card-foreground">
         <Badge tone="green">Sudah Dikumpulkan</Badge>
-        <p className="text-lg font-bold text-[#111827]">{asesmen.judul}</p>
-        <p className="text-sm text-[#6B7280]">Jawabanmu sudah tersimpan. Nilai akan diumumkan oleh guru.</p>
+        <p className="text-lg font-semibold">{asesmen.judul}</p>
+        <p className="text-sm text-muted-foreground">Jawabanmu sudah tersimpan. Nilai akan diumumkan oleh guru.</p>
         <Button onClick={() => router.push("/siswa/asesmen")}>Kembali ke Asesmen</Button>
       </div>
     );
   }
 
+  const waktuHampirHabis = sisaDetik <= 300;
+
   return (
     <div>
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
-        <div>
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-card p-4 text-card-foreground">
+        <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <p className="text-lg font-bold text-[#111827]">{asesmen.judul}</p>
+            <h1 className="text-lg font-semibold tracking-tight">{asesmen.judul}</h1>
             <Badge tone="amber">Sedang Mengerjakan {isKuis ? "Kuis" : "Ujian Online"}</Badge>
           </div>
-          <p className="mt-0.5 text-sm text-[#6B7280]">Mapel - {asesmen.mapel?.nama ?? "-"}</p>
+          <p className="mt-0.5 text-sm text-muted-foreground">Mapel - {asesmen.mapel?.nama ?? "-"}</p>
         </div>
         {asesmen.durasiMenit && (
-          <div className={`rounded-xl border px-4 py-2 text-right ${sisaDetik <= 300 ? "border-red-300 bg-red-50" : "border-black/5 bg-[#FFFFFF]"}`}>
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#9CA3AF]">Sisa Waktu</p>
-            <p className={`text-lg font-bold ${sisaDetik <= 300 ? "text-red-600" : "text-[#111827]"}`}>{formatTimer(sisaDetik)}</p>
-            {sisaDetik <= 300 && <p className="text-[10px] font-semibold text-red-500">Waktu hampir habis!</p>}
+          <div
+            role="timer"
+            className={`rounded-md border px-4 py-2 text-right ${waktuHampirHabis ? "border-danger" : ""}`}
+          >
+            <p className="text-xs text-muted-foreground">Sisa Waktu</p>
+            <p className={`font-mono text-lg font-semibold tabular-nums ${waktuHampirHabis ? "text-danger" : ""}`}>
+              {formatTimer(sisaDetik)}
+            </p>
+            {waktuHampirHabis && <p className="text-xs font-medium text-danger">Waktu hampir habis!</p>}
           </div>
         )}
       </div>
 
-      {(
-        <div className="mt-4 flex flex-wrap items-center gap-2">
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        <div className="relative min-w-[140px] flex-1">
+          <Search
+            className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+            strokeWidth={1.75}
+            aria-hidden="true"
+          />
           <input
             value={search}
             onChange={(e) => {
@@ -304,68 +334,92 @@ export default function SiswaAsesmenKerjakanPage() {
               setActiveIndex(0);
             }}
             placeholder="Cari soal..."
-            className="min-w-[140px] flex-1 rounded-lg border border-[#D1D5DB] px-3 py-1.5 text-sm outline-none focus:border-[#00D2D9]"
+            aria-label="Cari soal"
+            className={`${fieldCls} h-10 w-full pl-9 sm:h-9`}
           />
-          <div className="flex items-center gap-1">
-            <button onClick={() => setActiveIndex((i) => Math.max(0, i - 1))} disabled={activeIndex === 0} className="cursor-pointer rounded-lg border border-[#D1D5DB] px-2 py-1.5 text-xs font-semibold text-[#374151] disabled:opacity-40">
-              {"<<"}
-            </button>
-            <span className="px-2 text-xs font-semibold text-[#6B7280]">
-              {soalTerfilter.length === 0 ? "0/0" : `${activeIndex + 1}/${soalTerfilter.length}`}
+        </div>
+        <div className="flex items-center gap-1">
+          <button
+            aria-label="Soal sebelumnya"
+            onClick={() => setActiveIndex((i) => Math.max(0, i - 1))}
+            disabled={activeIndex === 0}
+            className={iconBtn}
+          >
+            <ChevronLeft className="size-4" strokeWidth={1.75} aria-hidden="true" />
+          </button>
+          <span className="min-w-12 px-1 text-center text-sm tabular-nums text-muted-foreground">
+            {soalTerfilter.length === 0 ? "0/0" : `${activeIndex + 1}/${soalTerfilter.length}`}
+          </span>
+          <button
+            aria-label="Soal berikutnya"
+            onClick={() => setActiveIndex((i) => Math.min(soalTerfilter.length - 1, i + 1))}
+            disabled={activeIndex >= soalTerfilter.length - 1}
+            className={iconBtn}
+          >
+            <ChevronRight className="size-4" strokeWidth={1.75} aria-hidden="true" />
+          </button>
+          <button
+            onClick={() => setShowGrid((v) => !v)}
+            aria-pressed={showGrid}
+            title={showGrid ? "Tutup daftar soal" : "Buka daftar soal"}
+            aria-label={showGrid ? "Tutup daftar soal" : "Buka daftar soal"}
+            className={`${iconBtn} ${showGrid ? "border-brand bg-brand-subtle" : ""}`}
+          >
+            <LayoutGrid className="size-4" strokeWidth={1.75} aria-hidden="true" />
+          </button>
+        </div>
+      </div>
+
+      {showGrid && (
+        <div className="mt-2 rounded-lg border bg-card p-3 text-card-foreground">
+          <div className="grid grid-cols-6 gap-1.5 sm:grid-cols-10">
+            {soalTerfilter.map((s, i) => {
+              const dijawab = (jawabanMap[s.id]?.opsiIds.length ?? 0) > 0 || !!jawabanMap[s.id]?.jawabanEssay;
+              const ragu = jawabanMap[s.id]?.raguRagu;
+              const state =
+                i === activeIndex
+                  ? "border-brand bg-brand text-brand-foreground"
+                  : ragu
+                  ? "border-dashed border-foreground/60 bg-accent"
+                  : dijawab
+                  ? "border-brand bg-brand-subtle"
+                  : "text-muted-foreground";
+              return (
+                <button
+                  key={s.id}
+                  onClick={() => {
+                    setActiveIndex(i);
+                    setShowGrid(false);
+                  }}
+                  aria-label={`Soal ${i + 1}${ragu ? ", ragu-ragu" : dijawab ? ", sudah dijawab" : ", belum dijawab"}`}
+                  aria-current={i === activeIndex ? "true" : undefined}
+                  className={`flex size-10 cursor-pointer items-center justify-center rounded-md border text-sm font-medium tabular-nums transition-colors duration-150 ${focusRing} ${state}`}
+                >
+                  {i + 1}
+                </button>
+              );
+            })}
+          </div>
+          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 border-t pt-3 text-xs text-muted-foreground">
+            <span className="inline-flex items-center gap-1.5">
+              <span aria-hidden="true" className="size-3 rounded-sm border border-brand bg-brand-subtle" />
+              Dijawab
             </span>
-            <button onClick={() => setActiveIndex((i) => Math.min(soalTerfilter.length - 1, i + 1))} disabled={activeIndex >= soalTerfilter.length - 1} className="cursor-pointer rounded-lg border border-[#D1D5DB] px-2 py-1.5 text-xs font-semibold text-[#374151] disabled:opacity-40">
-              {">>"}
-            </button>
-            <button
-              onClick={() => setShowGrid((v) => !v)}
-              title={showGrid ? "Tutup daftar soal" : "Buka daftar soal"}
-              aria-label={showGrid ? "Tutup daftar soal" : "Buka daftar soal"}
-              className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border text-[#374151] transition-colors ${showGrid ? "border-[#00D2D9] bg-[#EEF2FF] text-[#00D2D9]" : "border-[#D1D5DB] bg-[#FFFFFF] hover:bg-black/5"}`}
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4">
-                <rect x="3" y="3" width="7" height="7" rx="1" />
-                <rect x="14" y="3" width="7" height="7" rx="1" />
-                <rect x="3" y="14" width="7" height="7" rx="1" />
-                <rect x="14" y="14" width="7" height="7" rx="1" />
-              </svg>
-            </button>
+            <span className="inline-flex items-center gap-1.5">
+              <span aria-hidden="true" className="size-3 rounded-sm border border-dashed border-foreground/60 bg-accent" />
+              Ragu-ragu
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <span aria-hidden="true" className="size-3 rounded-sm border" />
+              Belum dijawab
+            </span>
           </div>
         </div>
       )}
 
-      {showGrid && (
-        <div className="mt-2 grid grid-cols-6 gap-1.5 rounded-xl border border-black/5 bg-[#FFFFFF] p-3 shadow-sm sm:grid-cols-10">
-          {soalTerfilter.map((s, i) => {
-            const dijawab = (jawabanMap[s.id]?.opsiIds.length ?? 0) > 0 || !!jawabanMap[s.id]?.jawabanEssay;
-            const ragu = jawabanMap[s.id]?.raguRagu;
-            return (
-              <button
-                key={s.id}
-                onClick={() => {
-                  setActiveIndex(i);
-                  setShowGrid(false);
-                }}
-                className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-xs font-semibold"
-                style={
-                  i === activeIndex
-                    ? { background: "#00D2D9", color: "white" }
-                    : ragu
-                    ? { background: "#FEF3C7", color: "#92400E" }
-                    : dijawab
-                    ? { background: "#DCFCE7", color: "#166534" }
-                    : { background: "#F3F4F6", color: "#374151" }
-                }
-              >
-                {i + 1}
-              </button>
-            );
-          })}
-        </div>
-      )}
-
-      <div className="mt-4 min-h-[280px] rounded-2xl border border-black/5 bg-[#FFFFFF] p-5 shadow-sm">
+      <div className="mt-4 min-h-[280px] rounded-lg border bg-card p-5 text-card-foreground">
         {!currentSoal ? (
-          <p className="text-sm text-[#9CA3AF]">Belum ada soal.</p>
+          <p className="text-sm text-muted-foreground">Belum ada soal.</p>
         ) : (
           <div>
             <div className="flex items-start justify-between gap-2">
@@ -374,26 +428,25 @@ export default function SiswaAsesmenKerjakanPage() {
               </Badge>
               {!isKuis && (
                 <button
+                  type="button"
+                  aria-pressed={!!jawabanSaatIni?.raguRagu}
                   onClick={() => handleToggleRagu(currentSoal.id)}
-                  className="cursor-pointer rounded-lg border px-2.5 py-1 text-xs font-semibold"
-                  style={
-                    jawabanSaatIni?.raguRagu
-                      ? { background: "#FEF3C7", borderColor: "#FDE68A", color: "#92400E" }
-                      : { borderColor: "#D1D5DB", color: "#374151" }
-                  }
+                  className={`inline-flex h-10 cursor-pointer items-center rounded-md border px-3 text-sm font-medium transition-colors duration-150 sm:h-9 ${focusRing} ${
+                    jawabanSaatIni?.raguRagu ? "border-dashed border-foreground/60 bg-accent" : "hover:bg-accent"
+                  }`}
                 >
                   Ragu-ragu
                 </button>
               )}
             </div>
 
-            <p className="mt-3 text-sm font-semibold text-[#111827]">
+            <p className="mt-4 text-base font-semibold leading-relaxed">
               {activeIndex + 1}. {currentSoal.pertanyaan}
             </p>
 
             {currentSoal.gambar && (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={currentSoal.gambar} alt="Gambar soal" className="mt-3 max-h-64 rounded-xl object-contain" />
+              <img src={currentSoal.gambar} alt="Gambar soal" className="mt-3 max-h-64 rounded-lg border object-contain" />
             )}
 
             {currentSoal.tipe === "ESSAY" ? (
@@ -402,15 +455,21 @@ export default function SiswaAsesmenKerjakanPage() {
                 onChange={(e) => handleEssayChange(currentSoal.id, e.target.value)}
                 onBlur={() => !isKuis && simpanJawaban(currentSoal.id, { jawabanEssay: jawabanMap[currentSoal.id]?.jawabanEssay ?? "" })}
                 rows={5}
+                aria-label="Jawaban essay"
                 placeholder="Tulis jawabanmu di sini..."
-                className="mt-4 w-full rounded-lg border border-[#D1D5DB] px-3 py-2 text-sm outline-none focus:border-[#00D2D9]"
+                className={`${fieldCls} mt-4 w-full py-2`}
               />
             ) : (
               <div className="mt-4 space-y-2">
                 {currentSoal.opsi.map((o) => {
                   const dipilih = jawabanSaatIni?.opsiIds.includes(o.id) ?? false;
                   return (
-                    <label key={o.id} className={`flex cursor-pointer items-center gap-2 rounded-lg border p-2.5 text-sm ${dipilih ? "border-[#00D2D9] bg-[#00D2D9]/5" : "border-black/5"}`}>
+                    <label
+                      key={o.id}
+                      className={`flex min-h-11 cursor-pointer items-center gap-3 rounded-md border px-4 py-2.5 text-sm transition-colors duration-150 ${
+                        dipilih ? "border-brand bg-brand-subtle" : "hover:bg-accent"
+                      }`}
+                    >
                       <input
                         type={currentSoal.tipe === "PILIHAN_GANDA" ? "radio" : "checkbox"}
                         checked={dipilih}
@@ -419,8 +478,9 @@ export default function SiswaAsesmenKerjakanPage() {
                             ? handlePilihOpsiPG(currentSoal.id, o.id)
                             : handleToggleOpsiCB(currentSoal.id, o.id)
                         }
+                        className="size-4 accent-brand"
                       />
-                      <span className="text-[#374151]">{o.teks}</span>
+                      <span>{o.teks}</span>
                     </label>
                   );
                 })}
@@ -446,7 +506,7 @@ export default function SiswaAsesmenKerjakanPage() {
       )}
 
       {isKuis && (
-        <p className="mt-3 text-center text-xs text-[#9CA3AF]">
+        <p className="mt-3 text-center text-sm text-muted-foreground">
           Jawab soal untuk otomatis lanjut ke soal berikutnya. Kamu tidak bisa kembali ke soal sebelumnya.
         </p>
       )}
@@ -459,15 +519,15 @@ export default function SiswaAsesmenKerjakanPage() {
         maxWidth="max-w-md"
       >
         <div className="space-y-4">
-          <p className="text-sm leading-6 text-[#374151]">
+          <p className="text-sm leading-6">
             Kamu keluar dari tab atau halaman asesmen. Klik <strong>Lanjut Asesmen</strong> untuk kembali mengerjakan.
           </p>
           {pelanggaranModal && pelanggaranModal.jumlahDireset > 0 ? (
-            <p className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+            <p className="rounded-md border border-danger p-3 text-sm text-danger">
               Pelanggaran ke-{pelanggaranModal.violationCount}: {pelanggaranModal.jumlahDireset} jawaban pilihan ganda/checkbox direset. Jawaban essay tetap aman.
             </p>
           ) : pelanggaranModal && (
-            <p className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700">
+            <p className="rounded-md border bg-muted p-3 text-sm">
               Pelanggaran ke-{pelanggaranModal.violationCount} tercatat. Reset berikutnya terjadi pada pelanggaran ke-{pelanggaranModal.violationCount + (3 - (pelanggaranModal.violationCount % 3 || 3))}. Jawaban essay tetap aman.
             </p>
           )}

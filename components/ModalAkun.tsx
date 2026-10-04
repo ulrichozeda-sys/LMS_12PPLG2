@@ -214,12 +214,11 @@ export default function ModalAkun({ open, onClose, onSuccess, mode, defaultRole 
                 key={r}
                 type="button"
                 onClick={() => setRole(r)}
-                className="cursor-pointer rounded-lg border py-2 text-sm font-medium transition-colors"
-                style={
+                className={`min-h-11 cursor-pointer rounded-md border px-3 text-sm font-medium transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                   role === r
-                    ? { background: "#00D2D9", borderColor: "#00D2D9", color: "white" }
-                    : { borderColor: "#D1D5DB", color: "#374151" }
-                }
+                    ? "border-transparent bg-brand text-brand-foreground"
+                    : "border-border bg-background text-foreground hover:bg-accent"
+                }`}
               >
                 {r === "GURU" ? "Guru" : "Siswa"}
               </button>
@@ -235,7 +234,7 @@ export default function ModalAkun({ open, onClose, onSuccess, mode, defaultRole 
           required
         />
         {mode === "create" && (
-          <p className="-mt-2 rounded-lg bg-blue-50 px-3 py-2 text-xs leading-relaxed text-blue-800">
+          <p className="-mt-2 rounded-lg bg-muted px-3 py-2 text-xs leading-relaxed text-foreground">
             Password awal otomatis sama dengan {role === "SISWA" ? "NIS" : "NIK"}. Saat login pertama, akun akan diminta membuat password baru.
           </p>
         )}
@@ -289,11 +288,11 @@ export default function ModalAkun({ open, onClose, onSuccess, mode, defaultRole 
 
         {/* Pilih Kelas (opsional) -- fitur Walas dihapus total dari sini */}
         <div>
-          <label className="mb-1.5 block text-xs font-semibold text-[#374151]">
+          <label className="mb-1.5 block text-xs font-semibold text-foreground">
             Pilih Kelas (opsional, bisa lebih dari 1 â€” kosongkan kalau cuma mau simpan datanya dulu)
           </label>
           <select
-            className="w-full rounded-lg border border-[#D1D5DB] px-3.5 py-2.5 text-sm outline-none focus:border-[#00D2D9]"
+            className="w-full min-h-10 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground outline-none placeholder:text-muted-foreground transition-colors duration-150 focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             value=""
             onChange={(e) => e.target.value && toggleKelas(e.target.value)}
           >
@@ -314,7 +313,7 @@ export default function ModalAkun({ open, onClose, onSuccess, mode, defaultRole 
                 return (
                   <Badge key={id} tone="brand" className="flex items-center gap-1">
                     {k?.label}
-                    <button type="button" onClick={() => toggleKelas(id)} className="cursor-pointer hover:text-red-500">
+                    <button type="button" onClick={() => toggleKelas(id)} className="cursor-pointer hover:text-danger">
                       Ã—
                     </button>
                   </Badge>
@@ -325,11 +324,11 @@ export default function ModalAkun({ open, onClose, onSuccess, mode, defaultRole 
         </div>
 
         <div>
-          <label className="mb-1.5 block text-xs font-semibold text-[#374151]">
+          <label className="mb-1.5 block text-xs font-semibold text-foreground">
             Foto Profil {role === "SISWA" ? "/ Selfie" : ""} (opsional)
           </label>
           <div className="flex gap-2">
-            <label className="relative flex h-20 w-20 cursor-pointer flex-col items-center justify-center gap-1 overflow-hidden rounded-lg border border-dashed border-[#D1D5DB] text-[#9CA3AF] transition-colors hover:border-[#00D2D9]">
+            <label className="relative flex h-20 w-20 cursor-pointer flex-col items-center justify-center gap-1 overflow-hidden rounded-lg border border-dashed border-input text-muted-foreground transition-colors hover:border-ring">
               {fotoProfil ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={fotoProfil} alt="Preview" className="h-full w-full object-cover" />
@@ -352,7 +351,7 @@ export default function ModalAkun({ open, onClose, onSuccess, mode, defaultRole 
               />
             </label>
 
-            <label className="relative flex h-20 w-20 cursor-pointer flex-col items-center justify-center gap-1 overflow-hidden rounded-lg border border-dashed border-[#D1D5DB] text-[#9CA3AF] transition-colors hover:border-[#00D2D9]">
+            <label className="relative flex h-20 w-20 cursor-pointer flex-col items-center justify-center gap-1 overflow-hidden rounded-lg border border-dashed border-input text-muted-foreground transition-colors hover:border-ring">
               {uploadingFoto ? (
                 <span className="text-[10px] font-medium">Upload...</span>
               ) : (
@@ -372,7 +371,7 @@ export default function ModalAkun({ open, onClose, onSuccess, mode, defaultRole 
           </div>
         </div>
 
-        {error && <p className="text-xs font-medium text-red-500">{error}</p>}
+        {error && <p className="text-xs font-medium text-danger">{error}</p>}
 
         <Button type="submit" loading={loading} className="w-full">
           {mode === "create" ? "Buat Akun" : "Simpan Perubahan"}

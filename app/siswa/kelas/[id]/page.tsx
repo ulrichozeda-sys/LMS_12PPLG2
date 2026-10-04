@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { ChevronDown } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import PengumumanCard from "@/components/PengumumanCard";
@@ -10,8 +11,6 @@ import TugasCard from "@/components/TugasCard";
 import MateriCard, { MateriData } from "@/components/MateriCard";
 import FeedCategoryFilter, { FeedCategory } from "@/components/FeedCategoryFilter";
 import { ClassDetailOverview, ClassDirectoryNavigation } from "@/components/ClassDetailOverview";
-
-const BRAND = "#00D2D9";
 
 interface SiswaDiKelas {
   siswaId: string;
@@ -25,6 +24,7 @@ interface GuruDiKelas {
 interface FeedItem {
   tipe: "PENGUMUMAN" | "ASESMEN" | "TUGAS" | "MATERI";
   timestamp: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any;
 }
 interface KelasDetail {
@@ -34,6 +34,25 @@ interface KelasDetail {
   siswa: SiswaDiKelas[];
   guruMapel: GuruDiKelas[];
   feed: FeedItem[];
+}
+
+const focusRing =
+  "outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+
+const personRow =
+  `flex min-h-12 w-full cursor-pointer items-center gap-3 rounded-md border p-3 text-left transition-colors duration-150 hover:bg-accent ${focusRing}`;
+
+function Avatar({ src, name }: { src: string | null; name: string }) {
+  return (
+    <div className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-md border bg-muted text-xs font-medium text-muted-foreground">
+      {src ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={src} alt={name} className="h-full w-full object-cover" />
+      ) : (
+        name.charAt(0)
+      )}
+    </div>
+  );
 }
 
 export default function SiswaKelasDetailPage() {
@@ -81,12 +100,20 @@ export default function SiswaKelasDetailPage() {
     }
   }
 
-  if (loading) return <p className="text-sm text-[#9CA3AF]">Memuat...</p>;
+  if (loading) {
+    return (
+      <div className="space-y-3" role="status" aria-label="Memuat kelas">
+        <div className="h-28 animate-pulse rounded-lg border bg-muted" />
+        <div className="h-12 animate-pulse rounded-lg border bg-muted" />
+        <div className="h-24 animate-pulse rounded-lg border bg-muted" />
+      </div>
+    );
+  }
 
   if (error || !kelas) {
     return (
-      <div className="flex flex-col items-center gap-3 py-10">
-        <p className="text-sm text-[#9CA3AF]">{error || "Kelas tidak ditemukan."}</p>
+      <div className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-lg border border-dashed px-4 py-10 text-center">
+        <p className="text-sm text-muted-foreground">{error || "Kelas tidak ditemukan."}</p>
         <Button variant="outline" onClick={() => router.push("/siswa")}>
           Kembali
         </Button>
@@ -117,40 +144,38 @@ export default function SiswaKelasDetailPage() {
       {section === "SISWA" && (
         <div className="mt-4 space-y-3">
           {Object.keys(siswaGrouped).length === 0 ? (
-            <p className="text-sm text-[#9CA3AF]">Belum ada siswa di kelas ini.</p>
+            <p className="text-sm text-muted-foreground">Belum ada siswa di kelas ini.</p>
           ) : (
             Object.entries(siswaGrouped).map(([label, list]) => {
               const isOpen = expandedRombel === label;
               return (
-                <div key={label} className="overflow-hidden rounded-2xl border border-black/5 bg-[#FFFFFF] shadow-sm">
-                  <button onClick={() => setExpandedRombel(isOpen ? null : label)} className="flex w-full cursor-pointer items-center justify-between px-5 py-3.5 text-left">
+                <div key={label} className="overflow-hidden rounded-lg border bg-card text-card-foreground">
+                  <button
+                    type="button"
+                    aria-expanded={isOpen}
+                    onClick={() => setExpandedRombel(isOpen ? null : label)}
+                    className={`flex min-h-12 w-full cursor-pointer items-center justify-between px-4 text-left transition-colors duration-150 hover:bg-accent ${focusRing}`}
+                  >
                     <div className="flex items-center gap-2">
-                      <p className="text-sm font-bold text-[#111827]">{label}</p>
+                      <p className="text-sm font-semibold">{label}</p>
                       <Badge tone="brand">{list.length} Siswa</Badge>
                     </div>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" className={`h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""}`}>
-                      <path d="m6 9 6 6 6-6" />
-                    </svg>
+                    <ChevronDown
+                      className={`size-4 text-muted-foreground transition-transform duration-150 ${isOpen ? "rotate-180" : ""}`}
+                      strokeWidth={1.75}
+                      aria-hidden="true"
+                    />
                   </button>
                   {isOpen && (
-                    <div className="space-y-2 border-t border-black/5 p-4">
+                    <div className="space-y-2 border-t p-3">
                       {list.map((ks) => (
-                        <button
-                          key={ks.siswaId}
-                          onClick={() => router.push(`/profil/${ks.siswa.id}`)}
-                          className="flex w-full cursor-pointer items-center gap-3 rounded-xl border border-black/5 p-3 text-left hover:bg-black/5"
-                        >
-                          <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#E5E7EB] text-xs font-bold text-[#6B7280]">
-                            {ks.siswa.fotoProfil ? (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img src={ks.siswa.fotoProfil} alt={ks.siswa.nama} className="h-full w-full object-cover" />
-                            ) : (
-                              ks.siswa.nama.charAt(0)
-                            )}
-                          </div>
+                        <button key={ks.siswaId} onClick={() => router.push(`/profil/${ks.siswa.id}`)} className={personRow}>
+                          <Avatar src={ks.siswa.fotoProfil} name={ks.siswa.nama} />
                           <div className="min-w-0 flex-1">
-                            <p className="truncate text-sm font-semibold text-[#111827]">{ks.siswa.nama}</p>
-                            <p className="text-xs text-[#9CA3AF]">NIS: {ks.siswa.nis}</p>
+                            <p className="truncate text-sm font-medium">{ks.siswa.nama}</p>
+                            <p className="text-xs text-muted-foreground">
+                              NIS: <span className="font-mono">{ks.siswa.nis}</span>
+                            </p>
                           </div>
                         </button>
                       ))}
@@ -166,27 +191,16 @@ export default function SiswaKelasDetailPage() {
       {section === "GURU" && (
         <div className="mt-4">
           {Object.keys(guruGrouped).length === 0 ? (
-            <p className="text-sm text-[#9CA3AF]">Belum ada guru mengajar di kelas ini.</p>
+            <p className="text-sm text-muted-foreground">Belum ada guru mengajar di kelas ini.</p>
           ) : (
             Object.entries(guruGrouped).map(([mapel, list]) => (
-              <div key={mapel} className="mb-4">
-                <p className="mb-2 text-xs font-bold uppercase tracking-wide text-[#9CA3AF]">{mapel}</p>
+              <div key={mapel} className="mb-5">
+                <h3 className="mb-2 text-sm font-medium text-muted-foreground">{mapel}</h3>
                 <div className="space-y-2">
                   {list.map((gm) => (
-                    <button
-                      key={gm.id}
-                      onClick={() => router.push(`/profil/${gm.guru.id}`)}
-                      className="flex w-full cursor-pointer items-center gap-3 rounded-xl border border-black/5 bg-[#FFFFFF] p-3 text-left shadow-sm hover:bg-black/5"
-                    >
-                      <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#E5E7EB] text-xs font-bold text-[#6B7280]">
-                        {gm.guru.fotoProfil ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={gm.guru.fotoProfil} alt={gm.guru.nama} className="h-full w-full object-cover" />
-                        ) : (
-                          gm.guru.nama.charAt(0)
-                        )}
-                      </div>
-                      <p className="text-sm font-semibold text-[#111827]">{gm.guru.nama}</p>
+                    <button key={gm.id} onClick={() => router.push(`/profil/${gm.guru.id}`)} className={`${personRow} bg-card`}>
+                      <Avatar src={gm.guru.fotoProfil} name={gm.guru.nama} />
+                      <p className="text-sm font-medium">{gm.guru.nama}</p>
                     </button>
                   ))}
                 </div>
@@ -198,13 +212,13 @@ export default function SiswaKelasDetailPage() {
 
       {section === null && (
         <div className="mt-6">
-          <p className="mb-3 text-sm font-bold text-[#111827]">Aktivitas Kelas</p>
+          <h2 className="mb-3 text-sm font-semibold">Aktivitas Kelas</h2>
           <FeedCategoryFilter value={feedCategory} onChange={setFeedCategory} />
           <div className="space-y-3">
             {kelas.feed.length === 0 ? (
-              <p className="text-sm text-[#9CA3AF]">Belum ada aktivitas di kelas ini.</p>
+              <p className="text-sm text-muted-foreground">Belum ada aktivitas di kelas ini.</p>
             ) : visibleFeed.length === 0 ? (
-              <p className="text-sm text-[#9CA3AF]">Tidak ada aktivitas untuk filter ini.</p>
+              <p className="text-sm text-muted-foreground">Tidak ada aktivitas untuk filter ini.</p>
             ) : (
               visibleFeed.map((item, i) => {
                 if (item.tipe === "PENGUMUMAN") {
@@ -217,23 +231,26 @@ export default function SiswaKelasDetailPage() {
                 if (item.tipe === "MATERI") return <MateriCard key={`m-${item.data.id}`} data={item.data as MateriData} />;
                 // ASESMEN: murni tampilan, gak diklik dari feed -- siswa ngerjain dari tab Asesmen
                 const a = item.data;
+                const sudah = a.statusSubmission === "SUDAH";
                 return (
-                  <div key={`a-${i}`} className="rounded-2xl border border-black/5 bg-[#FFFFFF] p-4 shadow-sm">
+                  <div key={`a-${i}`} className="rounded-lg border bg-card p-4 text-card-foreground">
                     <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-1.5">
                         <Badge tone="brand">{a.tipe === "KUIS" ? "Kuis" : "Ujian Online"}</Badge>
                         {a.mapel && <Badge tone="gray">{a.mapel.nama}</Badge>}
                       </div>
                       <button
                         type="button"
                         onClick={() => router.push(`/siswa/asesmen/${a.id}`)}
-                        className="flex-shrink-0 rounded-lg bg-[#00D2D9] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#557654]"
+                        className={`inline-flex h-10 shrink-0 cursor-pointer items-center rounded-md px-3 text-sm font-medium transition-colors duration-150 sm:h-9 ${focusRing} ${
+                          sudah ? "border bg-background hover:bg-accent" : "bg-brand text-brand-foreground hover:bg-brand/90"
+                        }`}
                       >
-                        {a.statusSubmission === "SUDAH" ? "Sudah Dikerjakan" : "Kerjakan"}
+                        {sudah ? "Sudah Dikerjakan" : "Kerjakan"}
                       </button>
                     </div>
-                    <p className="mt-2 text-sm font-bold text-[#111827]">{a.judul}</p>
-                    <p className="mt-1 text-xs text-[#9CA3AF]">oleh {a.guru?.nama}</p>
+                    <p className="mt-2 text-sm font-semibold">{a.judul}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">oleh {a.guru?.nama}</p>
                   </div>
                 );
               })

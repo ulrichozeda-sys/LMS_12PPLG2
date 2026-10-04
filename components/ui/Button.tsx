@@ -2,8 +2,6 @@
 
 import { ButtonHTMLAttributes, ReactNode } from "react";
 
-const BRAND = "#00D2D9";
-
 type Variant = "primary" | "outline" | "danger" | "ghost";
 type Size = "sm" | "md" | "lg";
 
@@ -15,9 +13,9 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const sizeClasses: Record<Size, string> = {
-  sm: "px-3 py-1.5 text-xs",
-  md: "px-4 py-2 text-sm",
-  lg: "px-6 py-3 text-sm",
+  sm: "min-h-9 px-3 text-xs",
+  md: "min-h-10 px-4 text-sm",
+  lg: "min-h-11 px-5 text-sm",
 };
 
 export default function Button({
@@ -31,45 +29,31 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const base =
-    "inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg font-semibold transition-all disabled:cursor-not-allowed disabled:opacity-60";
+    "inline-flex cursor-pointer items-center justify-center gap-2 rounded-md font-medium transition-colors duration-150 " +
+    "outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background " +
+    "disabled:cursor-not-allowed disabled:opacity-60";
 
-  const variantStyle: Record<Variant, { className: string; style?: React.CSSProperties }> = {
-    primary: {
-      className: "text-white hover:scale-[1.02] active:scale-[0.98]",
-      style: { background: BRAND },
-    },
-    outline: {
-      className: "border text-[#374151] hover:bg-black/5",
-      style: { borderColor: "#D1D5DB" },
-    },
-    danger: {
-      className: "bg-red-500 text-white hover:bg-red-600",
-    },
-    ghost: {
-      className: "text-[#6B7280] hover:bg-black/5",
-    },
+  const variantClasses: Record<Variant, string> = {
+    primary: "bg-brand text-brand-foreground hover:bg-brand/90",
+    outline: "border border-border bg-background text-foreground hover:bg-accent",
+    danger: "bg-danger text-white hover:bg-danger/90 dark:text-black",
+    ghost: "text-muted-foreground hover:bg-accent hover:text-foreground",
   };
-
-  const v = variantStyle[variant];
 
   return (
     <button
       disabled={disabled || loading}
-      className={`${base} ${sizeClasses[size]} ${v.className} ${className}`}
-      style={{ ...v.style, ...style }}
+      className={`${base} ${sizeClasses[size]} ${variantClasses[variant]} ${className}`}
+      style={style}
       {...props}
     >
       {loading ? (
         <>
-          <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-            />
+          <svg className="size-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
           </svg>
-          Memproses...
+          <span>Memproses...</span>
         </>
       ) : (
         children

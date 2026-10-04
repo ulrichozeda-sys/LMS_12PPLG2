@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ChevronDown } from "lucide-react";
 import AsesmenCard, { AsesmenData } from "@/components/Asesmencard";
 import { showConfirm } from "@/lib/dialog";
 
@@ -55,7 +56,15 @@ export default function SiswaAsesmenPage() {
       .catch(() => {});
   }
 
-  if (loading) return <p className="text-sm text-[#9CA3AF]">Memuat...</p>;
+  if (loading) {
+    return (
+      <div className="space-y-3" role="status" aria-label="Memuat asesmen">
+        <div className="h-12 animate-pulse rounded-lg border bg-muted" />
+        <div className="h-12 animate-pulse rounded-lg border bg-muted" />
+        <div className="h-12 animate-pulse rounded-lg border bg-muted" />
+      </div>
+    );
+  }
 
   const visibleAsesmenList = asesmenList.filter((asesmen) => !dismissedIds.includes(asesmen.id));
   const sekarang = new Date();
@@ -83,11 +92,14 @@ export default function SiswaAsesmenPage() {
       { judul: "Ujian Online", data: data.filter((asesmen) => asesmen.tipe === "UJIAN") },
     ];
     return (
-      <div className="space-y-5">
+      <div className="space-y-6">
         {kelompokTipe.map((group) => group.data.length > 0 && (
           <div key={group.judul}>
-            <p className="mb-3 text-xs font-bold uppercase tracking-wide text-[#64748B]">{group.judul}</p>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mb-3 flex items-center gap-2">
+              <h3 className="text-sm font-medium">{group.judul}</h3>
+              <span className="rounded-sm border px-1.5 text-xs tabular-nums text-muted-foreground">{group.data.length}</span>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {group.data.map((asesmen) => (
                 <AsesmenCard key={asesmen.id} data={asesmen} basePath="/siswa/asesmen" submissionStatus={asesmen.statusSubmission} onRemove={removeHistory} />
               ))}
@@ -101,22 +113,33 @@ export default function SiswaAsesmenPage() {
   return (
     <div>
       {visibleAsesmenList.length === 0 ? (
-        <p className="text-sm text-[#9CA3AF]">Belum ada asesmen yang ditampilkan. Data asesmen yang sudah kamu hapus dari tampilan tetap tersimpan.</p>
+        <div className="rounded-lg border border-dashed px-4 py-10 text-center">
+          <p className="text-sm font-medium">Belum ada asesmen yang ditampilkan</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Data asesmen yang sudah kamu hapus dari tampilan tetap tersimpan.
+          </p>
+        </div>
       ) : (
-        <div className="space-y-5">
+        <div className="space-y-4">
           {kelompok.map((group) => group.data.length > 0 && (
-            <section key={group.key} className="overflow-hidden rounded-2xl border border-black/5 bg-[#FFFFFF] p-4 shadow-sm sm:p-5">
+            <section key={group.key} className="rounded-lg border bg-card text-card-foreground">
               <button
                 type="button"
+                aria-expanded={!!visibleGroups[group.key]}
                 onClick={() => setVisibleGroups((current) => ({ ...current, [group.key]: !current[group.key] }))}
-                className="flex w-full cursor-pointer items-center justify-between text-left"
+                className="flex min-h-11 w-full cursor-pointer items-center justify-between gap-3 rounded-lg px-4 text-left outline-none transition-colors duration-150 hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
-                <span className="text-sm font-bold text-[#111827]">{group.judul}</span>
-                <svg viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" className={`h-4 w-4 transition-transform ${visibleGroups[group.key] ? "rotate-180" : ""}`}>
-                  <path d="m6 9 6 6 6-6" />
-                </svg>
+                <span className="flex items-center gap-2">
+                  <span className="text-sm font-semibold">{group.judul}</span>
+                  <span className="rounded-sm border px-1.5 text-xs tabular-nums text-muted-foreground">{group.data.length}</span>
+                </span>
+                <ChevronDown
+                  className={`size-4 text-muted-foreground transition-transform duration-150 ${visibleGroups[group.key] ? "rotate-180" : ""}`}
+                  strokeWidth={1.75}
+                  aria-hidden="true"
+                />
               </button>
-              {visibleGroups[group.key] && <div className="mt-5">{renderAsesmenCards(group.data)}</div>}
+              {visibleGroups[group.key] && <div className="border-t p-4">{renderAsesmenCards(group.data)}</div>}
             </section>
           ))}
         </div>

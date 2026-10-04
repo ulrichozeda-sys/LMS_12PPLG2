@@ -3,11 +3,10 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
+import { ArrowLeft, ChevronLeft, ChevronRight, LayoutGrid, Search } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import KepsekShell from "@/components/KepsekShell";
-
-const BRAND = "#00D2D9";
 
 interface OpsiJawaban {
   id: string;
@@ -35,6 +34,15 @@ interface AsesmenDetail {
   kelasTujuan: { kelas: { id: string; judul: string } }[];
   soal: Soal[];
 }
+
+const focusRing =
+  "outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+
+const inputCls =
+  "h-10 w-full rounded-md border border-input bg-background pl-9 pr-3 text-sm outline-none transition-colors duration-150 placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:h-9";
+
+const iconBtn =
+  `inline-flex size-10 cursor-pointer items-center justify-center rounded-md border bg-background text-foreground transition-colors duration-150 hover:bg-accent disabled:cursor-not-allowed disabled:opacity-40 sm:size-9 ${focusRing}`;
 
 export default function KepsekAsesmenDetailPage() {
   const router = useRouter();
@@ -77,175 +85,201 @@ export default function KepsekAsesmenDetailPage() {
   const halamanCount = soalTerfilter.length;
   const currentSoal = soalTerfilter[activeIndex] ?? null;
 
-  if (loading) return <KepsekShell><p className="mx-auto max-w-7xl px-4 text-sm text-[#9CA3AF] sm:px-6">Memuat...</p></KepsekShell>;
+  if (loading) {
+    return (
+      <KepsekShell activeTab="ASESMEN">
+        <div className="space-y-3" role="status" aria-label="Memuat asesmen">
+          <div className="h-24 animate-pulse rounded-lg border bg-muted" />
+          <div className="h-10 animate-pulse rounded-lg border bg-muted" />
+          <div className="h-72 animate-pulse rounded-lg border bg-muted" />
+        </div>
+      </KepsekShell>
+    );
+  }
   if (error || !asesmen) {
     return (
-      <KepsekShell><div className="flex flex-col items-center gap-3 py-10"><p className="text-sm text-[#9CA3AF]">{error || "Asesmen tidak ditemukan."}</p><Button variant="outline" onClick={() => router.push("/kepsek")}>Kembali</Button></div></KepsekShell>
+      <KepsekShell activeTab="ASESMEN">
+        <div className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-lg border border-dashed px-4 py-10 text-center">
+          <p className="text-sm text-muted-foreground">{error || "Asesmen tidak ditemukan."}</p>
+          <Button variant="outline" onClick={() => router.push("/kepsek")}>Kembali</Button>
+        </div>
+      </KepsekShell>
     );
   }
 
   return (
-    <KepsekShell activeTab="ASESMEN"><div className="mx-auto w-full max-w-7xl px-4 pb-10 sm:px-6">
-      <Link href="/kepsek" className="mb-4 inline-flex items-center gap-1 text-sm font-semibold text-[#64748B] hover:text-[#00D2D9]">
-        &larr; Kembali ke Kepsek
-      </Link>
-
-      <div className="flex flex-wrap items-start justify-between gap-5 rounded-xl border border-black/5 border-t-4 border-t-[#00D2D9] bg-[#FFFFFF] p-6 shadow-[0_2px_8px_rgba(15,23,42,0.08)]">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-[#111827]">{asesmen.judul}</h1>
-          <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-            <Badge tone="brand">{asesmen.tipe === "KUIS" ? "Kuis" : "Ujian Online"}</Badge>
-            {asesmen.mapel && <Badge tone="gray">{asesmen.mapel.nama}</Badge>}
-            <Badge tone={asesmen.status === "SELESAI" ? "green" : "amber"}>{asesmen.status === "SELESAI" ? "Selesai" : "Proses"}</Badge>
-          </div>
-          <p className="mt-2 text-sm text-[#64748B]">Dibuat oleh {asesmen.guru.nama}</p>
-          {asesmen.deskripsi && <p className="mt-1 text-sm text-[#475569]">{asesmen.deskripsi}</p>}
-          {asesmen.kelasTujuan.length > 0 && (
-            <div className="mt-3 flex flex-wrap items-center gap-1.5">
-              {asesmen.kelasTujuan.map(({ kelas }) => (
-                <Badge key={kelas.id} tone="gray">
-                  {kelas.judul}
-                </Badge>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="text-right">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#94A3B8]">Durasi pengerjaan</p>
-          <p className="mt-1 text-sm font-bold text-[#111827]">{asesmen.durasiMenit ? `${asesmen.durasiMenit} menit` : "Belum diatur"}</p>
-        </div>
-      </div>
-
-      <div className="mt-5 flex flex-wrap items-center gap-2">
+    <KepsekShell activeTab="ASESMEN">
+      <div className="pb-10">
         <Link
-          href={`/kepsek/asesmen/${asesmenId}/jawaban`}
-          className="inline-flex items-center justify-center rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] px-3 py-1.5 text-xs font-semibold text-[#475569] transition-colors hover:border-[#00D2D9] hover:text-[#00D2D9]"
+          href="/kepsek"
+          className={`mb-4 inline-flex min-h-10 items-center gap-1.5 rounded-sm text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground ${focusRing}`}
         >
-          Jawaban
+          <ArrowLeft className="size-4" strokeWidth={1.75} aria-hidden="true" />
+          Kembali ke Kepsek
         </Link>
-        <input
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setActiveIndex(0);
-          }}
-          placeholder="Cari soal..."
-          className="min-w-[180px] flex-1 rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] px-4 py-2 text-sm outline-none placeholder:text-[#94A3B8] focus:border-[#00D2D9] focus:ring-2 focus:ring-[#00D2D9]/10"
-        />
-        <div className="flex items-center gap-1">
-          <button
-            aria-label="Soal sebelumnya"
-            onClick={() => setActiveIndex((i) => Math.max(0, i - 1))}
-            disabled={activeIndex === 0}
-            className="cursor-pointer rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] px-3 py-2 text-xs font-semibold text-[#475569] disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            {"<<"}
-          </button>
-          <span className="min-w-12 px-2 text-center text-xs font-bold text-[#475569]">
-            {halamanCount === 0 ? "0/0" : `${activeIndex + 1}/${halamanCount}`}
-          </span>
-          <button
-            aria-label="Soal berikutnya"
-            onClick={() => setActiveIndex((i) => Math.min(halamanCount - 1, i + 1))}
-            disabled={activeIndex >= halamanCount - 1}
-            className="cursor-pointer rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] px-3 py-2 text-xs font-semibold text-[#475569] disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            {">>"}
-          </button>
-          <button
-            onClick={() => setShowGrid((v) => !v)}
-            className="cursor-pointer rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] p-2 text-[#475569]"
-            title="Buka Library Soal"
-            aria-label="Buka Library Soal"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4">
-              <rect x="3" y="3" width="7" height="7" rx="1" />
-              <rect x="14" y="3" width="7" height="7" rx="1" />
-              <rect x="3" y="14" width="7" height="7" rx="1" />
-              <rect x="14" y="14" width="7" height="7" rx="1" />
-            </svg>
-          </button>
-        </div>
-      </div>
 
-      {showGrid && (
-        <div className="mt-3 rounded-xl border border-black/5 bg-[#FFFFFF] p-3 shadow-sm">
-          <p className="mb-2 text-xs font-semibold text-[#64748B]">Library Soal</p>
-          {halamanCount === 0 ? (
-            <p className="text-xs text-[#94A3B8]">{search ? "Tidak ada soal yang cocok." : "Belum ada soal."}</p>
-          ) : (
-            <div className="flex flex-wrap items-center gap-2">
-              {soalTerfilter.map((soal, i) => (
-                <button
-                  key={soal.id}
-                  onClick={() => {
-                    setActiveIndex(i);
-                    setShowGrid(false);
-                  }}
-                  className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-xs font-semibold"
-                  style={i === activeIndex ? { background: BRAND, color: "white" } : { background: "#F3F4F6", color: "#374151" }}
-                >
-                  {i + 1}
-                </button>
-              ))}
+        <div className="flex flex-wrap items-start justify-between gap-4 rounded-lg border bg-card p-5 text-card-foreground">
+          <div className="min-w-0">
+            <h1 className="text-xl font-semibold tracking-tight">{asesmen.judul}</h1>
+            <div className="mt-2 flex flex-wrap items-center gap-1.5">
+              <Badge tone="brand">{asesmen.tipe === "KUIS" ? "Kuis" : "Ujian Online"}</Badge>
+              {asesmen.mapel && <Badge tone="gray">{asesmen.mapel.nama}</Badge>}
+              <Badge tone={asesmen.status === "SELESAI" ? "green" : "amber"}>{asesmen.status === "SELESAI" ? "Selesai" : "Proses"}</Badge>
             </div>
-          )}
-        </div>
-      )}
-
-      <div className="mt-4 min-h-[360px] rounded-xl border border-black/5 bg-[#FFFFFF] p-6 shadow-[0_2px_8px_rgba(15,23,42,0.08)] sm:p-10">
-        {asesmen.soal.length === 0 ? (
-          <p className="text-sm text-[#9CA3AF]">Belum ada soal.</p>
-        ) : halamanCount === 0 ? (
-          <p className="text-sm text-[#9CA3AF]">Tidak ada soal yang cocok dengan pencarian.</p>
-        ) : currentSoal ? (
-          <div>
-            <div className="flex items-start justify-between gap-2">
-              <Badge tone="gray">
-                {currentSoal.tipe === "PILIHAN_GANDA" ? "Pilihan Ganda" : currentSoal.tipe === "CHECKBOX" ? "Checkbox" : "Essay"}
-              </Badge>
-            </div>
-
-            <p className="mt-5 text-base font-semibold leading-relaxed text-[#111827]">
-              {activeIndex + 1}. {currentSoal.pertanyaan}
-            </p>
-
-            {currentSoal.gambar && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={currentSoal.gambar} alt="Gambar soal" className="mt-3 max-h-64 rounded-xl object-contain" />
-            )}
-
-            {currentSoal.tipe !== "ESSAY" ? (
-              <div className="mt-4 space-y-2">
-                {currentSoal.opsi.map((o) => (
-                  <div
-                    key={o.id}
-                    className={`flex items-center justify-between gap-3 rounded-lg border px-4 py-3 text-sm ${
-                      o.isBenar ? "border-[#00D2D9] bg-[#00D2D9]/5" : "border-[#E2E8F0]"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <input type={currentSoal.tipe === "PILIHAN_GANDA" ? "radio" : "checkbox"} checked={o.isBenar} readOnly disabled />
-                      <span className="text-[#374151]">{o.teks}</span>
-                    </div>
-                    {o.isBenar && <Badge tone="green">Kunci Jawaban</Badge>}
-                  </div>
+            <p className="mt-3 text-sm text-muted-foreground">Dibuat oleh {asesmen.guru.nama}</p>
+            {asesmen.deskripsi && <p className="mt-1 text-sm">{asesmen.deskripsi}</p>}
+            {asesmen.kelasTujuan.length > 0 && (
+              <div className="mt-3 flex flex-wrap items-center gap-1.5">
+                {asesmen.kelasTujuan.map(({ kelas }) => (
+                  <Badge key={kelas.id} tone="gray">
+                    {kelas.judul}
+                  </Badge>
                 ))}
               </div>
-            ) : (
-              <p className="mt-3 text-xs text-[#9CA3AF]">Soal Essay â€” dinilai manual oleh guru setelah siswa mengumpulkan.</p>
             )}
           </div>
-        ) : null}
-      </div>
 
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
-        <p className="text-xs text-[#9CA3AF]">Tampilan read-only untuk monitoring Kepsek.</p>
-        <Badge tone={asesmen.status === "SELESAI" ? "green" : "amber"}>
-          {asesmen.status === "SELESAI" ? "Sudah dipublikasikan ke kelas" : "Belum dipublikasikan"}
-        </Badge>
+          <div className="sm:text-right">
+            <p className="text-xs text-muted-foreground">Durasi pengerjaan</p>
+            <p className="mt-1 text-sm font-semibold tabular-nums">
+              {asesmen.durasiMenit ? `${asesmen.durasiMenit} menit` : "Belum diatur"}
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <Link
+            href={`/kepsek/asesmen/${asesmenId}/jawaban`}
+            className={`inline-flex h-10 items-center justify-center rounded-md border bg-background px-3 text-sm font-medium transition-colors duration-150 hover:bg-accent sm:h-9 ${focusRing}`}
+          >
+            Jawaban
+          </Link>
+          <div className="relative min-w-[180px] flex-1">
+            <Search
+              className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+              strokeWidth={1.75}
+              aria-hidden="true"
+            />
+            <input
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setActiveIndex(0);
+              }}
+              placeholder="Cari soal..."
+              aria-label="Cari soal"
+              className={inputCls}
+            />
+          </div>
+          <div className="flex items-center gap-1">
+            <button aria-label="Soal sebelumnya" onClick={() => setActiveIndex((i) => Math.max(0, i - 1))} disabled={activeIndex === 0} className={iconBtn}>
+              <ChevronLeft className="size-4" strokeWidth={1.75} aria-hidden="true" />
+            </button>
+            <span className="min-w-12 px-1 text-center text-sm tabular-nums text-muted-foreground">
+              {halamanCount === 0 ? "0/0" : `${activeIndex + 1}/${halamanCount}`}
+            </span>
+            <button aria-label="Soal berikutnya" onClick={() => setActiveIndex((i) => Math.min(halamanCount - 1, i + 1))} disabled={activeIndex >= halamanCount - 1} className={iconBtn}>
+              <ChevronRight className="size-4" strokeWidth={1.75} aria-hidden="true" />
+            </button>
+            <button
+              onClick={() => setShowGrid((v) => !v)}
+              aria-pressed={showGrid}
+              className={`${iconBtn} ${showGrid ? "bg-accent" : ""}`}
+              title="Buka Library Soal"
+              aria-label="Buka Library Soal"
+            >
+              <LayoutGrid className="size-4" strokeWidth={1.75} aria-hidden="true" />
+            </button>
+          </div>
+        </div>
+
+        {showGrid && (
+          <div className="mt-3 rounded-lg border bg-card p-3 text-card-foreground">
+            <p className="mb-3 text-sm font-medium">Library Soal</p>
+            {halamanCount === 0 ? (
+              <p className="text-sm text-muted-foreground">{search ? "Tidak ada soal yang cocok." : "Belum ada soal."}</p>
+            ) : (
+              <div className="flex flex-wrap items-center gap-2">
+                {soalTerfilter.map((soal, i) => (
+                  <button
+                    key={soal.id}
+                    onClick={() => {
+                      setActiveIndex(i);
+                      setShowGrid(false);
+                    }}
+                    aria-label={`Soal ${i + 1}`}
+                    aria-current={i === activeIndex ? "true" : undefined}
+                    className={`flex size-10 cursor-pointer items-center justify-center rounded-md border text-sm font-medium tabular-nums transition-colors duration-150 ${focusRing} ${
+                      i === activeIndex ? "border-brand bg-brand text-brand-foreground" : "bg-muted hover:bg-accent"
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="mt-4 min-h-[360px] rounded-lg border bg-card p-5 text-card-foreground sm:p-6">
+          {asesmen.soal.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Belum ada soal.</p>
+          ) : halamanCount === 0 ? (
+            <p className="text-sm text-muted-foreground">Tidak ada soal yang cocok dengan pencarian.</p>
+          ) : currentSoal ? (
+            <div>
+              <div className="flex items-start justify-between gap-2">
+                <Badge tone="gray">
+                  {currentSoal.tipe === "PILIHAN_GANDA" ? "Pilihan Ganda" : currentSoal.tipe === "CHECKBOX" ? "Checkbox" : "Essay"}
+                </Badge>
+              </div>
+
+              <p className="mt-4 text-base font-semibold leading-relaxed">
+                {activeIndex + 1}. {currentSoal.pertanyaan}
+              </p>
+
+              {currentSoal.gambar && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={currentSoal.gambar} alt="Gambar soal" className="mt-3 max-h-64 rounded-lg border object-contain" />
+              )}
+
+              {currentSoal.tipe !== "ESSAY" ? (
+                <div className="mt-4 space-y-2">
+                  {currentSoal.opsi.map((o) => (
+                    <div
+                      key={o.id}
+                      className={`flex min-h-11 items-center justify-between gap-3 rounded-md border px-4 py-2.5 text-sm ${
+                        o.isBenar ? "border-brand bg-brand-subtle" : ""
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <input
+                          type={currentSoal.tipe === "PILIHAN_GANDA" ? "radio" : "checkbox"}
+                          checked={o.isBenar}
+                          readOnly
+                          disabled
+                          className="size-4 accent-brand"
+                        />
+                        <span>{o.teks}</span>
+                      </div>
+                      {o.isBenar && <Badge tone="green">Kunci Jawaban</Badge>}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-3 text-sm text-muted-foreground">Soal Essay — dinilai manual oleh guru setelah siswa mengumpulkan.</p>
+              )}
+            </div>
+          ) : null}
+        </div>
+
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm text-muted-foreground">Tampilan read-only untuk monitoring Kepsek.</p>
+          <Badge tone={asesmen.status === "SELESAI" ? "green" : "amber"}>
+            {asesmen.status === "SELESAI" ? "Sudah dipublikasikan ke kelas" : "Belum dipublikasikan"}
+          </Badge>
+        </div>
       </div>
-    </div></KepsekShell>
+    </KepsekShell>
   );
 }

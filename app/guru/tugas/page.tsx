@@ -7,8 +7,8 @@ import TugasCard, { TugasData } from "@/components/TugasCard";
 import ModalTugas from "@/components/ModalTugas";
 import ModalKirimTugas from "@/components/ModalKirimTugas";
 import { showConfirm } from "@/lib/dialog";
-
-const BRAND = "#00D2D9";
+import { EmptyState, LoadingBlock, PageTitle } from "@/components/shared/data-display";
+import { SelectInput } from "@/components/shared/form-controls";
 
 export default function GuruTugasPage() {
   const [tugasList, setTugasList] = useState<TugasData[]>([]);
@@ -69,16 +69,17 @@ export default function GuruTugasPage() {
   const history = tugasList.filter((t) => new Date(t.createdAt).toDateString() !== todayStr);
 
   return (
-    <div>
-      <div className="rounded-2xl p-5 text-white shadow-sm" style={{ background: BRAND }}>
-        <p className="text-sm font-bold">Selamat Datang di Tab Tugas</p>
-        <p className="mt-1 text-sm text-white/85">Buat Tugas kemudian kirim ke suatu kelas untuk memulai tugas.</p>
-      </div>
+    <div className="space-y-6">
+      <PageTitle
+        title="Tugas"
+        description="Buat tugas, lalu kirim ke suatu kelas untuk memulai tugas."
+      />
 
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <Button onClick={openBuat}>+ Buat Tugas</Button>
-        <select
-          className="rounded-lg border border-[#D1D5DB] px-3 py-2 text-sm outline-none focus:border-[#00D2D9]"
+        <SelectInput
+          aria-label="Filter kelas"
+          className="w-full sm:w-56"
           value={filterKelasId}
           onChange={(e) => setFilterKelasId(e.target.value)}
         >
@@ -88,17 +89,17 @@ export default function GuruTugasPage() {
               {k.label}
             </option>
           ))}
-        </select>
+        </SelectInput>
       </div>
 
       {loading ? (
-        <p className="mt-4 text-sm text-[#9CA3AF]">Memuat...</p>
+        <LoadingBlock />
       ) : (
         <>
-          <div className="mt-6">
-            <p className="mb-3 text-sm font-bold text-[#111827]">Tugas Hari Ini</p>
+          <section>
+            <h2 className="mb-3 text-base font-semibold tracking-tight">Tugas Hari Ini</h2>
             {hariIni.length === 0 ? (
-              <p className="text-sm text-[#9CA3AF]">Belum ada tugas dibuat hari ini.</p>
+              <EmptyState>Belum ada tugas dibuat hari ini.</EmptyState>
             ) : (
               <div className="space-y-3">
                 {hariIni.map((t) => (
@@ -106,12 +107,12 @@ export default function GuruTugasPage() {
                 ))}
               </div>
             )}
-          </div>
+          </section>
 
-          <div className="mt-8">
-            <p className="mb-3 text-sm font-bold text-[#111827]">History</p>
+          <section>
+            <h2 className="mb-3 text-base font-semibold tracking-tight">History</h2>
             {history.length === 0 ? (
-              <p className="text-sm text-[#9CA3AF]">Belum ada riwayat tugas.</p>
+              <EmptyState>Belum ada riwayat tugas.</EmptyState>
             ) : (
               <div className="space-y-3">
                 {history.map((t) => (
@@ -119,7 +120,7 @@ export default function GuruTugasPage() {
                 ))}
               </div>
             )}
-          </div>
+          </section>
         </>
       )}
 

@@ -10,17 +10,17 @@ const CATEGORIES: { value: FeedCategory; label: string }[] = [
 
 export default function FeedCategoryFilter({ value, onChange }: { value: FeedCategory; onChange: (value: FeedCategory) => void }) {
   return (
-    <div className="mb-4 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap" aria-label="Filter aktivitas kelas">
+    <div role="group" className="mb-4 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap" aria-label="Filter aktivitas kelas">
       {CATEGORIES.map((category) => (
         <button
           key={category.value}
           type="button"
           aria-pressed={value === category.value}
           onClick={() => onChange(category.value)}
-          className={`min-h-10 border px-3 py-2 text-left text-xs font-semibold sm:text-center ${
+          className={`min-h-10 rounded-md border px-3 py-2 text-left text-xs font-medium transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-ring sm:text-center ${
             value === category.value
-              ? "border-[#008C91] bg-[#E6FAFA] text-[#006F73]"
-              : "border-[#E2E8F0] bg-white text-[#475569] hover:bg-[#F8FAFC]"
+              ? "border-transparent bg-brand text-brand-foreground"
+              : "border-border bg-card text-muted-foreground hover:bg-accent hover:text-foreground"
           }`}
         >
           {category.label}

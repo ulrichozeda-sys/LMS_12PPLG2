@@ -61,26 +61,27 @@ export default function JoinClassForm({ onSuccess }: JoinClassFormProps) {
   }
 
   return (
-    <div className="mb-5 rounded-2xl border border-black/5 bg-[#FFFFFF] p-4 shadow-sm">
+    <div className="mb-5 rounded-lg border border-border bg-card p-4">
       <form onSubmit={handleSubmit} className="flex flex-col gap-2 sm:flex-row">
         <input
           type="text"
           value={value}
           onChange={(event) => setValue(event.target.value)}
           placeholder="Masukkan kode kelas atau link undangan"
-          className="min-w-0 flex-1 rounded-lg border border-[#D1D5DB] px-3.5 py-2.5 text-sm outline-none transition-shadow focus:border-[#00D2D9] focus:ring-2 focus:ring-[#00D2D9]/20"
+          aria-label="Kode kelas atau link undangan"
+          className="min-h-11 min-w-0 flex-1 rounded-md border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground outline-none transition-colors duration-150 focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-60"
           disabled={loading}
         />
         <button
           type="submit"
           disabled={loading || !value.trim()}
-          className="rounded-lg bg-[#00D2D9] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#557654] disabled:cursor-not-allowed disabled:opacity-60"
+          className="min-h-11 rounded-md bg-brand px-4 py-2.5 text-sm font-medium text-brand-foreground transition-colors duration-150 hover:bg-brand/90 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading ? "Memproses..." : "Gabung Kelas"}
         </button>
       </form>
-      {error && <p className="mt-2 text-xs font-medium text-red-500">{error}</p>}
-      {success && <p className="mt-2 text-xs font-medium text-green-600">{success}</p>}
+      {error && <p role="alert" className="mt-2 text-xs font-medium text-danger">{error}</p>}
+      {success && <p role="status" className="mt-2 text-xs font-medium text-foreground">{success}</p>}
     </div>
   );
 }
