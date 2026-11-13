@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Check } from "lucide-react";
+import { Check, Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/shared/logo";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
@@ -46,6 +46,7 @@ export default function LoginPage() {
   const [portal, setPortal] = useState<Portal>("ADMIN");
   const [loginIdentifier, setLoginIdentifier] = useState(""); // email (admin) / nik (petugas) / nis (siswa)
   const [loginPassword, setLoginPassword] = useState("");
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
 
   // ===== state lupa password =====
   const [identifier, setIdentifier] = useState(""); // NIS/NIK
@@ -76,6 +77,7 @@ export default function LoginPage() {
     setPortal(newPortal);
     setLoginIdentifier("");
     setLoginPassword("");
+    setShowLoginPassword(false);
     setError("");
   }
 
@@ -282,14 +284,30 @@ export default function LoginPage() {
                     />
                   </Field>
                   <Field label="Password">
-                    <TextInput
-                      type="password"
-                      required
-                      autoComplete="current-password"
-                      placeholder="Password"
-                      value={loginPassword}
-                      onChange={(e) => setLoginPassword(e.target.value)}
-                    />
+                    <span className="relative block">
+                      <TextInput
+                        type={showLoginPassword ? "text" : "password"}
+                        required
+                        autoComplete="current-password"
+                        placeholder="Password"
+                        value={loginPassword}
+                        onChange={(e) => setLoginPassword(e.target.value)}
+                        className="pr-11"
+                      />
+                      <button
+                        type="button"
+                        aria-label={showLoginPassword ? "Sembunyikan password" : "Lihat password"}
+                        aria-pressed={showLoginPassword}
+                        onClick={() => setShowLoginPassword((visible) => !visible)}
+                        className="absolute inset-y-0 right-0 inline-flex w-10 cursor-pointer items-center justify-center rounded-r-md text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      >
+                        {showLoginPassword ? (
+                          <EyeOff className="size-4" aria-hidden="true" />
+                        ) : (
+                          <Eye className="size-4" aria-hidden="true" />
+                        )}
+                      </button>
+                    </span>
                   </Field>
 
                   {error && <FormError>{error}</FormError>}

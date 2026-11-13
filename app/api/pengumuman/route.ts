@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth";
-import { requireRole, ADMIN_TIER } from "@/lib/rbac";
+import { requireRole, ADMIN_TIER, TEACHER_TIER } from "@/lib/rbac";
 
 // GET /api/pengumuman?kelasId=xxx -> daftar pengumuman di kelas itu (gak ada lagi konsep komentar)
 export async function GET(req: NextRequest) {
@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const session = await getSession();
-    requireRole(session, ["GURU"]);
+    requireRole(session, TEACHER_TIER);
 
     const body = await req.json();
     const { kelasId, isi, lampiran } = body;
@@ -49,9 +49,11 @@ export async function POST(req: NextRequest) {
     }
 
     // guru wajib ngajar di kelas ini (KelasGuruMapel) -- gak ada lagi cek walas
-    const isPengajar = await db.kelasGuruMapel.findFirst({ where: { kelasId, guruId: session!.userId } });
-    if (!isPengajar) {
-      return NextResponse.json({ error: "Anda tidak mengajar di kelas ini." }, { status: 403 });
+    if (session!.role === "GURU") {
+      const isPengajar = await db.kelasGuruMapel.findFirst({ where: { kelasId, guruId: session!.userId } });
+      if (!isPengajar) {
+        return NextResponse.json({ error: "Anda tidak mengajar di kelas ini." }, { status: 403 });
+      }
     }
 
     const pengumumanBaru = await db.pengumuman.create({

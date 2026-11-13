@@ -6,7 +6,13 @@ import { requireRole, ADMIN_TIER } from "@/lib/rbac";
 type Params = { params: Promise<{ id: string; submissionId: string }> };
 type StatusSoal = "BENAR" | "SALAH" | "SEBAGIAN_BENAR" | "BELUM_DIJAWAB" | "BELUM_DINILAI" | "SUDAH_DINILAI";
 
-async function getContext(asesmenId: string, submissionId: string, userId: string, isAdminTier = false) {
+async function getContext(
+  asesmenId: string,
+  submissionId: string,
+  userId: string,
+  isAdminTier = false,
+  isSuperAdmin = false,
+) {
   const asesmen = await db.asesmen.findUnique({
     where: { id: asesmenId },
     include: { mapel: true, kelasTujuan: { include: { kelas: { select: { id: true, judul: true } } } } },
@@ -19,6 +25,7 @@ async function getContext(asesmenId: string, submissionId: string, userId: strin
     include: {
       siswa: {
         select: {
+          role: true,
           nama: true,
           nis: true,
           kelasReferensi: { select: { label: true } },
@@ -29,6 +36,9 @@ async function getContext(asesmenId: string, submissionId: string, userId: strin
     },
   });
   if (!submission || submission.asesmenId !== asesmenId) return { error: "Submission tidak ditemukan pada asesmen ini.", status: 404 } as const;
+  if (!isSuperAdmin && submission.siswa.role === "SUPER_ADMIN") {
+    return { error: "Submission tidak ditemukan pada asesmen ini.", status: 404 } as const;
+  }
   return { asesmen, submission } as const;
 }
 
@@ -38,7 +48,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
     requireRole(session, ["GURU", ...ADMIN_TIER]);
     const { id: asesmenId, submissionId } = await params;
     const isAdminTier = ADMIN_TIER.includes(session!.role);
-    const context = await getContext(asesmenId, submissionId, session!.userId, isAdminTier);
+    const context = await getContext(asesmenId, submissionId, session!.userId, isAdminTier, session!.role === "SUPER_ADMIN");
     if ("error" in context) return NextResponse.json({ error: context.error }, { status: context.status });
 
     const { asesmen, submission } = context;
@@ -101,7 +111,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
     });
     const kelas = submission.siswa.kelasSiswa[0]?.kelas.judul ?? submission.siswa.kelasReferensi?.label ?? "-";
     const nilaiObjektif = totalObjektif ? Math.round(totalNilaiObjektif / totalObjektif) : 0;
-    return NextResponse.json({ data: { submissionId: submission.id, siswa: { nama: submission.siswa.nama, nis: submission.siswa.nis ?? "-", kelasJurusan: submission.siswa.kelasReferensi?.label ?? "-" }, asesmen: { judul: asesmen.judul, mapel: asesmen.mapel?.nama ?? null }, kelas, mulaiPada: submission.mulaiPada, submittedAt: submission.submittedAt, nilaiAkhir: submission.nilaiAkhir, rekap: { totalBenar, totalSalah, totalKosong, totalEssay, totalEssayBelumDinilai, totalObjektif, totalObjektifDijawab, totalEssayDijawab, totalRaguRagu, nilaiObjektif }, soal } });
+    return NextResponse.json({ data: { submissionId: submission.id, isSelf: session!.role === "SUPER_ADMIN" && submission.siswaId === session!.userId, siswa: { nama: submission.siswa.nama, nis: submission.siswa.nis ?? "-", kelasJurusan: submission.siswa.kelasReferensi?.label ?? "-" }, asesmen: { judul: asesmen.judul, mapel: asesmen.mapel?.nama ?? null }, kelas, mulaiPada: submission.mulaiPada, submittedAt: submission.submittedAt, nilaiAkhir: submission.nilaiAkhir, rekap: { totalBenar, totalSalah, totalKosong, totalEssay, totalEssayBelumDinilai, totalObjektif, totalObjektifDijawab, totalEssayDijawab, totalRaguRagu, nilaiObjektif }, soal } });
   } catch (err: unknown) {
     const name = err instanceof Error ? err.name : "";
     const message = err instanceof Error ? err.message : "Terjadi kesalahan.";
@@ -112,11 +122,17 @@ export async function GET(_req: NextRequest, { params }: Params) {
 export async function PATCH(req: NextRequest, { params }: Params) {
   try {
     const session = await getSession();
-    requireRole(session, ["GURU"]);
+    requireRole(session, ["GURU", "SUPER_ADMIN"]);
     const { id: asesmenId, submissionId } = await params;
     const { jawabanSiswaId, nilaiSoal } = await req.json();
     if (!jawabanSiswaId || typeof nilaiSoal !== "number" || nilaiSoal < 0 || nilaiSoal > 100) return NextResponse.json({ error: "jawabanSiswaId dan nilaiSoal (0-100) wajib diisi." }, { status: 400 });
-    const context = await getContext(asesmenId, submissionId, session!.userId, false);
+    const context = await getContext(
+      asesmenId,
+      submissionId,
+      session!.userId,
+      session!.role === "SUPER_ADMIN",
+      session!.role === "SUPER_ADMIN",
+    );
     if ("error" in context) return NextResponse.json({ error: context.error }, { status: context.status });
     const jawaban = await db.jawabanSiswa.findUnique({ where: { id: jawabanSiswaId }, include: { soal: true } });
     if (!jawaban || jawaban.submissionId !== submissionId || jawaban.soal.asesmenId !== asesmenId) return NextResponse.json({ error: "Jawaban tidak ditemukan pada submission ini." }, { status: 404 });

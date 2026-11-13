@@ -136,6 +136,24 @@ const mapelList = [
 ];
 
 async function main() {
+  const superAdminEmail = process.env.SUPER_ADMIN_EMAIL?.trim().toLowerCase();
+  const superAdminPassword = process.env.SUPER_ADMIN_PASSWORD;
+  const superAdminName = process.env.SUPER_ADMIN_NAME?.trim() || "Super Admin";
+
+  if (!superAdminEmail || !superAdminPassword) {
+    throw new Error("SUPER_ADMIN_EMAIL and SUPER_ADMIN_PASSWORD are required to seed the Super Admin account.");
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(superAdminEmail)) {
+    throw new Error("SUPER_ADMIN_EMAIL must be a valid email address.");
+  }
+  if (!/^(?=.*[A-Za-z])(?=.*\d).{6,}$/.test(superAdminPassword)) {
+    throw new Error("SUPER_ADMIN_PASSWORD must be at least 6 characters and contain letters and numbers.");
+  }
+  const existingSuperAdmin = await db.user.findUnique({ where: { email: superAdminEmail } });
+  if (existingSuperAdmin && existingSuperAdmin.role !== "SUPER_ADMIN") {
+    throw new Error("SUPER_ADMIN_EMAIL is already used by a non-Super Admin account; no account was changed.");
+  }
+
   console.log("Seeding jurusan...");
   const jurusanMap: Record<string, string> = {};
 
@@ -185,6 +203,24 @@ async function main() {
     },
   });
 
+  const superAdminHash = await bcrypt.hash(superAdminPassword, 10);
+  if (existingSuperAdmin) {
+    await db.user.update({
+      where: { id: existingSuperAdmin.id },
+      data: { password: superAdminHash, passwordSementara: false, nama: superAdminName },
+    });
+  } else {
+    await db.user.create({
+      data: {
+        email: superAdminEmail,
+        password: superAdminHash,
+        role: "SUPER_ADMIN",
+        nama: superAdminName,
+        passwordSementara: false,
+      },
+    });
+  }
+
   console.log("Seeding akun kepsek & kurikulum...");
 
 const kepsekPassword = await bcrypt.hash("kepsek123", 10);
@@ -213,7 +249,7 @@ await db.user.upsert({
   },
 });
 
-  console.log("✅ Seed selesai:", jurusanList.length, "jurusan,", kelasReferensiSeed.length, "kelas referensi,", mapelList.length, "mapel, 1 akun admin.");
+  console.log("✅ Seed selesai:", jurusanList.length, "jurusan,", kelasReferensiSeed.length, "kelas referensi,", mapelList.length, "mapel, dan akun Super Admin target.");
 }
 main()
   .catch((e) => {

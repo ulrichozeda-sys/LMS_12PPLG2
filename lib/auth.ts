@@ -15,7 +15,7 @@ export type SessionPayload = {
   userId: string;
   passwordSementara: boolean;
   email: string;
-  role: "ADMIN" | "KEPSEK" | "KURIKULUM" | "GURU" | "SISWA";
+  role: "ADMIN" | "KEPSEK" | "KURIKULUM" | "GURU" | "SISWA" | "SUPER_ADMIN";
   nama: string;
 };
 

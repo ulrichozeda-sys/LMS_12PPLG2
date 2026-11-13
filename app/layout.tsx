@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
+import DialogHost from "@/components/ui/DialogHost";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -44,6 +45,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <DialogHost />
         </ThemeProvider>
       </body>
     </html>

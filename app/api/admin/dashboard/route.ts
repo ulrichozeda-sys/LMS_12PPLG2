@@ -27,14 +27,14 @@ export async function GET() {
         take: 5,
       }),
       db.asesmen.groupBy({ by: ["tipe"], _count: { _all: true } }),
-      db.submission.aggregate({ where: { status: "SUDAH", nilaiAkhir: { not: null } }, _avg: { nilaiAkhir: true }, _count: { _all: true } }),
+      db.submission.aggregate({ where: { status: "SUDAH", nilaiAkhir: { not: null }, siswa: { role: { not: "SUPER_ADMIN" } } }, _avg: { nilaiAkhir: true }, _count: { _all: true } }),
       db.tugas.count(),
-      db.tugasSubmission.count({ where: { status: "SUDAH" } }),
+      db.tugasSubmission.count({ where: { status: "SUDAH", siswa: { role: { not: "SUPER_ADMIN" } } } }),
       db.user.findMany({ where: { role: { in: ["SISWA", "GURU"] }, updatedAt: { gte: activityStart } }, select: { id: true, role: true, updatedAt: true } }),
       db.asesmen.findMany({ where: { createdAt: { gte: activityStart } }, select: { guruId: true, createdAt: true } }),
       db.tugas.findMany({ where: { createdAt: { gte: activityStart } }, select: { guruId: true, createdAt: true } }),
-      db.submission.findMany({ where: { mulaiPada: { gte: activityStart } }, select: { siswaId: true, mulaiPada: true } }),
-      db.tugasSubmission.findMany({ where: { submittedAt: { gte: activityStart, not: null }, status: "SUDAH" }, select: { siswaId: true, submittedAt: true } }),
+      db.submission.findMany({ where: { mulaiPada: { gte: activityStart }, siswa: { role: { not: "SUPER_ADMIN" } } }, select: { siswaId: true, mulaiPada: true } }),
+      db.tugasSubmission.findMany({ where: { submittedAt: { gte: activityStart, not: null }, status: "SUDAH", siswa: { role: { not: "SUPER_ADMIN" } } }, select: { siswaId: true, submittedAt: true } }),
       db.asesmen.findMany({
         where: { status: "SELESAI" },
         select: {
@@ -43,7 +43,7 @@ export async function GET() {
           createdAt: true,
           mapel: { select: { nama: true } },
           kelasTujuan: { select: { kelas: { select: { id: true, judul: true } } } },
-          submission: { where: { status: "SUDAH", nilaiAkhir: { not: null } }, select: { nilaiAkhir: true, submittedAt: true } },
+          submission: { where: { status: "SUDAH", nilaiAkhir: { not: null }, siswa: { role: { not: "SUPER_ADMIN" } } }, select: { nilaiAkhir: true, submittedAt: true } },
         },
       }),
       db.asesmen.findMany({
@@ -51,14 +51,14 @@ export async function GET() {
         select: {
           id: true,
           kelasTujuan: { select: { kelas: { select: { siswa: { select: { siswaId: true } } } } } },
-          submission: { select: { siswaId: true, status: true } },
+          submission: { where: { siswa: { role: { not: "SUPER_ADMIN" } } }, select: { siswaId: true, status: true } },
         },
       }),
       db.tugas.findMany({
         select: {
           id: true,
           kelasTujuan: { select: { kelas: { select: { siswa: { select: { siswaId: true } } } } } },
-          submission: { select: { siswaId: true, status: true } },
+          submission: { where: { siswa: { role: { not: "SUPER_ADMIN" } } }, select: { siswaId: true, status: true } },
         },
       }),
     ]);

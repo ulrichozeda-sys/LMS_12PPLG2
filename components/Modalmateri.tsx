@@ -12,7 +12,7 @@ interface KelasOption {
   label: string;
 }
 
-type MateriType = "LINK" | "PDF" | "FILE" | "FOTO";
+type MateriType = "LINK" | "FILE";
 
 interface ModalMateriProps {
   open: boolean;
@@ -47,7 +47,7 @@ export default function ModalMateri({ open, onClose, onSuccess, mode, initialDat
 
     if (mode === "edit" && initialData) {
       setJudul(initialData.judul);
-      setTipe(initialData.tipe);
+      setTipe(initialData.tipe === "LINK" ? "LINK" : "FILE");
       setUrl(initialData.url);
       setFileName(initialData.url.split("/").pop()?.replace(/^[0-9a-f-]{36}-/i, "") ?? "");
       setDeskripsi(initialData.deskripsi ?? "");
@@ -81,7 +81,7 @@ export default function ModalMateri({ open, onClose, onSuccess, mode, initialDat
       }
       setUrl(payload.url);
       setFileName(file.name);
-      setTipe(file.type === "application/pdf" ? "PDF" : file.type.startsWith("image/") ? "FOTO" : "FILE");
+      setTipe("FILE");
     } catch {
       setError("File gagal diunggah.");
     } finally {
@@ -94,10 +94,6 @@ export default function ModalMateri({ open, onClose, onSuccess, mode, initialDat
     setError("");
 
     const destinationIds = defaultKelasId && mode === "create" ? [defaultKelasId] : selectedKelasIds;
-    if (destinationIds.length === 0 && !(defaultKelasId && mode === "edit")) {
-      setError("Pilih minimal 1 kelas tujuan.");
-      return;
-    }
 
     setLoading(true);
     try {
@@ -140,9 +136,7 @@ export default function ModalMateri({ open, onClose, onSuccess, mode, initialDat
 
         <Select label="Tipe sumber" value={tipe} onChange={(e) => { setTipe(e.target.value as MateriType); setUrl(""); setFileName(""); }}>
           <option value="LINK">Link</option>
-          <option value="PDF">PDF</option>
           <option value="FILE">File</option>
-          <option value="FOTO">Foto</option>
         </Select>
 
         {tipe === "LINK" ? (
@@ -161,7 +155,7 @@ export default function ModalMateri({ open, onClose, onSuccess, mode, initialDat
         <Textarea label="Deskripsi (opsional)" value={deskripsi} onChange={(e) => setDeskripsi(e.target.value)} />
 
         {!defaultKelasId && <div>
-          <label className="mb-1.5 block text-xs font-semibold text-foreground">Kelas Tujuan</label>
+          <label className="mb-1.5 block text-xs font-semibold text-foreground">Kelas Tujuan (opsional)</label>
           <select
             className="w-full min-h-10 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground outline-none placeholder:text-muted-foreground transition-colors duration-150 focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             value=""

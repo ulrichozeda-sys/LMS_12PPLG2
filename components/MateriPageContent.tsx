@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import Button from "@/components/ui/Button";
 import MateriCard, { MateriData } from "@/components/MateriCard";
 import ModalMateri from "@/components/Modalmateri";
+import ModalKirimMateri from "@/components/ModalKirimMateri";
 import { showAlert, showConfirm } from "@/lib/dialog";
 import { EmptyState, LoadingBlock, PageTitle } from "@/components/shared/data-display";
 import { Field, SelectInput } from "@/components/shared/form-controls";
 
-type MateriRole = "GURU" | "SISWA";
+type MateriRole = "GURU" | "SISWA" | "SUPER_ADMIN";
 type KelasOption = { id: string; label: string };
 
 export default function MateriPageContent({ role }: { role: MateriRole }) {
@@ -21,6 +22,7 @@ export default function MateriPageContent({ role }: { role: MateriRole }) {
   const [me, setMe] = useState<{ id: string } | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingMateri, setEditingMateri] = useState<MateriData | null>(null);
+  const [sendingMateri, setSendingMateri] = useState<MateriData | null>(null);
 
   useEffect(() => {
     fetch("/api/kelas")
@@ -82,8 +84,9 @@ export default function MateriPageContent({ role }: { role: MateriRole }) {
               <MateriCard
                 key={materi.id}
                 data={materi}
-                isEditable={role === "GURU" && materi.guru?.id === me?.id}
+                isEditable={(role === "SUPER_ADMIN" || role === "GURU" && materi.guru?.id === me?.id)}
                 onEdit={setEditingMateri}
+                onSend={(role === "SUPER_ADMIN" || role === "GURU" && materi.guru?.id === me?.id) ? setSendingMateri : undefined}
                 onDelete={handleDelete}
               />
             ))}
@@ -97,11 +100,11 @@ export default function MateriPageContent({ role }: { role: MateriRole }) {
     <div>
       <PageTitle
         title="Materi"
-        description={role === "GURU" ? "Kelola materi untuk kelas yang Anda ajar." : "Materi dari kelas yang Anda ikuti."}
+        description={role === "SUPER_ADMIN" ? "Kelola materi dari seluruh kelas." : role === "GURU" ? "Kelola materi untuk kelas yang Anda ajar." : "Materi dari kelas yang Anda ikuti."}
       />
 
       <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        {role === "GURU" && (
+        {(role === "GURU" || role === "SUPER_ADMIN") && (
           <Button onClick={() => { setEditingMateri(null); setModalOpen(true); }}>+ Buat Materi</Button>
         )}
         <div className="w-full sm:ml-auto sm:max-w-xs">
@@ -127,7 +130,7 @@ export default function MateriPageContent({ role }: { role: MateriRole }) {
         </>
       )}
 
-      {role === "GURU" && (
+      {(role === "GURU" || role === "SUPER_ADMIN") && (
         <ModalMateri
           open={modalOpen || !!editingMateri}
           onClose={() => { setModalOpen(false); setEditingMateri(null); }}
@@ -136,6 +139,11 @@ export default function MateriPageContent({ role }: { role: MateriRole }) {
           initialData={editingMateri}
         />
       )}
+      <ModalKirimMateri
+        materi={sendingMateri}
+        onClose={() => setSendingMateri(null)}
+        onSuccess={() => setReloadKey((value) => value + 1)}
+      />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth";
-import { requireRole } from "@/lib/rbac";
+import { requireRole, TEACHER_TIER } from "@/lib/rbac";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -10,7 +10,7 @@ type Params = { params: Promise<{ id: string }> };
 export async function POST(req: NextRequest, { params }: Params) {
   try {
     const session = await getSession();
-    requireRole(session, ["GURU"]);
+    requireRole(session, TEACHER_TIER);
 
     const { id: tugasId } = await params;
     const body = await req.json();
@@ -22,7 +22,7 @@ export async function POST(req: NextRequest, { params }: Params) {
 
     const tugas = await db.tugas.findUnique({ where: { id: tugasId } });
     if (!tugas) return NextResponse.json({ error: "Tugas tidak ditemukan." }, { status: 404 });
-    if (tugas.guruId !== session!.userId) {
+    if (session!.role === "GURU" && tugas.guruId !== session!.userId) {
       return NextResponse.json({ error: "Bukan tugas milik anda." }, { status: 403 });
     }
 

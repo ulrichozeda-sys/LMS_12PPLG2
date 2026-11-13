@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth";
-import { requireRole, ADMIN_TIER } from "@/lib/rbac";
+import { requireRole, ADMIN_TIER, TEACHER_TIER } from "@/lib/rbac";
 
 export async function GET(req: NextRequest) {
   try {
@@ -61,7 +61,14 @@ export async function GET(req: NextRequest) {
         mapel: true,
         guru: { select: { id: true, nama: true } },
         kelasTujuan: { include: { kelas: { select: { id: true, judul: true } } } },
-        _count: { select: { soal: true, submission: true } },
+        _count: {
+          select: {
+            soal: true,
+            submission: session!.role === "SUPER_ADMIN"
+              ? true
+              : { where: { siswa: { role: { not: "SUPER_ADMIN" } } } },
+          },
+        },
       },
       orderBy: { updatedAt: "desc" },
     });
@@ -76,7 +83,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const session = await getSession();
-    requireRole(session, ["GURU"]);
+    requireRole(session, TEACHER_TIER);
 
     const body = await req.json();
     const { judul, tipe, mapelId, durasiMenit, deskripsi, kelasIds = [] } = body;

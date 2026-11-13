@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth";
-import { requireRole } from "@/lib/rbac";
+import { requireRole, TEACHER_TIER } from "@/lib/rbac";
 
-const TIPE_MATERI = ["LINK", "PDF", "FILE", "FOTO"] as const;
+const TIPE_MATERI = ["LINK", "FILE"] as const;
+const LEGACY_TIPE_MATERI = ["PDF", "FOTO"] as const;
 
 function isValidUrlForType(tipe: string, url: string) {
   if (tipe === "LINK") {
@@ -30,11 +31,32 @@ function parseKelasIds(value: unknown) {
 
 type Params = { params: Promise<{ id: string }> };
 
+export async function GET(_req: NextRequest, { params }: Params) {
+  try {
+    const session = requireRole(await getSession(), ["GURU", "SUPER_ADMIN"]);
+    const { id } = await params;
+    const materi = await db.materi.findUnique({
+      where: { id },
+      include: { kelasTujuan: { include: { kelas: { select: { id: true, judul: true } } } } },
+    });
+    if (!materi) return NextResponse.json({ error: "Materi tidak ditemukan." }, { status: 404 });
+    if (session.role === "GURU" && materi.guruId !== session.userId) {
+      return NextResponse.json({ error: "Bukan materi milik anda." }, { status: 403 });
+    }
+    return NextResponse.json({ data: materi });
+  } catch (error: unknown) {
+    const name = error instanceof Error ? error.name : "";
+    const message = error instanceof Error ? error.message : "Terjadi kesalahan.";
+    const status = name === "UnauthorizedError" ? 401 : name === "ForbiddenError" ? 403 : 500;
+    return NextResponse.json({ error: message }, { status });
+  }
+}
+
 // PATCH /api/materi/[id] -> edit materi
 // body: { judul?, url?, deskripsi?, kelasIds? } -> kelasIds kalau dikirim, replace semua assignment lama
 export async function PATCH(req: NextRequest, { params }: Params) {
   try {
-    const session = requireRole(await getSession(), ["GURU"]);
+    const session = requireRole(await getSession(), TEACHER_TIER);
 
     const { id } = await params;
     const body = await req.json().catch(() => null);
@@ -46,20 +68,21 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
     const existing = await db.materi.findUnique({ where: { id } });
     if (!existing) return NextResponse.json({ error: "Materi tidak ditemukan." }, { status: 404 });
-    if (existing.guruId !== session.userId) {
+    if (session.role === "GURU" && existing.guruId !== session.userId) {
       return NextResponse.json({ error: "Bukan materi milik anda." }, { status: 403 });
     }
 
     const nextTipe = tipe ?? existing.tipe;
     const nextUrl = url ?? existing.url;
-    if (!TIPE_MATERI.includes(nextTipe as (typeof TIPE_MATERI)[number]) || !isValidUrlForType(nextTipe, nextUrl)) {
+    const typeValid = tipe
+      ? TIPE_MATERI.includes(nextTipe as (typeof TIPE_MATERI)[number])
+      : TIPE_MATERI.includes(nextTipe as (typeof TIPE_MATERI)[number]) ||
+        LEGACY_TIPE_MATERI.includes(nextTipe as (typeof LEGACY_TIPE_MATERI)[number]);
+    if (!typeValid || !isValidUrlForType(nextTipe, nextUrl)) {
       return NextResponse.json({ error: "Tipe atau URL sumber materi tidak valid." }, { status: 400 });
     }
-    if (kelasIds && kelasIds.length === 0) {
-      return NextResponse.json({ error: "Materi harus dibagikan ke minimal 1 kelas." }, { status: 400 });
-    }
-    if (kelasIds) {
-      const kelasDiampu = await db.kelasGuruMapel.findMany({
+    if (kelasIds && session.role === "GURU") {
+      const kelasDiampu = kelasIds.length === 0 ? [] : await db.kelasGuruMapel.findMany({
         where: { guruId: session.userId, kelasId: { in: kelasIds } },
         select: { kelasId: true },
       });
@@ -81,9 +104,11 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
       if (kelasIds) {
         await tx.materiKelas.deleteMany({ where: { materiId: id } });
-        await tx.materiKelas.createMany({
-          data: kelasIds.map((kelasId: string) => ({ materiId: id, kelasId })),
-        });
+        if (kelasIds.length > 0) {
+          await tx.materiKelas.createMany({
+            data: kelasIds.map((kelasId: string) => ({ materiId: id, kelasId })),
+          });
+        }
       }
 
       return materi;
@@ -99,12 +124,12 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 // DELETE /api/materi/[id] -> hapus materi
 export async function DELETE(req: NextRequest, { params }: Params) {
   try {
-    const session = requireRole(await getSession(), ["GURU"]);
+    const session = requireRole(await getSession(), TEACHER_TIER);
 
     const { id } = await params;
     const existing = await db.materi.findUnique({ where: { id } });
     if (!existing) return NextResponse.json({ error: "Materi tidak ditemukan." }, { status: 404 });
-    if (existing.guruId !== session.userId) {
+    if (session.role === "GURU" && existing.guruId !== session.userId) {
       return NextResponse.json({ error: "Bukan materi milik anda." }, { status: 403 });
     }
 

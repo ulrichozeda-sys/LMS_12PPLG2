@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth";
-import { requireRole } from "@/lib/rbac";
+import { requireRole, TEACHER_TIER } from "@/lib/rbac";
 
 type Params = { params: Promise<{ id: string }> };
 
 export async function POST(req: NextRequest, { params }: Params) {
   try {
     const session = await getSession();
-    requireRole(session, ["GURU"]);
+    requireRole(session, TEACHER_TIER);
 
     const { id: pengumumanId } = await params;
     const body = await req.json();
@@ -22,14 +22,16 @@ export async function POST(req: NextRequest, { params }: Params) {
       include: { lampiran: true },
     });
     if (!pengumuman) return NextResponse.json({ error: "Pengumuman tidak ditemukan." }, { status: 404 });
-    if (pengumuman.authorId !== session!.userId) {
+    if (session!.role === "GURU" && pengumuman.authorId !== session!.userId) {
       return NextResponse.json({ error: "Bukan pengumuman milik anda." }, { status: 403 });
     }
 
-    const targetKelas = await db.kelasGuruMapel.findMany({
-      where: { guruId: session!.userId, kelasId: { in: kelasIds } },
-      select: { kelasId: true },
-    });
+    const targetKelas = session!.role === "GURU"
+      ? await db.kelasGuruMapel.findMany({
+          where: { guruId: session!.userId, kelasId: { in: kelasIds } },
+          select: { kelasId: true },
+        })
+      : kelasIds.map((kelasId: string) => ({ kelasId }));
     const allowedIds = new Set(targetKelas.map((kelas) => kelas.kelasId));
     const newKelasIds = kelasIds.filter((kelasId: string) => kelasId !== pengumuman.kelasId && allowedIds.has(kelasId));
     if (newKelasIds.length === 0) {

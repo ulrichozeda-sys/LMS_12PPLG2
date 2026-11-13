@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { MoreVertical } from "lucide-react";
 import Badge from "./ui/Badge";
 import Button from "./ui/Button";
 import Modal from "./ui/Modal";
@@ -43,7 +44,7 @@ interface SubmissionLampiran {
 }
 interface SubmissionData {
   id: string;
-  siswa: { id: string; nama: string; fotoProfil: string | null; kelasReferensi: { label: string } | null };
+  siswa: { id: string; nama: string; fotoProfil: string | null; role: string; kelasReferensi: { label: string } | null };
   lampiran: SubmissionLampiran[];
   submittedAt: string | null;
 }
@@ -51,7 +52,7 @@ interface SubmissionData {
 interface TugasCardProps {
   data: TugasData;
   currentUserId: string;
-  role: "GURU" | "SISWA" | "ADMIN" | "KEPSEK" | "KURIKULUM";
+  role: "GURU" | "SISWA" | "ADMIN" | "KEPSEK" | "KURIKULUM" | "SUPER_ADMIN";
   onSubmissionChanged?: () => void;
   onEdit?: (tugas: TugasData) => void;
   onDelete?: (id: string) => void;
@@ -84,7 +85,7 @@ export default function TugasCard({ data, currentUserId, role, onSubmissionChang
   const [editingSubmission, setEditingSubmission] = useState(false);
   const [submissionStatus, setSubmissionStatus] = useState<"BELUM" | "SUDAH">(data.statusSubmission ?? "BELUM");
 
-  const isOwner = role === "GURU" && data.guru.id === currentUserId;
+  const isOwner = role === "SUPER_ADMIN" || role === "GURU" && data.guru.id === currentUserId;
 
   function isImageUrl(url: string) {
     return /\.(png|jpe?g|gif|webp|bmp|svg)(?:[?#]|$)/i.test(url);
@@ -95,7 +96,11 @@ export default function TugasCard({ data, currentUserId, role, onSubmissionChang
     try {
       const res = await fetch(`/api/tugas/${data.id}`);
       const json = await res.json();
-      setSubmissions(json.data?.submission ?? []);
+      const loadedSubmissions = json.data?.submission ?? [];
+      setSubmissions(loadedSubmissions);
+      if (role === "SUPER_ADMIN") {
+        setSubmissionStatus(loadedSubmissions.some((submission: SubmissionData) => submission.siswa.id === currentUserId) ? "SUDAH" : "BELUM");
+      }
     } catch {}
     setLoadingDetail(false);
   }
@@ -200,7 +205,7 @@ export default function TugasCard({ data, currentUserId, role, onSubmissionChang
   return (
     <div className="rounded-lg border border-border bg-card p-4 shadow-none">
       <div className="flex items-start justify-between gap-2">
-        <div className="flex items-center gap-2">
+      <div className="flex min-w-0 items-center gap-2">
           <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-muted text-xs font-bold text-muted-foreground">
             {data.guru.fotoProfil ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -221,23 +226,33 @@ export default function TugasCard({ data, currentUserId, role, onSubmissionChang
           </div>
         </div>
 
-        {isOwner && (
-          <div className="relative flex-shrink-0" data-options-menu>
-            <button type="button" aria-label="Opsi tugas" onClick={() => setOpenOptionsId((value) => value === "tugas" ? null : "tugas")} className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-lg font-bold text-muted-foreground hover:bg-muted">â‹¯</button>
-            {openOptionsId === "tugas" && (
-              <div className="absolute right-0 top-9 z-20 w-32 overflow-hidden rounded-lg border border-border bg-card py-1 shadow-sm dark:shadow-none">
-                <button type="button" onClick={() => { setOpenOptionsId(null); onSend?.(data); }} className="block w-full cursor-pointer px-3 py-2 text-left text-xs font-medium text-muted-foreground hover:bg-accent">Kirim ke</button>
-                <button type="button" onClick={() => { setOpenOptionsId(null); onEdit?.(data); }} className="block w-full cursor-pointer px-3 py-2 text-left text-xs font-medium text-muted-foreground hover:bg-accent">Edit</button>
-                <button type="button" onClick={() => { setOpenOptionsId(null); onDelete?.(data.id); }} className="block w-full cursor-pointer px-3 py-2 text-left text-xs font-medium text-danger hover:bg-danger/10">Hapus</button>
-              </div>
-            )}
-          </div>
-        )}
-        {role === "SISWA" && (
-          <Badge tone={submissionStatus === "SUDAH" ? "green" : "red"}>
-            {submissionStatus === "SUDAH" ? "Sudah Dikerjakan" : "Belum Dikerjakan"}
-          </Badge>
-        )}
+        <div className="flex shrink-0 items-center gap-1">
+          {(role === "SISWA" || role === "SUPER_ADMIN") && (
+            <Badge tone={submissionStatus === "SUDAH" ? "green" : "red"}>
+              {submissionStatus === "SUDAH" ? "Sudah Dikerjakan" : "Belum Dikerjakan"}
+            </Badge>
+          )}
+          {isOwner && (
+            <div className="relative" data-options-menu>
+              <button
+                type="button"
+                aria-label="Opsi tugas"
+                aria-expanded={openOptionsId === "tugas"}
+                onClick={() => setOpenOptionsId((value) => value === "tugas" ? null : "tugas")}
+                className="flex size-8 cursor-pointer items-center justify-center rounded-lg text-muted-foreground hover:bg-muted"
+              >
+                <MoreVertical className="size-4" aria-hidden="true" />
+              </button>
+              {openOptionsId === "tugas" && (
+                <div className="absolute right-0 top-9 z-20 w-32 overflow-hidden rounded-lg border border-border bg-card py-1 shadow-sm dark:shadow-none">
+                  <button type="button" onClick={() => { setOpenOptionsId(null); onSend?.(data); }} className="block w-full cursor-pointer px-3 py-2 text-left text-xs font-medium text-muted-foreground hover:bg-accent">Kirim ke</button>
+                  <button type="button" onClick={() => { setOpenOptionsId(null); onEdit?.(data); }} className="block w-full cursor-pointer px-3 py-2 text-left text-xs font-medium text-muted-foreground hover:bg-accent">Edit</button>
+                  <button type="button" onClick={() => { setOpenOptionsId(null); onDelete?.(data.id); }} className="block w-full cursor-pointer px-3 py-2 text-left text-xs font-medium text-danger hover:bg-danger/10">Hapus</button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       <p className="mt-3 text-sm font-bold text-foreground">{data.judul}</p>
@@ -289,9 +304,13 @@ export default function TugasCard({ data, currentUserId, role, onSubmissionChang
           {loadingDetail && <p className="text-xs text-muted-foreground">Memuat...</p>}
 
           {/* upload jawaban -- cuma siswa, cuma lampiran (file/link), gak ada input teks */}
-          {role === "SISWA" && (
+          {(role === "SISWA" || role === "SUPER_ADMIN") && (
             <div className="rounded-lg border border-dashed border-input p-3">
-              <p className="mb-2 text-xs font-semibold text-foreground">{editingSubmission ? "Edit Jawaban Tugas" : "Jawab Tugas (lampirkan file/pdf/link)"}</p>
+              <p className="mb-2 text-xs font-semibold text-foreground">
+                {role === "SUPER_ADMIN"
+                  ? editingSubmission ? "Edit Submission Super Admin" : "Kirim Submission Super Admin"
+                  : editingSubmission ? "Edit Jawaban Tugas" : "Jawab Tugas (lampirkan file/pdf/link)"}
+              </p>
               <div className="flex flex-wrap items-center gap-2">
                 <label className="cursor-pointer rounded-lg border border-input px-3 py-1.5 text-xs font-medium text-foreground hover:bg-accent">
                   {uploading ? "Upload..." : "+ Upload File"}
@@ -358,7 +377,7 @@ export default function TugasCard({ data, currentUserId, role, onSubmissionChang
           {submissions?.map((s) => (
             <div key={s.id} className="flex items-start gap-2">
               <button
-                onClick={() => router.push(`/profil/${s.siswa.id}`)}
+                onClick={() => router.push(`${role === "SUPER_ADMIN" ? "/super-admin" : ""}/profil/${s.siswa.id}`)}
                 className="flex h-7 w-7 flex-shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-muted text-[10px] font-bold text-muted-foreground"
               >
                 {s.siswa.fotoProfil ? (
@@ -369,7 +388,7 @@ export default function TugasCard({ data, currentUserId, role, onSubmissionChang
                 )}
               </button>
               <div className="relative flex-1 rounded-lg bg-card p-2.5" data-options-menu>
-                {(role === "GURU" || (role === "SISWA" && s.siswa.id === currentUserId)) && (
+                {(role === "GURU" || role === "SUPER_ADMIN" || (role === "SISWA" && s.siswa.id === currentUserId)) && (
                   <div className="absolute right-2 top-2" data-options-menu>
                     <button
                       type="button"
@@ -381,7 +400,7 @@ export default function TugasCard({ data, currentUserId, role, onSubmissionChang
                     </button>
                     {openOptionsId === `jawaban-${s.id}` && (
                       <div className="absolute right-0 top-8 z-20 w-44 overflow-hidden rounded-lg border border-border bg-card py-1 shadow-sm dark:shadow-none">
-                        {role === "SISWA" ? (
+                        {role === "SISWA" || (role === "SUPER_ADMIN" && s.siswa.id === currentUserId) ? (
                           <>
                             <button type="button" onClick={() => { setOpenOptionsId(null); handleEditSubmission(); }} className="block w-full cursor-pointer px-3 py-2 text-left text-xs font-medium text-muted-foreground hover:bg-accent">Edit Jawaban</button>
                             <button type="button" onClick={() => { setOpenOptionsId(null); void handleDeleteSubmission(); }} disabled={submitting} className="block w-full cursor-pointer px-3 py-2 text-left text-xs font-medium text-danger hover:bg-danger/10 disabled:opacity-50">Hapus Jawaban</button>
@@ -394,13 +413,15 @@ export default function TugasCard({ data, currentUserId, role, onSubmissionChang
                   </div>
                 )}
                 <button
-                  onClick={() => router.push(`/profil/${s.siswa.id}`)}
+                  onClick={() => router.push(`${role === "SUPER_ADMIN" ? "/super-admin" : ""}/profil/${s.siswa.id}`)}
                   className="cursor-pointer text-xs font-bold text-foreground hover:underline"
                 >
                   {s.siswa.id === currentUserId ? "Anda" : s.siswa.nama}
                 </button>
                 <span className="ml-2 text-[11px] font-medium text-muted-foreground">
-                  {s.siswa.kelasReferensi?.label ?? "Kelas belum diatur"}
+                  {role === "SUPER_ADMIN" && s.siswa.id === currentUserId
+                    ? "Akun Super Admin"
+                    : s.siswa.kelasReferensi?.label ?? "Kelas belum diatur"}
                 </span>
                 {s.submittedAt && (
                   <p className="mt-0.5 text-[11px] text-muted-foreground">

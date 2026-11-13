@@ -6,7 +6,7 @@ A modern classroom and academic management app built with Next.js.
 
 ## Fitur Utama
 
-- Autentikasi dan role-based access untuk Admin, Kepsek, Kurikulum, Guru, dan Siswa.
+- Autentikasi dan role-based access untuk Super Admin, Admin, Kepsek, Kurikulum, Guru, dan Siswa.
 - Dashboard berbeda sesuai kebutuhan setiap role.
 - Kelas, pengumuman, materi, tugas, asesmen, soal, dan jawaban siswa.
 - Penilaian, detail submission read-only untuk role pengawas, dan ekspor nilai.
@@ -57,15 +57,20 @@ DB_SSL_CA=
 DATABASE_URL=mysql://root@127.0.0.1:3306/myclass
 JWT_SECRET=ganti-dengan-secret-random
 RESEND_API_KEY=
+SUPER_ADMIN_EMAIL=
+SUPER_ADMIN_PASSWORD=
+SUPER_ADMIN_NAME=Super Admin
 ```
 
 Untuk TiDB Cloud, isi `DB_HOST`, `DB_PORT=4000`, `DB_USER`, `DB_PASSWORD`, dan `DB_NAME=myclass` sesuai kredensial cluster; set `DB_SSL=true` dan `DB_SSL_CA` ke isi sertifikat CA PEM. `DB_SSL_CA` menerima PEM multiline atau satu baris dengan newline yang ditulis sebagai `\n`. `DATABASE_URL` dipakai Prisma CLI, sedangkan koneksi aplikasi dan seed memakai `DB_*`.
+
+Untuk membuat akun Super Admin, isi `SUPER_ADMIN_EMAIL` dan `SUPER_ADMIN_PASSWORD` secara lokal. Seed memvalidasi format email dan password, menggunakan bcryptjs, serta menolak email yang sudah dipakai role lain. Jangan masukkan nilai tersebut ke chat atau commit.
 
 Di Vercel, tambahkan variabel tersebut di Project Settings → Environment Variables. Pastikan `DB_SSL` dan `DB_SSL_CA` tersedia untuk setiap environment yang memakai TiDB (Production dan Preview jika Preview digunakan), kemudian redeploy. Jangan commit `.env`, `account.txt`, password, API key, sertifikat CA, atau file upload pengguna.
 
 ## Database
 
-Pastikan database pada `.env` sudah tersedia, kemudian jalankan:
+Pastikan `DB_HOST` dan host pada `DATABASE_URL` sama-sama menunjuk database lokal yang benar sebelum menjalankan perintah database. Untuk Super Admin lokal, jalankan perintah seed hanya setelah mengisi variabel environment di atas:
 
 ```bash
 npx prisma migrate deploy

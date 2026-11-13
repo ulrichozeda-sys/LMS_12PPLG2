@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth";
-import { requireRole } from "@/lib/rbac";
+import { requireRole, TEACHER_TIER } from "@/lib/rbac";
 
 type RangeKey = "semua" | "minggu" | "bulan" | "3bulan" | "tahun";
 
@@ -36,7 +36,7 @@ function safeAverage(values: Array<number | null | undefined>): number {
 export async function GET(req: NextRequest) {
   try {
     const session = await getSession();
-    requireRole(session, ["GURU"]);
+    requireRole(session, TEACHER_TIER);
 
     const rangeParam = req.nextUrl.searchParams.get("range") ?? "bulan";
     const range: RangeKey = ["semua", "minggu", "bulan", "3bulan", "tahun"].includes(rangeParam)
@@ -44,10 +44,10 @@ export async function GET(req: NextRequest) {
       : "bulan";
 
     const fromDate = getRangeStart(range);
-    const guruId = session!.userId;
+    const guruId = session!.role === "SUPER_ADMIN" ? undefined : session!.userId;
 
     const kelasGuruMapel = await db.kelasGuruMapel.findMany({
-      where: { guruId },
+      where: guruId ? { guruId } : undefined,
       select: { kelasId: true },
     });
 
@@ -72,6 +72,7 @@ export async function GET(req: NextRequest) {
         where: {
           status: "SUDAH",
           nilaiAkhir: { not: null },
+          ...(session!.role === "SUPER_ADMIN" ? {} : { siswa: { role: { not: "SUPER_ADMIN" } } }),
           asesmen: {
             guruId,
             tipe: "KUIS",
@@ -84,6 +85,7 @@ export async function GET(req: NextRequest) {
         where: {
           status: "SUDAH",
           nilaiAkhir: { not: null },
+          ...(session!.role === "SUPER_ADMIN" ? {} : { siswa: { role: { not: "SUPER_ADMIN" } } }),
           asesmen: {
             guruId,
             tipe: "UJIAN",
@@ -96,6 +98,7 @@ export async function GET(req: NextRequest) {
         where: {
           status: "SUDAH",
           nilaiAkhir: { not: null },
+          ...(session!.role === "SUPER_ADMIN" ? {} : { siswa: { role: { not: "SUPER_ADMIN" } } }),
           asesmen: {
             guruId,
             createdAt: { gte: fromDate },
@@ -113,6 +116,7 @@ export async function GET(req: NextRequest) {
         where: {
           tugas: { guruId, createdAt: { gte: fromDate } },
           status: "SUDAH",
+          ...(session!.role === "SUPER_ADMIN" ? {} : { siswa: { role: { not: "SUPER_ADMIN" } } }),
         },
       }),
       db.jawabanSiswa.count({
@@ -125,7 +129,7 @@ export async function GET(req: NextRequest) {
               createdAt: { gte: fromDate },
             },
           },
-          submission: { status: "SUDAH" },
+          submission: { status: "SUDAH", ...(session!.role === "SUPER_ADMIN" ? {} : { siswa: { role: { not: "SUPER_ADMIN" } } }) },
         },
       }),
       db.asesmen.findMany({
@@ -145,6 +149,7 @@ export async function GET(req: NextRequest) {
             where: {
               status: "SUDAH",
               nilaiAkhir: { not: null },
+              ...(session!.role === "SUPER_ADMIN" ? {} : { siswa: { role: { not: "SUPER_ADMIN" } } }),
             },
             select: { nilaiAkhir: true },
           },
@@ -163,6 +168,7 @@ export async function GET(req: NextRequest) {
             where: {
               status: "SUDAH",
               nilaiAkhir: { not: null },
+              ...(session!.role === "SUPER_ADMIN" ? {} : { siswa: { role: { not: "SUPER_ADMIN" } } }),
             },
             select: { nilaiAkhir: true },
           },
@@ -172,6 +178,7 @@ export async function GET(req: NextRequest) {
         where: {
           tugas: { guruId, createdAt: { gte: fromDate } },
           status: "SUDAH",
+          ...(session!.role === "SUPER_ADMIN" ? {} : { siswa: { role: { not: "SUPER_ADMIN" } } }),
         },
         select: {
           siswa: {
@@ -195,7 +202,7 @@ export async function GET(req: NextRequest) {
               createdAt: { gte: fromDate },
             },
           },
-          submission: { status: "SUDAH" },
+          submission: { status: "SUDAH", ...(session!.role === "SUPER_ADMIN" ? {} : { siswa: { role: { not: "SUPER_ADMIN" } } }) },
         },
         select: {
           submission: {

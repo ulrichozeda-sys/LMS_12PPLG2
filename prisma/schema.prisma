@@ -12,6 +12,7 @@ enum Role {
   KURIKULUM
   GURU
   SISWA
+  SUPER_ADMIN
 }
 
 enum TipeAsesmen {

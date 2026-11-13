@@ -55,7 +55,11 @@ export async function GET(_req: NextRequest, { params }: Params) {
             include: {
               mapel: true,
               guru: { select: { id: true, nama: true, fotoProfil: true } },
-              submission: session.role === "SISWA" ? { where: { siswaId: session.userId }, select: { status: true } } : undefined,
+              submission: session.role === "SISWA"
+                ? { where: { siswaId: session.userId }, select: { status: true } }
+                : session.role === "SUPER_ADMIN"
+                  ? undefined
+                  : { where: { siswa: { role: { not: "SUPER_ADMIN" } } } },
               _count: { select: { soal: true } },
             },
           },
@@ -72,7 +76,13 @@ export async function GET(_req: NextRequest, { params }: Params) {
               lampiran: true,
               kelasTujuan: { include: { kelas: { select: { id: true, judul: true } } } },
               submission: session.role === "SISWA" ? { where: { siswaId: session.userId }, select: { status: true } } : undefined,
-              _count: { select: { submission: true } },
+              _count: {
+                select: {
+                  submission: session.role === "SUPER_ADMIN"
+                    ? true
+                    : { where: { siswa: { role: { not: "SUPER_ADMIN" } } } },
+                },
+              },
             },
           },
         },

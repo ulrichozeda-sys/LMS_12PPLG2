@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth";
-import { requireRole, ADMIN_TIER } from "@/lib/rbac";
+import { requireRole, ADMIN_TIER, TEACHER_TIER } from "@/lib/rbac";
 
 export async function GET(req: NextRequest) {
   try {
@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
           guru: { select: { id: true, nama: true, fotoProfil: true, role: true } },
           lampiran: true,
           kelasTujuan: { include: { kelas: { select: { id: true, judul: true } } } },
-          _count: { select: { submission: true } },
+          _count: { select: { submission: { where: { siswa: { role: { not: "SUPER_ADMIN" } } } } } },
         },
         orderBy: { createdAt: "desc" },
       });
@@ -39,7 +39,9 @@ export async function GET(req: NextRequest) {
               guru: { select: { id: true, nama: true, fotoProfil: true } },
               lampiran: true,
               submission: { where: { siswaId: session!.userId } },
-              _count: { select: { submission: true } },
+              _count: {
+                select: { submission: { where: { siswa: { role: { not: "SUPER_ADMIN" } } } } },
+              },
             },
           },
         },
@@ -63,6 +65,26 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ data: Array.from(tugasMap.values()) });
     }
 
+    if (session!.role === "SUPER_ADMIN") {
+      const tugasList = await db.tugas.findMany({
+        include: {
+          mapel: true,
+          guru: { select: { id: true, nama: true, fotoProfil: true, role: true } },
+          lampiran: true,
+          kelasTujuan: { include: { kelas: { select: { id: true, judul: true } } } },
+          submission: { where: { siswaId: session!.userId }, select: { status: true } },
+          _count: { select: { submission: true } },
+        },
+        orderBy: { createdAt: "desc" },
+      });
+      return NextResponse.json({
+        data: tugasList.map(({ submission, ...tugas }) => ({
+          ...tugas,
+          statusSubmission: submission[0]?.status ?? "BELUM",
+        })),
+      });
+    }
+
     return NextResponse.json({ data: [] });
   } catch (err: any) {
     const status = err.name === "UnauthorizedError" ? 401 : err.name === "ForbiddenError" ? 403 : 500;
@@ -73,7 +95,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const session = await getSession();
-    requireRole(session, ["GURU"]);
+    requireRole(session, TEACHER_TIER);
     const body = await req.json();
     const { judul, isi, mapelId, kelasIds, lampiran } = body;
     const tugasBaru = await db.$transaction(async (tx) => {

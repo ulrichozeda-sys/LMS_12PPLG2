@@ -1,17 +1,19 @@
 import type { SessionPayload } from "./auth";
 
-export type Role = "ADMIN" | "KEPSEK" | "KURIKULUM" | "GURU" | "SISWA";
+export type Role = "ADMIN" | "KEPSEK" | "KURIKULUM" | "GURU" | "SISWA" | "SUPER_ADMIN";
 
-export const ADMIN_TIER: Role[] = ["ADMIN", "KEPSEK", "KURIKULUM"];
+export const ADMIN_TIER: Role[] = ["ADMIN", "SUPER_ADMIN", "KEPSEK", "KURIKULUM"];
 export const READ_ONLY_ADMIN_TIER: Role[] = ["KEPSEK", "KURIKULUM"];
-export const FULL_CRUD_ADMIN: Role[] = ["ADMIN"];
+export const FULL_CRUD_ADMIN: Role[] = ["ADMIN", "SUPER_ADMIN"];
+export const TEACHER_TIER: Role[] = ["GURU", "SUPER_ADMIN"];
 
 export const ROUTE_ACCESS: Record<string, Role[]> = {
-  "/admin": ["ADMIN"],
+  "/admin": ["ADMIN", "SUPER_ADMIN"],
   "/kepsek": ["KEPSEK"],
   "/kurikulum": ["KURIKULUM"],
-  "/guru": ["GURU"],
+  "/guru": ["GURU", "SUPER_ADMIN"],
   "/siswa": ["SISWA"],
+  "/super-admin": ["SUPER_ADMIN"],
 };
 
 const DASHBOARD_PATHS: Record<Role, string> = {
@@ -20,6 +22,7 @@ const DASHBOARD_PATHS: Record<Role, string> = {
   KURIKULUM: "/kurikulum",
   GURU: "/guru",
   SISWA: "/siswa/dashboard",
+  SUPER_ADMIN: "/super-admin",
 };
 
 export function getDashboardPath(role: Role): string {
