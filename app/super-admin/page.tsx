@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import {
   ChartColumn,
   EllipsisVertical,
-  FileText,
   LayoutDashboard,
   School,
   Users,
@@ -15,7 +14,6 @@ import KelasCard, { KelasData } from "@/components/KelasCard";
 import ModalKelas from "@/components/ModalKelas";
 import { AkunData } from "@/components/AkunCard";
 import ModalAkun from "@/components/ModalAkun";
-import LaporanCard, { LaporanData } from "@/components/LaporanCard";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import Modal from "@/components/ui/Modal";
@@ -40,10 +38,10 @@ import {
   SelectInput,
 } from "@/components/shared/form-controls";
 
-type Tab = "DASHBOARD" | "KELAS" | "AKUN" | "LAPORAN" | "PERFORMA";
+type Tab = "DASHBOARD" | "KELAS" | "AKUN" | "PERFORMA";
 
 interface AdminDashboardData {
-  statistik: { kelas: number; siswa: number; guru: number; asesmen: number; tugas: number; mapel: number; laporanPending: number; kuis: number; ujian: number; rataRataNilai: number; submissionDinilai: number; tugasDibuat: number; tugasDikumpulkan: number };
+  statistik: { kelas: number; siswa: number; guru: number; asesmen: number; tugas: number; mapel: number; kuis: number; ujian: number; rataRataNilai: number; submissionDinilai: number; tugasDibuat: number; tugasDikumpulkan: number };
   akunTerbaru: { id: string; nama: string; email: string; role: "SISWA" | "GURU"; createdAt: string }[];
   aktivitas: { periodeHari: number; userAktif: number; siswaAktif: number; guruAktif: number; aktivitasHarian: { tanggal: string; asesmen: number; tugas: number; submission: number; userAktif: number }[] };
 }
@@ -66,7 +64,6 @@ const TABS: { key: Tab; label: string; icon: LucideIcon }[] = [
   { key: "DASHBOARD", label: "Dashboard", icon: LayoutDashboard },
   { key: "KELAS", label: "Buat Kelas", icon: School },
   { key: "AKUN", label: "Daftar Akun", icon: Users },
-  { key: "LAPORAN", label: "Laporan", icon: FileText },
   { key: "PERFORMA", label: "Performa Akademik", icon: ChartColumn },
 ];
 
@@ -85,7 +82,6 @@ export default function SuperAdminDashboard() {
   const [guruList, setGuruList] = useState<AkunData[]>([]);
   const [mapelList, setMapelList] = useState<{ id: string; nama: string }[]>([]);
   const [kelasReferensiList, setKelasReferensiList] = useState<{ id: string; label: string; jenjang: string; tingkat: number | null; jurusan: { nama: string } | null }[]>([]);
-  const [laporanList, setLaporanList] = useState<LaporanData[]>([]);
   const [dashboardData, setDashboardData] = useState<AdminDashboardData | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -153,10 +149,6 @@ export default function SuperAdminDashboard() {
         const [data, mapelData] = await Promise.all([res.json(), mapelRes.json()]);
         setGuruList(data.data ?? []);
         setMapelList(data.data ? mapelData.data ?? [] : []);
-      } else if (tab === "LAPORAN") {
-        const res = await fetch("/api/lupa-password");
-        const data = await res.json();
-        setLaporanList(data.data ?? []);
       } else if (tab === "PERFORMA") {
         const res = await fetch("/api/admin/dashboard");
         const data = await res.json();
@@ -316,7 +308,6 @@ export default function SuperAdminDashboard() {
         { label: "Asesmen", value: dashboardData.statistik.asesmen, caption: "Kuis dan ujian", tab: "KELAS" },
         { label: "Tugas", value: dashboardData.statistik.tugas, caption: "Tugas dibuat", tab: "KELAS" },
         { label: "Mata Pelajaran", value: dashboardData.statistik.mapel, caption: "Mapel tersedia", tab: "GURU" },
-        { label: "Laporan Pending", value: dashboardData.statistik.laporanPending, caption: "Perlu ditinjau", tab: "LAPORAN" },
         { label: "Rata-rata Nilai", value: dashboardData.statistik.rataRataNilai, caption: "Dari asesmen dinilai", tab: "PERFORMA" },
       ]
     : [];
@@ -818,24 +809,6 @@ export default function SuperAdminDashboard() {
           </div>
         )}
 
-        {/* ============ LAPORAN ============ */}
-        {!loading && activeTab === "LAPORAN" && (
-          <div className="space-y-4">
-            <PageTitle
-              title="Laporan"
-              description="Laporan lupa password dari siswa dan petugas."
-            />
-            {laporanList.length === 0 ? (
-              <EmptyState>Tidak ada laporan lupa password saat ini.</EmptyState>
-            ) : (
-              <div className="space-y-3">
-                {laporanList.map((l) => (
-                  <LaporanCard key={l.id} data={l} onUpdated={() => loadTabData("LAPORAN")} />
-                ))}
-              </div>
-            )}
-          </div>
-        )}
       <ModalKelas
         open={showModalKelas}
         onClose={() => setShowModalKelas(false)}

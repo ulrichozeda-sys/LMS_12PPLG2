@@ -8,7 +8,6 @@ import {
   ClipboardList,
   LayoutDashboard,
   School,
-  FileText,
   Users,
   type LucideIcon,
 } from "lucide-react";
@@ -19,7 +18,6 @@ const NAV_ITEMS: { key: string; label: string; href: string; icon: LucideIcon; t
   { key: "DASHBOARD", label: "Dashboard", href: "/super-admin", icon: LayoutDashboard, tab: "DASHBOARD" },
   { key: "KELAS", label: "Kelas", href: "/super-admin/kelas", icon: School, tab: "KELAS" },
   { key: "AKUN", label: "Daftar Akun", href: "/super-admin?tab=AKUN", icon: Users, tab: "AKUN" },
-  { key: "LAPORAN", label: "Laporan", href: "/super-admin?tab=LAPORAN", icon: FileText, tab: "LAPORAN" },
   { key: "PERFORMA", label: "Performa Akademik", href: "/super-admin?tab=PERFORMA", icon: ClipboardCheck, tab: "PERFORMA" },
   { key: "ASESMEN", label: "Asesmen", href: "/super-admin/asesmen", icon: ClipboardCheck },
   { key: "TUGAS", label: "Tugas", href: "/super-admin/tugas", icon: ClipboardList },

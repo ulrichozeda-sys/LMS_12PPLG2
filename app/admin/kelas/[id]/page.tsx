@@ -6,7 +6,6 @@ import {
   ChevronDown,
   ClipboardCheck,
   ClipboardList,
-  FileText,
   School,
   User,
   Users,
@@ -28,12 +27,11 @@ import { DashboardShell, type NavItem } from "@/components/shared/dashboard-shel
 import { Avatar } from "@/components/shared/avatar";
 import { EmptyState, LoadingBlock } from "@/components/shared/data-display";
 
-type AdminTab = "KELAS" | "AKUN" | "LAPORAN";
+type AdminTab = "KELAS" | "AKUN";
 
 const ADMIN_TABS: { key: AdminTab; label: string; icon: NavItem["icon"] }[] = [
   { key: "KELAS", label: "Buat Kelas", icon: School },
   { key: "AKUN", label: "Daftar Akun", icon: Users },
-  { key: "LAPORAN", label: "Laporan", icon: FileText },
 ];
 
 interface SiswaDiKelas {

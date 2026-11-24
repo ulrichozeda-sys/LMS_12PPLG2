@@ -31,9 +31,6 @@ export async function proxy(request: NextRequest) {
     pathname === "/" ||
     pathname === "/login" ||
     pathname.startsWith("/api/auth") ||
-    pathname.startsWith("/api/lupa-password") ||
-    pathname.startsWith("/api/verify-otp") ||
-    pathname.startsWith("/api/reset-password") ||
     pathname.startsWith("/api/ganti-password-awal");
 
   const token = request.cookies.get(COOKIE_NAME)?.value;

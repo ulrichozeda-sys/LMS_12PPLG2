@@ -147,6 +147,14 @@ export default function ModalAkun({ open, onClose, onSuccess, mode, defaultRole 
       setError("Nama wajib diisi.");
       return;
     }
+    if (mode === "create" && role === "SISWA" && !/^\d{10}$/.test(nomorInduk)) {
+      setError("NIS harus terdiri dari tepat 10 angka.");
+      return;
+    }
+    if (mode === "create" && role === "GURU" && !/^\d{16}$/.test(nomorInduk)) {
+      setError("NIK harus terdiri dari tepat 16 angka.");
+      return;
+    }
     if (role === "SISWA" && mode === "create" && !kelasReferensiId) {
       setError("Filter Jurusan (kelas referensi) wajib dipilih.");
       return;
@@ -230,9 +238,15 @@ export default function ModalAkun({ open, onClose, onSuccess, mode, defaultRole 
         <Input
           label={role === "SISWA" ? "NIS" : "NIK"}
           value={nomorInduk}
+          inputMode="numeric"
           onChange={(e) => setNomorInduk(e.target.value)}
           required
         />
+        {mode === "create" && (
+          <p role="note" className="-mt-2 text-xs text-muted-foreground">
+            {role === "SISWA" ? "NIS harus tepat 10 angka." : "NIK harus tepat 16 angka."}
+          </p>
+        )}
         {mode === "create" && (
           <p className="-mt-2 rounded-lg bg-muted px-3 py-2 text-xs leading-relaxed text-foreground">
             Password awal otomatis sama dengan {role === "SISWA" ? "NIS" : "NIK"}. Saat login pertama, akun akan diminta membuat password baru.

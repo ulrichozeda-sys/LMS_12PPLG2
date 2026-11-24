@@ -97,6 +97,9 @@ export async function POST(req: NextRequest) {
           { status: 400 }
         );
       }
+      if (typeof nis !== "string" || !/^\d{10}$/.test(nis)) {
+        return NextResponse.json({ error: "NIS harus terdiri dari tepat 10 angka." }, { status: 400 });
+      }
 
       const nisExists = await db.user.findUnique({ where: { nis } });
       if (nisExists) {
@@ -155,6 +158,9 @@ export async function POST(req: NextRequest) {
 
       if (!nik) {
         return NextResponse.json({ error: "NIK wajib diisi untuk guru." }, { status: 400 });
+      }
+      if (typeof nik !== "string" || !/^\d{16}$/.test(nik)) {
+        return NextResponse.json({ error: "NIK harus terdiri dari tepat 16 angka." }, { status: 400 });
       }
 
       const nikExists = await db.user.findUnique({ where: { nik } });

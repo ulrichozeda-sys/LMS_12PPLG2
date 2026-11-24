@@ -56,7 +56,6 @@ DB_SSL=false
 DB_SSL_CA=
 DATABASE_URL=mysql://root@127.0.0.1:3306/myclass
 JWT_SECRET=ganti-dengan-secret-random
-RESEND_API_KEY=
 SUPER_ADMIN_EMAIL=
 SUPER_ADMIN_PASSWORD=
 SUPER_ADMIN_NAME=Super Admin

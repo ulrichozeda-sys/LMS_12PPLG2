@@ -38,13 +38,12 @@ const roleLabel: Record<Role, string> = {
 };
 
 // ---- sidebar nav per role viewer ----
-type AdminTab = "KELAS" | "AKUN" | "LAPORAN";
+type AdminTab = "KELAS" | "AKUN";
 type GuruSiswaNav = "DASHBOARD" | "KELAS" | "ASESMEN" | "TUGAS" | "MATERI" | "PERFORMA" | "PROFILE";
 
 const ADMIN_TABS: { key: AdminTab; label: string }[] = [
   { key: "KELAS", label: "Buat Kelas" },
   { key: "AKUN", label: "Daftar Akun" },
-  { key: "LAPORAN", label: "Laporan" },
 ];
 const KEPSEK_TABS: { key: string; label: string; href: string }[] = [
   { key: "DASHBOARD", label: "Dashboard", href: "/kepsek" },
@@ -100,7 +99,6 @@ function AdminIcon({ tab }: { tab: AdminTab }) {
   const paths: Record<AdminTab, React.ReactNode> = {
     KELAS: <path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6" />,
     AKUN: <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM19 8v6M22 11h-6" />,
-    LAPORAN: <path d="M6 2h9l5 5v15H6V2Zm9 0v5h5M9 13h6M9 17h4" />,
   };
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-[18px] w-[18px] flex-shrink-0">

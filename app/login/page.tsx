@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Check, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/shared/logo";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
@@ -11,14 +11,11 @@ import { SiteFooter } from "@/components/shared/site-footer";
 import {
   Field,
   FormError,
-  InlineButton,
   PrimaryButton,
-  TextArea,
   TextInput,
 } from "@/components/shared/form-controls";
 
 type Portal = "ADMIN" | "PETUGAS" | "SISWA";
-type View = "LOGIN" | "LAPOR" | "OTP" | "PASSWORD_BARU" | "SUKSES";
 
 const PORTAL_CONFIG: Record<
   Portal,
@@ -29,18 +26,8 @@ const PORTAL_CONFIG: Record<
   SISWA: { label: "Siswa", title: "Login Sebagai Siswa", identifierLabel: "NIS", identifierPlaceholder: "Nis" },
 };
 
-function ViewHeading({ eyebrow, title }: { eyebrow: string; title: string }) {
-  return (
-    <div>
-      <p className="text-xs font-medium text-muted-foreground">{eyebrow}</p>
-      <h2 className="mt-1 text-sm font-semibold leading-snug">{title}</h2>
-    </div>
-  );
-}
-
 export default function LoginPage() {
   const router = useRouter();
-  const [view, setView] = useState<View>("LOGIN");
 
   // ===== state login =====
   const [portal, setPortal] = useState<Portal>("ADMIN");
@@ -48,30 +35,10 @@ export default function LoginPage() {
   const [loginPassword, setLoginPassword] = useState("");
   const [showLoginPassword, setShowLoginPassword] = useState(false);
 
-  // ===== state lupa password =====
-  const [identifier, setIdentifier] = useState(""); // NIS/NIK
-  const [lupaEmail, setLupaEmail] = useState("");
-  const [tanggalLahir, setTanggalLahir] = useState("");
-  const [alasan, setAlasan] = useState("");
-  const [otpDigits, setOtpDigits] = useState(["", "", "", ""]);
-  const [passwordBaru, setPasswordBaru] = useState("");
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [info, setInfo] = useState("");
 
   const config = PORTAL_CONFIG[portal];
-
-  function resetLupaState() {
-    setIdentifier("");
-    setLupaEmail("");
-    setTanggalLahir("");
-    setAlasan("");
-    setOtpDigits(["", "", "", ""]);
-    setPasswordBaru("");
-    setError("");
-    setInfo("");
-  }
 
   function handlePortalChange(newPortal: Portal) {
     setPortal(newPortal);
@@ -104,106 +71,6 @@ export default function LoginPage() {
       setError("Terjadi kesalahan. Coba lagi.");
       setLoading(false);
     }
-  }
-
-  // ===== LAPOR (step 1) =====
-  async function handleLaporSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-    try {
-      const res = await fetch("/api/lupa-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ identifier, email: lupaEmail, tanggalLahir, alasan }),
-      });
-      const data = await res.json();
-      setInfo(data.message ?? "Laporan berhasil dikirim ke admin.");
-    } catch {
-      setError("Terjadi kesalahan. Coba lagi.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  // ===== OTP (step 2) =====
-  function handleOtpChange(index: number, value: string) {
-    if (!/^\d?$/.test(value)) return; // cuma boleh 1 digit angka
-    const next = [...otpDigits];
-    next[index] = value;
-    setOtpDigits(next);
-
-    if (value && index < 3) {
-      const nextInput = document.getElementById(`otp-${index + 1}`);
-      nextInput?.focus();
-    }
-  }
-
-  async function handleVerifyOtp(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-
-    const otp = otpDigits.join("");
-    if (otp.length !== 4) {
-      setError("Masukkan 4 digit kode OTP.");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const res = await fetch("/api/verify-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ identifier, otp }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error ?? "Kode OTP tidak valid.");
-        setLoading(false);
-        return;
-      }
-      setView("PASSWORD_BARU");
-    } catch {
-      setError("Terjadi kesalahan. Coba lagi.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  // ===== PASSWORD BARU (step 3) =====
-  async function handleResetPassword(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-
-    if (passwordBaru.length < 6) {
-      setError("Password minimal 6 karakter.");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const res = await fetch("/api/reset-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ identifier, passwordBaru }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error ?? "Gagal mengubah password.");
-        setLoading(false);
-        return;
-      }
-      setView("SUKSES");
-    } catch {
-      setError("Terjadi kesalahan. Coba lagi.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function kembaliKeLogin() {
-    resetLupaState();
-    setView("LOGIN");
   }
 
   return (
@@ -241,271 +108,78 @@ export default function LoginPage() {
           </div>
 
           <div className="rounded-lg border bg-card p-6 text-card-foreground">
-            {/* ============ VIEW: LOGIN ============ */}
-            {view === "LOGIN" && (
-              <>
-                <p className="text-xs font-medium text-muted-foreground">Portal Administrasi</p>
-                <div
-                  role="group"
-                  aria-label="Pilih portal"
-                  className="mt-2 grid grid-cols-3 gap-1 rounded-md border bg-muted p-1"
-                >
-                  {(Object.keys(PORTAL_CONFIG) as Portal[]).map((key) => (
-                    <button
-                      key={key}
-                      type="button"
-                      aria-pressed={portal === key}
-                      onClick={() => handlePortalChange(key)}
-                      className={cn(
-                        "h-9 cursor-pointer rounded-sm text-sm font-medium transition-colors duration-150 outline-none",
-                        "focus-visible:ring-2 focus-visible:ring-ring",
-                        portal === key
-                          ? "bg-brand text-brand-foreground"
-                          : "text-muted-foreground hover:text-foreground",
-                      )}
-                    >
-                      {PORTAL_CONFIG[key].label}
-                    </button>
-                  ))}
-                </div>
-
-                <h2 className="mt-6 text-sm font-semibold">{config.title}</h2>
-
-                <form onSubmit={handleLoginSubmit} className="mt-4 space-y-3">
-                  <Field label={config.identifierLabel}>
-                    <TextInput
-                      type={portal === "ADMIN" ? "email" : "text"}
-                      required
-                      autoComplete="username"
-                      placeholder={config.identifierPlaceholder}
-                      value={loginIdentifier}
-                      onChange={(e) => setLoginIdentifier(e.target.value)}
-                      className={portal !== "ADMIN" ? "font-mono" : undefined}
-                    />
-                  </Field>
-                  <Field label="Password">
-                    <span className="relative block">
-                      <TextInput
-                        type={showLoginPassword ? "text" : "password"}
-                        required
-                        autoComplete="current-password"
-                        placeholder="Password"
-                        value={loginPassword}
-                        onChange={(e) => setLoginPassword(e.target.value)}
-                        className="pr-11"
-                      />
-                      <button
-                        type="button"
-                        aria-label={showLoginPassword ? "Sembunyikan password" : "Lihat password"}
-                        aria-pressed={showLoginPassword}
-                        onClick={() => setShowLoginPassword((visible) => !visible)}
-                        className="absolute inset-y-0 right-0 inline-flex w-10 cursor-pointer items-center justify-center rounded-r-md text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                      >
-                        {showLoginPassword ? (
-                          <EyeOff className="size-4" aria-hidden="true" />
-                        ) : (
-                          <Eye className="size-4" aria-hidden="true" />
-                        )}
-                      </button>
-                    </span>
-                  </Field>
-
-                  {error && <FormError>{error}</FormError>}
-
-                  <PrimaryButton type="submit" disabled={loading}>
-                    {loading ? "Memproses..." : "Masuk"}
-                  </PrimaryButton>
-
-                  {portal !== "ADMIN" && (
-                    <p className="text-center text-xs text-muted-foreground">
-                      Lupa Password?{" "}
-                      <InlineButton
-                        onClick={() => {
-                          resetLupaState();
-                          setView("LAPOR");
-                        }}
-                      >
-                        Ubah Password
-                      </InlineButton>
-                    </p>
+            <p className="text-xs font-medium text-muted-foreground">Portal Administrasi</p>
+            <div
+              role="group"
+              aria-label="Pilih portal"
+              className="mt-2 grid grid-cols-3 gap-1 rounded-md border bg-muted p-1"
+            >
+              {(Object.keys(PORTAL_CONFIG) as Portal[]).map((key) => (
+                <button
+                  key={key}
+                  type="button"
+                  aria-pressed={portal === key}
+                  onClick={() => handlePortalChange(key)}
+                  className={cn(
+                    "h-9 cursor-pointer rounded-sm text-sm font-medium transition-colors duration-150 outline-none",
+                    "focus-visible:ring-2 focus-visible:ring-ring",
+                    portal === key
+                      ? "bg-brand text-brand-foreground"
+                      : "text-muted-foreground hover:text-foreground",
                   )}
-                </form>
-              </>
-            )}
+                >
+                  {PORTAL_CONFIG[key].label}
+                </button>
+              ))}
+            </div>
 
-            {/* ============ VIEW: LAPOR (step 1) ============ */}
-            {view === "LAPOR" && (
-              <>
-                <ViewHeading
-                  eyebrow="Buat Laporan Password"
-                  title="Gunakan NIS/NIK, email, tanggal lahir, dan alasan untuk ubah password"
+            <h2 className="mt-6 text-sm font-semibold">{config.title}</h2>
+
+            <form onSubmit={handleLoginSubmit} className="mt-4 space-y-3">
+              <Field label={config.identifierLabel}>
+                <TextInput
+                  type={portal === "ADMIN" ? "email" : "text"}
+                  required
+                  autoComplete="username"
+                  placeholder={config.identifierPlaceholder}
+                  value={loginIdentifier}
+                  onChange={(e) => setLoginIdentifier(e.target.value)}
+                  className={portal !== "ADMIN" ? "font-mono" : undefined}
                 />
+              </Field>
+              <Field label="Password">
+                <span className="relative block">
+                  <TextInput
+                    type={showLoginPassword ? "text" : "password"}
+                    required
+                    autoComplete="current-password"
+                    placeholder="Password"
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                    className="pr-11"
+                  />
+                  <button
+                    type="button"
+                    aria-label={showLoginPassword ? "Sembunyikan password" : "Lihat password"}
+                    aria-pressed={showLoginPassword}
+                    onClick={() => setShowLoginPassword((visible) => !visible)}
+                    className="absolute inset-y-0 right-0 inline-flex w-10 cursor-pointer items-center justify-center rounded-r-md text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    {showLoginPassword ? (
+                      <EyeOff className="size-4" aria-hidden="true" />
+                    ) : (
+                      <Eye className="size-4" aria-hidden="true" />
+                    )}
+                  </button>
+                </span>
+              </Field>
 
-                {info ? (
-                  <div role="status" className="mt-4 rounded-md border bg-brand-subtle p-4 text-center">
-                    <p className="text-sm">{info}</p>
-                    <InlineButton onClick={kembaliKeLogin} className="mt-2">
-                      Kembali ke Login
-                    </InlineButton>
-                  </div>
-                ) : (
-                  <form onSubmit={handleLaporSubmit} className="mt-4 space-y-3">
-                    <Field label="NIS / NIK">
-                      <TextInput
-                        required
-                        placeholder="NIS / NIK"
-                        value={identifier}
-                        onChange={(e) => setIdentifier(e.target.value)}
-                        className="font-mono"
-                      />
-                    </Field>
-                    <Field label="Email">
-                      <TextInput
-                        type="email"
-                        required
-                        placeholder="Email"
-                        value={lupaEmail}
-                        onChange={(e) => setLupaEmail(e.target.value)}
-                      />
-                    </Field>
-                    <Field label="Tanggal lahir">
-                      <TextInput
-                        type="date"
-                        required
-                        value={tanggalLahir}
-                        onChange={(e) => setTanggalLahir(e.target.value)}
-                      />
-                    </Field>
-                    <Field label="Alasan lupa password">
-                      <TextArea
-                        required
-                        placeholder="Alasan lupa password"
-                        value={alasan}
-                        onChange={(e) => setAlasan(e.target.value)}
-                        rows={3}
-                      />
-                    </Field>
+              {error && <FormError>{error}</FormError>}
 
-                    {error && <FormError>{error}</FormError>}
-
-                    <PrimaryButton type="submit" disabled={loading}>
-                      {loading ? "Mengirim..." : "Buat Laporan"}
-                    </PrimaryButton>
-
-                    <div className="flex items-center justify-between">
-                      <InlineButton tone="muted" onClick={kembaliKeLogin}>
-                        Kembali ke login
-                      </InlineButton>
-                      <InlineButton onClick={() => setView("OTP")}>
-                        Sudah punya kode OTP?
-                      </InlineButton>
-                    </div>
-                  </form>
-                )}
-              </>
-            )}
-
-            {/* ============ VIEW: OTP (step 2) ============ */}
-            {view === "OTP" && (
-              <>
-                <ViewHeading
-                  eyebrow="Ubah Password"
-                  title="Ketik NIS/NIK lalu masukkan kode OTP 4 digit yang dikirim admin melalui email"
-                />
-
-                <form onSubmit={handleVerifyOtp} className="mt-4 space-y-4">
-                  <Field label="NIS / NIK">
-                    <TextInput
-                      required
-                      placeholder="NIS / NIK"
-                      value={identifier}
-                      onChange={(e) => setIdentifier(e.target.value)}
-                      className="font-mono"
-                    />
-                  </Field>
-
-                  <div>
-                    <p className="mb-1.5 text-xs font-medium text-muted-foreground">Kode OTP</p>
-                    <div className="flex justify-center gap-3">
-                      {otpDigits.map((digit, i) => (
-                        <input
-                          key={i}
-                          id={`otp-${i}`}
-                          type="text"
-                          inputMode="numeric"
-                          maxLength={1}
-                          aria-label={`Digit OTP ${i + 1}`}
-                          value={digit}
-                          onChange={(e) => handleOtpChange(i, e.target.value)}
-                          className="size-12 rounded-md border border-input bg-background text-center font-mono text-lg font-semibold text-foreground outline-none transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                        />
-                      ))}
-                    </div>
-                  </div>
-
-                  {error && <FormError className="text-center">{error}</FormError>}
-
-                  <PrimaryButton type="submit" disabled={loading}>
-                    {loading ? "Memverifikasi..." : "Lanjut"}
-                  </PrimaryButton>
-
-                  <div className="flex items-center justify-between">
-                    <InlineButton tone="muted" onClick={kembaliKeLogin}>
-                      Kembali ke login
-                    </InlineButton>
-                    <InlineButton onClick={() => setView("LAPOR")}>Belum lapor?</InlineButton>
-                  </div>
-                </form>
-              </>
-            )}
-
-            {/* ============ VIEW: PASSWORD BARU (step 3) ============ */}
-            {view === "PASSWORD_BARU" && (
-              <>
-                <ViewHeading eyebrow="Portal Administrasi" title="Buat Password Baru" />
-
-                <form onSubmit={handleResetPassword} className="mt-4 space-y-3">
-                  <Field label="Password baru">
-                    <TextInput
-                      type="password"
-                      required
-                      autoComplete="new-password"
-                      placeholder="Password Baru"
-                      value={passwordBaru}
-                      onChange={(e) => setPasswordBaru(e.target.value)}
-                    />
-                  </Field>
-
-                  {error && <FormError>{error}</FormError>}
-
-                  <PrimaryButton type="submit" disabled={loading}>
-                    {loading ? "Menyimpan..." : "Buat Password"}
-                  </PrimaryButton>
-
-                  <div className="text-center">
-                    <InlineButton tone="muted" onClick={kembaliKeLogin}>
-                      Kembali ke login
-                    </InlineButton>
-                  </div>
-                </form>
-              </>
-            )}
-
-            {/* ============ VIEW: SUKSES ============ */}
-            {view === "SUKSES" && (
-              <div role="status" className="text-center">
-                <div className="mx-auto flex size-10 items-center justify-center rounded-md bg-brand text-brand-foreground">
-                  <Check className="size-5" strokeWidth={2} aria-hidden="true" />
-                </div>
-                <h2 className="mt-3 text-sm font-semibold">Password Berhasil Diubah</h2>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Silakan login dengan password baru anda.
-                </p>
-                <PrimaryButton type="button" onClick={kembaliKeLogin} className="mt-4">
-                  Kembali ke Login
-                </PrimaryButton>
-              </div>
-            )}
+              <PrimaryButton type="submit" disabled={loading}>
+                {loading ? "Memproses..." : "Masuk"}
+              </PrimaryButton>
+            </form>
           </div>
         </div>
       </main>

@@ -69,6 +69,13 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       return NextResponse.json({ error: "Akun tidak ditemukan." }, { status: 404 });
     }
 
+    if (existing.role === "SISWA" && nis !== undefined && nis !== existing.nis && (typeof nis !== "string" || !/^\d{10}$/.test(nis))) {
+      return NextResponse.json({ error: "NIS harus terdiri dari tepat 10 angka." }, { status: 400 });
+    }
+    if (existing.role === "GURU" && nik !== undefined && nik !== existing.nik && (typeof nik !== "string" || !/^\d{16}$/.test(nik))) {
+      return NextResponse.json({ error: "NIK harus terdiri dari tepat 16 angka." }, { status: 400 });
+    }
+
     if (email && email.toLowerCase().trim() !== existing.email) {
       const emailTaken = await db.user.findUnique({ where: { email: email.toLowerCase().trim() } });
       if (emailTaken) return NextResponse.json({ error: "Email sudah dipakai akun lain." }, { status: 409 });
