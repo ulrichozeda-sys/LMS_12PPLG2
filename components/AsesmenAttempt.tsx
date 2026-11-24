@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { ChevronLeft, ChevronRight, LayoutGrid, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import Button from "@/components/ui/Button";
 import { showConfirm } from "@/lib/dialog";
 import Badge from "@/components/ui/Badge";
@@ -66,8 +66,6 @@ export function AsesmenAttempt({ role }: { role: "SISWA" | "SUPER_ADMIN" }) {
   const [error, setError] = useState("");
 
   const [activeIndex, setActiveIndex] = useState(0);
-  const [showGrid, setShowGrid] = useState(false);
-  const [search, setSearch] = useState("");
 
   const [jawabanMap, setJawabanMap] = useState<Record<string, JawabanLokal>>({});
 
@@ -185,7 +183,7 @@ export function AsesmenAttempt({ role }: { role: "SISWA" | "SUPER_ADMIN" }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [asesmen, sudahSelesai, asesmenId]);
 
-  const soalTerfilter = asesmen ? asesmen.soal.filter((s) => s.pertanyaan.toLowerCase().includes(search.toLowerCase())) : [];
+  const soalTerfilter = asesmen?.soal ?? [];
   const currentSoal = soalTerfilter[activeIndex] ?? null;
   const jawabanSaatIni = currentSoal ? jawabanMap[currentSoal.id] : null;
   const isKuis = asesmen?.tipe === "KUIS";
@@ -321,101 +319,50 @@ export function AsesmenAttempt({ role }: { role: "SISWA" | "SUPER_ADMIN" }) {
         )}
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-2">
-        <div className="relative min-w-[140px] flex-1">
-          <Search
-            className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-            strokeWidth={1.75}
-            aria-hidden="true"
-          />
-          <input
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setActiveIndex(0);
-            }}
-            placeholder="Cari soal..."
-            aria-label="Cari soal"
-            className={`${fieldCls} h-10 w-full pl-9 sm:h-9`}
-          />
-        </div>
-        <div className="flex items-center gap-1">
-          <button
-            aria-label="Soal sebelumnya"
-            onClick={() => setActiveIndex((i) => Math.max(0, i - 1))}
-            disabled={activeIndex === 0}
-            className={iconBtn}
-          >
-            <ChevronLeft className="size-4" strokeWidth={1.75} aria-hidden="true" />
-          </button>
-          <span className="min-w-12 px-1 text-center text-sm tabular-nums text-muted-foreground">
-            {soalTerfilter.length === 0 ? "0/0" : `${activeIndex + 1}/${soalTerfilter.length}`}
-          </span>
-          <button
-            aria-label="Soal berikutnya"
-            onClick={() => setActiveIndex((i) => Math.min(soalTerfilter.length - 1, i + 1))}
-            disabled={activeIndex >= soalTerfilter.length - 1}
-            className={iconBtn}
-          >
-            <ChevronRight className="size-4" strokeWidth={1.75} aria-hidden="true" />
-          </button>
-          <button
-            onClick={() => setShowGrid((v) => !v)}
-            aria-pressed={showGrid}
-            title={showGrid ? "Tutup daftar soal" : "Buka daftar soal"}
-            aria-label={showGrid ? "Tutup daftar soal" : "Buka daftar soal"}
-            className={`${iconBtn} ${showGrid ? "border-brand bg-brand-subtle" : ""}`}
-          >
-            <LayoutGrid className="size-4" strokeWidth={1.75} aria-hidden="true" />
-          </button>
-        </div>
-      </div>
-
-      {showGrid && (
-        <div className="mt-2 rounded-lg border bg-card p-3 text-card-foreground">
-          <div className="grid grid-cols-6 gap-1.5 sm:grid-cols-10">
-            {soalTerfilter.map((s, i) => {
-              const dijawab = (jawabanMap[s.id]?.opsiIds.length ?? 0) > 0 || !!jawabanMap[s.id]?.jawabanEssay;
-              const ragu = jawabanMap[s.id]?.raguRagu;
-              const state =
-                i === activeIndex
-                  ? "border-brand bg-brand text-brand-foreground"
-                  : ragu
-                  ? "border-dashed border-foreground/60 bg-accent"
-                  : dijawab
-                  ? "border-brand bg-brand-subtle"
-                  : "text-muted-foreground";
-              return (
+      {!isKuis && (
+        <nav aria-label="Navigasi soal" className="mt-4 rounded-lg border bg-card p-3 text-card-foreground">
+          <div className="flex items-center justify-between gap-3">
+            <button
+              aria-label="Soal sebelumnya"
+              onClick={() => setActiveIndex((i) => Math.max(0, i - 1))}
+              disabled={activeIndex === 0}
+              className={iconBtn}
+            >
+              <ChevronLeft className="size-4" strokeWidth={1.75} aria-hidden="true" />
+            </button>
+            <p aria-live="polite" className="text-sm font-medium tabular-nums">
+              Soal {soalTerfilter.length === 0 ? 0 : activeIndex + 1} dari {soalTerfilter.length}
+            </p>
+            <button
+              aria-label="Soal berikutnya"
+              onClick={() => setActiveIndex((i) => Math.min(soalTerfilter.length - 1, i + 1))}
+              disabled={activeIndex >= soalTerfilter.length - 1}
+              className={iconBtn}
+            >
+              <ChevronRight className="size-4" strokeWidth={1.75} aria-hidden="true" />
+            </button>
+          </div>
+          <div role="group" aria-label="Pilih nomor soal" className="mt-3 max-h-36 overflow-y-auto border-t pt-3 sm:max-h-40">
+            <div className="grid grid-cols-6 gap-2 sm:grid-cols-10">
+              {soalTerfilter.map((s, i) => (
                 <button
                   key={s.id}
-                  onClick={() => {
-                    setActiveIndex(i);
-                    setShowGrid(false);
-                  }}
-                  aria-label={`Soal ${i + 1}${ragu ? ", ragu-ragu" : dijawab ? ", sudah dijawab" : ", belum dijawab"}`}
-                  aria-current={i === activeIndex ? "true" : undefined}
-                  className={`flex size-10 cursor-pointer items-center justify-center rounded-md border text-sm font-medium tabular-nums transition-colors duration-150 ${focusRing} ${state}`}
+                  type="button"
+                  onClick={() => setActiveIndex(i)}
+                  aria-label={`Soal ${i + 1}`}
+                  aria-current={i === activeIndex ? "step" : undefined}
+                  className={`flex size-10 cursor-pointer items-center justify-center rounded-md border text-sm font-medium tabular-nums transition-colors duration-150 ${focusRing} ${
+                    i === activeIndex
+                      ? "border-brand bg-brand text-brand-foreground"
+                      : "text-muted-foreground hover:bg-accent"
+                  }`}
                 >
                   {i + 1}
                 </button>
-              );
-            })}
+              ))}
+            </div>
           </div>
-          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 border-t pt-3 text-xs text-muted-foreground">
-            <span className="inline-flex items-center gap-1.5">
-              <span aria-hidden="true" className="size-3 rounded-sm border border-brand bg-brand-subtle" />
-              Dijawab
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <span aria-hidden="true" className="size-3 rounded-sm border border-dashed border-foreground/60 bg-accent" />
-              Ragu-ragu
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <span aria-hidden="true" className="size-3 rounded-sm border" />
-              Belum dijawab
-            </span>
-          </div>
-        </div>
+        </nav>
       )}
 
       <div className="mt-4 min-h-[280px] rounded-lg border bg-card p-5 text-card-foreground">

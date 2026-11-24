@@ -192,7 +192,7 @@ export default function GuruKelasDetailPage() {
     return (
       <div className="flex flex-col items-center gap-3 py-10">
         <p className="text-sm text-muted-foreground">{error || "Kelas tidak ditemukan."}</p>
-        <Button variant="outline" onClick={() => router.push("/guru")}>
+        <Button variant="outline" onClick={() => router.push("/guru/kelas")}>
           Kembali
         </Button>
       </div>

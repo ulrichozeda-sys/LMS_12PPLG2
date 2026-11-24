@@ -3,9 +3,11 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import {
+  ChartColumn,
   ChevronDown,
   ClipboardCheck,
   ClipboardList,
+  LayoutDashboard,
   School,
   User,
   Users,
@@ -27,11 +29,13 @@ import { DashboardShell, type NavItem } from "@/components/shared/dashboard-shel
 import { Avatar } from "@/components/shared/avatar";
 import { EmptyState, LoadingBlock } from "@/components/shared/data-display";
 
-type AdminTab = "KELAS" | "AKUN";
+type AdminTab = "DASHBOARD" | "KELAS" | "AKUN" | "PERFORMA";
 
 const ADMIN_TABS: { key: AdminTab; label: string; icon: NavItem["icon"] }[] = [
+  { key: "DASHBOARD", label: "Dashboard", icon: LayoutDashboard },
   { key: "KELAS", label: "Buat Kelas", icon: School },
   { key: "AKUN", label: "Daftar Akun", icon: Users },
+  { key: "PERFORMA", label: "Performa Akademik", icon: ChartColumn },
 ];
 
 interface SiswaDiKelas {
@@ -198,7 +202,7 @@ export default function AdminKelasDetailPage() {
         onSelect: () => navigateToAdminTab(tab.key),
       }))
     : [
-        { key: "KELAS", label: "Kelas", icon: School, href: "/guru", active: true },
+        { key: "KELAS", label: "Kelas", icon: School, href: "/guru/kelas", active: true },
         { key: "ASESMEN", label: "Asesmen", icon: ClipboardCheck, href: "/guru/asesmen" },
         { key: "TUGAS", label: "Tugas", icon: ClipboardList, href: "/guru/tugas" },
         { key: "PROFILE", label: "Profile", icon: User, href: me ? `/profil/${me.id}` : "#" },

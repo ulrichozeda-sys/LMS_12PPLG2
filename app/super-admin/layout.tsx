@@ -80,6 +80,7 @@ function SuperAdminShell({ children }: { children: React.ReactNode }) {
       me={me}
       onLogout={handleLogout}
       maxWidth="max-w-7xl"
+      className={pathname.startsWith("/super-admin/profil/") ? "profile-shell" : undefined}
     >
       {children}
     </DashboardShell>

@@ -226,6 +226,29 @@
     display: none !important;
   }
 
+  .profile-shell > header,
+  .profile-shell > div > aside,
+  .profile-shell > footer {
+    display: none !important;
+  }
+
+  .profile-shell > div > main {
+    width: 85.6mm !important;
+    height: 53.98mm !important;
+    min-height: 0 !important;
+    flex: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .profile-shell > div > main > div {
+    width: 85.6mm !important;
+    height: 53.98mm !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
   .profile-print-area {
     width: 85.6mm !important;
     height: 53.98mm !important;

@@ -114,7 +114,7 @@ export default function SiswaKelasDetailPage() {
     return (
       <div className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-lg border border-dashed px-4 py-10 text-center">
         <p className="text-sm text-muted-foreground">{error || "Kelas tidak ditemukan."}</p>
-        <Button variant="outline" onClick={() => router.push("/siswa")}>
+        <Button variant="outline" onClick={() => router.push("/siswa/kelas")}>
           Kembali
         </Button>
       </div>

@@ -55,7 +55,7 @@ export default function ModalEditProfil({ open, onClose, onSuccess, userId, init
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="Edit Profile">
+    <Modal open={open} onClose={onClose} title="Edit Profil">
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input label="Nama" value={nama} onChange={(event) => setNama(event.target.value)} required />
         <Input label="URL Foto Profil (opsional)" value={fotoProfil} onChange={(event) => setFotoProfil(event.target.value)} />

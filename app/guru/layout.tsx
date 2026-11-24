@@ -41,7 +41,7 @@ export default function GuruLayout({ children }: { children: React.ReactNode }) 
     { key: "TUGAS", label: "Tugas", href: "/guru/tugas", icon: ClipboardList },
     { key: "MATERI", label: "Materi", href: "/guru/materi", icon: BookOpen },
     { key: "PERFORMA", label: "Performa Akademik", href: "/guru/performa-akademik", icon: ChartColumn },
-    { key: "PROFILE", label: "Profile", href: me ? `/profil/${me.id}` : "#", icon: User },
+    { key: "PROFILE", label: "Profil", href: me ? `/profil/${me.id}` : "#", icon: User },
   ];
 
   function isActive(href: string) {

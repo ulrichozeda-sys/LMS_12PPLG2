@@ -70,17 +70,17 @@ export default function SiswaLayout({ children }: { children: React.ReactNode })
   }
 
   const NAV_ITEMS: { key: NavKey; label: string; href: string; icon: LucideIcon }[] = [
-    { key: "DASHBOARD", label: "Dashboard", href: "/siswa", icon: LayoutDashboard },
+    { key: "DASHBOARD", label: "Dashboard", href: "/siswa/dashboard", icon: LayoutDashboard },
     { key: "KELAS", label: "Kelas", href: "/siswa/kelas", icon: School },
     { key: "ASESMEN", label: "Asesmen", href: "/siswa/asesmen", icon: ListChecks },
     { key: "TUGAS", label: "Tugas", href: "/siswa/tugas", icon: ClipboardList },
     { key: "MATERI", label: "Materi", href: "/siswa/materi", icon: BookOpen },
     { key: "PERFORMA", label: "Performa Akademik", href: "/siswa/performa-akademik", icon: ChartColumn },
-    { key: "PROFILE", label: "Profile", href: me ? `/profil/${me.id}` : "#", icon: User },
+    { key: "PROFILE", label: "Profil", href: me ? `/profil/${me.id}` : "#", icon: User },
   ];
 
   function isActive(href: string) {
-    if (href === "/siswa") return pathname === "/siswa";
+    if (href === "/siswa/dashboard") return pathname === href;
     return pathname.startsWith(href);
   }
 

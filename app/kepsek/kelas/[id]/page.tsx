@@ -6,7 +6,6 @@ import {
   ChartColumn,
   ChevronDown,
   ClipboardCheck,
-  GraduationCap,
   LayoutDashboard,
   School,
   Users,
@@ -50,8 +49,7 @@ interface KelasDetail {
 const NAV: { key: string; label: string; href: string; icon: NavItem["icon"] }[] = [
   { key: "DASHBOARD", label: "Dashboard", href: "/kepsek", icon: LayoutDashboard },
   { key: "KELAS", label: "Kelas", href: "/kepsek?tab=KELAS", icon: School },
-  { key: "SISWA", label: "Daftar Siswa", href: "/kepsek?tab=SISWA", icon: GraduationCap },
-  { key: "GURU", label: "Daftar Guru", href: "/kepsek?tab=GURU", icon: Users },
+  { key: "AKUN", label: "Daftar Akun", href: "/kepsek?tab=AKUN", icon: Users },
   { key: "ASESMEN", label: "Asesmen", href: "/kepsek?tab=ASESMEN", icon: ClipboardCheck },
   { key: "PERFORMA", label: "Performa Akademik", href: "/kepsek?tab=PERFORMA", icon: ChartColumn },
 ];

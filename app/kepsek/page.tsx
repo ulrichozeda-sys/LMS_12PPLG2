@@ -7,7 +7,6 @@ import {
   ChartColumn,
   ChevronDown,
   ClipboardCheck,
-  GraduationCap,
   LayoutDashboard,
   School,
   Users,
@@ -163,8 +162,7 @@ function KepsekDashboardContent() {
   const navItems: NavItem[] = [
     { key: "DASHBOARD", label: "Dashboard", icon: LayoutDashboard, active: activeTab === "DASHBOARD", onSelect: () => openTab("DASHBOARD") },
     { key: "KELAS", label: "Kelas", icon: School, active: activeTab === "KELAS", onSelect: () => openTab("KELAS") },
-    { key: "SISWA", label: "Daftar Siswa", icon: GraduationCap, active: activeTab === "AKUN" && accountRole === "SISWA", onSelect: () => openAccount("SISWA") },
-    { key: "GURU", label: "Daftar Guru", icon: Users, active: activeTab === "AKUN" && accountRole === "GURU", onSelect: () => openAccount("GURU") },
+    { key: "AKUN", label: "Daftar Akun", icon: Users, active: activeTab === "AKUN", onSelect: () => openTab("AKUN") },
     { key: "ASESMEN", label: "Asesmen", icon: ClipboardCheck, active: activeTab === "ASESMEN", onSelect: () => openTab("ASESMEN") },
     { key: "PERFORMA", label: "Performa Akademik", icon: ChartColumn, active: activeTab === "PERFORMA", onSelect: () => openTab("PERFORMA") },
   ];

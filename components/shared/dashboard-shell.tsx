@@ -39,6 +39,7 @@ export function DashboardShell({
   onMenuOpen,
   headerActions,
   maxWidth = "max-w-6xl",
+  className,
   children,
 }: {
   roleLabel: string;
@@ -50,6 +51,7 @@ export function DashboardShell({
   onMenuOpen?: () => void;
   headerActions?: ReactNode;
   maxWidth?: string;
+  className?: string;
   children: ReactNode;
 }) {
   // Dua state terpisah: mobile (drawer) vs desktop (collapse)
@@ -75,7 +77,7 @@ export function DashboardShell({
     );
 
   return (
-    <div className="flex min-h-dvh flex-col bg-background text-foreground">
+    <div className={cn("flex min-h-dvh flex-col bg-background text-foreground", className)}>
       {/* HEADER */}
       <header className="sticky top-0 z-30 h-14 border-b bg-background">
         <div className="flex h-full items-center justify-between gap-3 px-4 sm:px-6">
