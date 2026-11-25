@@ -62,11 +62,21 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       kelasIds,
       nik,
       mapelId,
+      passwordBaru,
     } = body;
 
     const existing = await db.user.findUnique({ where: { id } });
     if (!existing) {
       return NextResponse.json({ error: "Akun tidak ditemukan." }, { status: 404 });
+    }
+
+    if (passwordBaru !== undefined && passwordBaru !== "" && (
+      typeof passwordBaru !== "string" || !/^(?=.*[A-Za-z])(?=.*\d).{6,}$/.test(passwordBaru)
+    )) {
+      return NextResponse.json(
+        { error: "Password minimal 6 karakter dan harus kombinasi huruf dan angka." },
+        { status: 400 }
+      );
     }
 
     if (existing.role === "SISWA" && nis !== undefined && nis !== existing.nis && (typeof nis !== "string" || !/^\d{10}$/.test(nis))) {
@@ -94,17 +104,27 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       if (!rombel) return NextResponse.json({ error: "Kelas referensi (rombel) tidak ditemukan." }, { status: 404 });
     }
 
-    let newPasswordHash: string | undefined;
-    if (existing.role === "SISWA" && nis && nis !== existing.nis) {
-      newPasswordHash = await hashPassword(nis);
-    }
-    if (existing.role === "GURU" && nik && nik !== existing.nik) {
-      newPasswordHash = await hashPassword(nik);
-    }
+    const identityChanged =
+      existing.role === "SISWA" && typeof nis === "string" && nis !== existing.nis
+      || existing.role === "GURU" && typeof nik === "string" && nik !== existing.nik;
+    const newPasswordHash = passwordBaru
+      ? await hashPassword(passwordBaru)
+      : identityChanged
+        ? await hashPassword(existing.role === "SISWA" ? nis : nik)
+        : undefined;
 
     const updated = await db.$transaction(async (tx) => {
       const user = await tx.user.update({
         where: { id },
+        select: {
+          id: true,
+          email: true,
+          nama: true,
+          role: true,
+          nis: true,
+          nik: true,
+          passwordSementara: true,
+        },
         data: {
           email: email ? email.toLowerCase().trim() : undefined,
           nama: nama || undefined,
@@ -116,6 +136,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
           kelasReferensiId: existing.role === "SISWA" && kelasReferensiId ? kelasReferensiId : undefined,
           tanggalLahir: tanggalLahir ? new Date(tanggalLahir) : undefined,
           password: newPasswordHash ?? undefined,
+          passwordSementara: newPasswordHash ? true : undefined,
         },
       });
 

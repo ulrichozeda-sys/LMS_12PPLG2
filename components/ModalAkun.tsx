@@ -51,6 +51,8 @@ export default function ModalAkun({ open, onClose, onSuccess, mode, defaultRole 
   const [email, setEmail] = useState("");
   const [nama, setNama] = useState("");
   const [nomorInduk, setNomorInduk] = useState("");
+  const [passwordBaru, setPasswordBaru] = useState("");
+  const [konfirmasiPassword, setKonfirmasiPassword] = useState("");
   const [tanggalLahir, setTanggalLahir] = useState("");
   const [jenisKelamin, setJenisKelamin] = useState("");
   const [deskripsi, setDeskripsi] = useState("");
@@ -92,6 +94,8 @@ export default function ModalAkun({ open, onClose, onSuccess, mode, defaultRole 
       setEmail(initialData.email);
       setNama(initialData.nama);
       setNomorInduk(initialData.role === "SISWA" ? initialData.nis ?? "" : initialData.nik ?? "");
+      setPasswordBaru("");
+      setKonfirmasiPassword("");
       setTanggalLahir(initialData.tanggalLahir ? initialData.tanggalLahir.split("T")[0] : "");
       setJenisKelamin(initialData.jenisKelamin ?? "");
       setDeskripsi(initialData.deskripsi ?? "");
@@ -104,6 +108,8 @@ export default function ModalAkun({ open, onClose, onSuccess, mode, defaultRole 
       setEmail("");
       setNama("");
       setNomorInduk("");
+      setPasswordBaru("");
+      setKonfirmasiPassword("");
       setTanggalLahir("");
       setJenisKelamin("");
       setDeskripsi("");
@@ -163,6 +169,14 @@ export default function ModalAkun({ open, onClose, onSuccess, mode, defaultRole 
       setError("Pilih mapel kalau sudah menambahkan kelas yang diampu.");
       return;
     }
+    if (passwordBaru && !/^(?=.*[A-Za-z])(?=.*\d).{6,}$/.test(passwordBaru)) {
+      setError("Password minimal 6 karakter dan harus kombinasi huruf dan angka.");
+      return;
+    }
+    if (passwordBaru !== konfirmasiPassword) {
+      setError("Konfirmasi password tidak cocok.");
+      return;
+    }
 
     setLoading(true);
     try {
@@ -178,6 +192,7 @@ export default function ModalAkun({ open, onClose, onSuccess, mode, defaultRole 
         deskripsi: deskripsi || null,
         fotoProfil: fotoProfil || null,
       };
+      if (mode === "edit" && passwordBaru) body.passwordBaru = passwordBaru;
 
       if (role === "SISWA") {
         body.nis = nomorInduk;
@@ -251,6 +266,28 @@ export default function ModalAkun({ open, onClose, onSuccess, mode, defaultRole 
           <p className="-mt-2 rounded-lg bg-muted px-3 py-2 text-xs leading-relaxed text-foreground">
             Password awal otomatis sama dengan {role === "SISWA" ? "NIS" : "NIK"}. Saat login pertama, akun akan diminta membuat password baru.
           </p>
+        )}
+        {mode === "edit" && (
+          <div className="space-y-3 rounded-lg border p-3">
+            <p className="text-sm font-medium">Ubah password akun (opsional)</p>
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              Jika NIS/NIK diubah, password login ikut berubah menjadi NIS/NIK baru. Password di bawah ini, jika diisi, akan digunakan sebagai gantinya dan akun diminta menggantinya saat login berikutnya.
+            </p>
+            <Input
+              label="Password baru"
+              type="password"
+              autoComplete="new-password"
+              value={passwordBaru}
+              onChange={(e) => setPasswordBaru(e.target.value)}
+            />
+            <Input
+              label="Konfirmasi password baru"
+              type="password"
+              autoComplete="new-password"
+              value={konfirmasiPassword}
+              onChange={(e) => setKonfirmasiPassword(e.target.value)}
+            />
+          </div>
         )}
         <Input label="Nama" value={nama} onChange={(e) => setNama(e.target.value)} required />
 
